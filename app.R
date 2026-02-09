@@ -13,6 +13,8 @@
 #   shiny::runApp("app.R")   # or just Run App in RStudio
 # ============================================================
 
+options(shiny.sanitize.errors = FALSE)
+
 suppressPackageStartupMessages({
   library(shiny)
   library(ggplot2)
@@ -259,6 +261,8 @@ wquantile <- function(x, w, probs = c(0.05, 0.95)) {
   cw <- cumsum(w) / sum(w)
   approx(cw, x, xout = probs, ties = "ordered")$y
 }
+
+source("sweep.R", local = FALSE)
 
 make_plots <- function(res, base_size = 12, contour_bins = 12, exemplars_n = 3) {
   df <- build_researcher_df(res)
@@ -807,8 +811,8 @@ ui <- fluidPage(
         
         tabPanel("Aggregates",
           div(class = "plot-explanation",
-            HTML("<strong>What this shows:</strong> Distribution of total expected output across many 
-                  simulation runs, comparing policies. This reveals robustness: does optimal allocation 
+            HTML("<strong>What this shows:</strong> Distribution of total expected output across many
+                  simulation runs, comparing policies. This reveals robustness: does optimal allocation
                   consistently outperform naive allocation across different random populations?")
           ),
           fluidRow(
@@ -818,6 +822,38 @@ ui <- fluidPage(
             ),
             column(8,
               plotOutput("fig7", height = 420)
+            )
+          )
+        ),
+
+        tabPanel("Parameter Sweeps",
+          div(class = "plot-explanation",
+            HTML("<strong>What this shows:</strong> Systematic parameter sweeps across model configurations,
+                  averaged over multiple random seeds. Each cell in the heatmap represents the mean outcome
+                  for that parameter combination. This reveals which structural features of the research
+                  population drive the value of different allocation strategies.")
+          ),
+          fluidRow(
+            column(4,
+              selectInput("sweep_choice", "Sweep type",
+                choices = setNames(
+                  names(SWEEP_CONFIGS),
+                  sapply(SWEEP_CONFIGS, `[[`, "name")
+                )
+              ),
+              sliderInput("sweep_seeds", "Number of seeds",
+                          min = 3, max = 15, value = 5, step = 1),
+              div(class = "param-help",
+                  "More seeds = more precise estimates but slower computation."),
+              actionButton("run_sweep_btn", "Run Sweep",
+                           class = "btn-primary btn-run"),
+              hr(),
+              uiOutput("sweep_description")
+            ),
+            column(8,
+              plotOutput("sweep_primary_plot", height = 480),
+              hr(),
+              plotOutput("sweep_secondary_plot", height = 380)
             )
           )
         )
@@ -1040,6 +1076,54 @@ server <- function(input, output, session) {
     req(agg())
     ph <- plots()$aggregate_helpers
     ph$plot_aggregate(agg())
+  }, res = 110)
+
+  # ---- Parameter Sweeps ----
+
+  output$sweep_description <- renderUI({
+    config <- SWEEP_CONFIGS[[input$sweep_choice]]
+    req(config)
+    div(class = "plot-explanation",
+        HTML(paste0("<p>", config$description, "</p>")))
+  })
+
+  sweep_results <- eventReactive(input$run_sweep_btn, {
+    sweep_name <- input$sweep_choice
+    n_seeds    <- input$sweep_seeds
+
+    config      <- SWEEP_CONFIGS[[sweep_name]]
+    params_grid <- config$grid_fn()
+    total       <- nrow(params_grid) * n_seeds
+
+    withProgress(
+      message = paste("Running", config$name, "sweep..."),
+      value = 0,
+      {
+        raw_df <- run_sweep(
+          sweep_name  = sweep_name,
+          seeds       = seq_len(n_seeds),
+          progress_fn = function(i, total) {
+            incProgress(1 / total,
+                        detail = sprintf("Run %d / %d", i, total))
+          }
+        )
+
+        summary_df <- summarize_sweep(raw_df, config)
+        list(raw = raw_df, summary = summary_df, config = config)
+      }
+    )
+  }, ignoreInit = TRUE)
+
+  output$sweep_primary_plot <- renderPlot({
+    res <- sweep_results()
+    req(res)
+    plot_sweep_from_config(res$summary, res$config, which = "primary")
+  }, res = 110)
+
+  output$sweep_secondary_plot <- renderPlot({
+    res <- sweep_results()
+    req(res)
+    plot_sweep_from_config(res$summary, res$config, which = "secondary")
   }, res = 110)
 }
 
