@@ -5,7 +5,7 @@ account: amohseni
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 16413087
-bundleId: 11558865
+bundleId: 11684998
 url: https://amohseni.shinyapps.io/Minimal-Grant-Funding-Model/
 version: 1
 asMultiple: FALSE
