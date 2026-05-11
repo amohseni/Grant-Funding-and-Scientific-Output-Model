@@ -1,0 +1,12 @@
+name: Grant-Funding-and-Scientific-Output-Model
+title: Grant-Funding-and-Scientific-Output-Model
+username: amohseni
+account: amohseni
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 17339007
+bundleId: 11979765
+url: https://amohseni.shinyapps.io/Grant-Funding-and-Scientific-Output-Model/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
