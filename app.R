@@ -670,7 +670,7 @@ run_simulation <- function(
     r_min = 1.0, r_shape = 2.0,
     rho_kr = 0,
     gamma = 1.0,
-    epsilon = 0.1,
+    epsilon = 0.3,
     b = 0.5,
     n_steps = 50,
     tau_r = 1.0,
@@ -727,7 +727,7 @@ run_simulation <- function(
   results <- list()
   
   for (s in strategies) {
-    set.seed(seed * 1000 + s)
+    set.seed(seed * 1000)
     
     if (s == 1) {
       alloc <- allocate_no_funding(n, B)
@@ -928,25 +928,45 @@ theme_sim <- function(base_size = 12, base_family = "") {
 
 # Helper for "Value of X" comparison bar plots (signals, forward looking, seed).
 # Expects a tibble with columns: Comparison (factor), Without, With, Gain.
+# Pull se_total_expected from a strategy result; return 0 if absent / NA.
+se_or_zero <- function(strategy_result) {
+  v <- strategy_result$se_total_expected
+  if (is.null(v) || is.na(v)) 0 else v
+}
+
 make_value_plot <- function(comparisons, title, subtitle,
                             baseline_label, treatment_label,
                             baseline_color, treatment_color) {
+  # SE columns optional; default to 0 (no error bars)
+  if (is.null(comparisons$SE_Without)) comparisons$SE_Without <- 0
+  if (is.null(comparisons$SE_With)) comparisons$SE_With <- 0
+  
   df_long <- comparisons %>%
-    pivot_longer(cols = c(Without, With), names_to = "Info", values_to = "Output")
+    pivot_longer(cols = c(Without, With), names_to = "Info", values_to = "Output") %>%
+    mutate(SE = ifelse(Info == "Without", SE_Without, SE_With))
   df_long$Info <- factor(df_long$Info, levels = c("Without", "With"))
   
   y_max <- max(c(comparisons$With, comparisons$Without))
+  has_errors <- any(df_long$SE > 0)
   
-  ggplot(df_long, aes(x = Comparison, y = Output, fill = Info)) +
-    geom_col(position = position_dodge(width = 0.7), width = 0.6, alpha = 0.9) +
+  p <- ggplot(df_long, aes(x = Comparison, y = Output, fill = Info)) +
+    geom_col(position = position_dodge(width = 0.7), width = 0.6, alpha = 0.9)
+  
+  if (has_errors) {
+    p <- p + geom_errorbar(aes(ymin = Output - SE, ymax = Output + SE),
+                           position = position_dodge(width = 0.7),
+                           width = 0.2, alpha = 0.7, linewidth = 0.5)
+  }
+  
+  p +
     geom_text(data = comparisons,
               aes(x = Comparison,
-                  y = pmax(With, Without) + y_max * 0.02,
+                  y = pmax(With, Without) + y_max * 0.04,
                   label = sprintf("%+.1f", Gain)),
               inherit.aes = FALSE, size = 4, fontface = "bold", color = "#c62828") +
     scale_fill_manual(values = c("Without" = baseline_color, "With" = treatment_color),
                       labels = c("Without" = baseline_label, "With" = treatment_label)) +
-    scale_y_continuous(expand = expansion(mult = c(0, 0.12))) +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
     labs(title = title, subtitle = subtitle, x = NULL,
          y = "Total expected output", fill = NULL) +
     theme_sim(base_size = 13) +
@@ -1069,8 +1089,11 @@ ui <- fluidPage(
       actionButton("run", "Run Simulation", class = "btn-primary btn-run"),
       actionButton("reset", "Reset to Defaults", class = "btn-default btn-run"),
       
-      numericInput("seed", "Random seed", value = 1, min = 1, max = 100000, step = 1),
-      div(class = "param-help", "Auto-advances to a new random value (1–100000) after each run; set manually to reproduce a specific draw."),
+      numericInput("seed", "Random seed", value = 1, min = 1, max = 1000000, step = 1),
+      div(class = "param-help", "Auto-advances to a new random value (1–10^6) after each run; set manually to reproduce a specific draw."),
+      
+      numericInput("n_trials", "Trials per run", value = 1, min = 1, max = 30, step = 1),
+      div(class = "param-help", "Number of trials to average. Higher values reduce noise but increase compute time. Per-strategy plots use the first seed's state; comparison plots show means with error bars."),
       
       hr(),
       
@@ -1125,7 +1148,7 @@ ui <- fluidPage(
                         sliderInput("k_min", "Pareto scale (\\(k_{min}\\))", min = 0.1, max = 5, value = 1.0, step = 0.1),
                         div(class = "param-help", "Minimum knowledge value."),
                         
-                        sliderInput("epsilon", "Growth rate (\\(\\varepsilon\\))", min = 0.01, max = 1, value = 0.1, step = 0.01),
+                        sliderInput("epsilon", "Growth rate (\\(\\varepsilon\\))", min = 0.01, max = 1, value = 0.3, step = 0.01),
                         div(class = "param-help", "Rate of knowledge growth between rounds. K grows in proportion to current output rate: \\(K_2 = K_1 + \\varepsilon \\cdot K_1 R_1 / (K_1 + R_1)\\).")
                )
       ),
@@ -1328,9 +1351,10 @@ server <- function(input, output, session) {
     updateSliderInput(session, "gamma", value = 1.0)
     updateCheckboxGroupInput(session, "strategies", selected = 1:9)
     updateNumericInput(session, "seed", value = 1)
+    updateNumericInput(session, "n_trials", value = 1)
     updateSliderInput(session, "k_shape", value = 2.0)
     updateSliderInput(session, "k_min", value = 1.0)
-    updateSliderInput(session, "epsilon", value = 0.1)
+    updateSliderInput(session, "epsilon", value = 0.3)
     updateSliderInput(session, "r_shape", value = 2.0)
     updateSliderInput(session, "r_min", value = 1.0)
     updateSliderInput(session, "rho_kr", value = 0)
@@ -1349,32 +1373,69 @@ server <- function(input, output, session) {
       strats <- as.integer(input$strategies)
       if (length(strats) == 0) strats <- 1
       
-      withProgress(message = "Running simulation...", value = 0.1, {
-        res <- run_simulation(
-          seed = input$seed,
-          n = input$n,
-          k_min = input$k_min, k_shape = input$k_shape,
-          r_min = input$r_min, r_shape = input$r_shape,
-          rho_kr = input$rho_kr,
-          gamma = input$gamma,
-          epsilon = input$epsilon,
-          b = input$b,
-          n_steps = 50,
-          tau_r = input$tau_r,
-          tau_k = input$tau_k,
-          use_resource_signal = input$use_resource_signal,
-          n_pre_rounds = input$n_pre_rounds,
-          x_seed = input$x_seed,
-          M = 1500,
-          strategies = strats
-        )
-        incProgress(0.9)
+      n_runs <- max(1L, as.integer(input$n_trials))
+      base_seed <- as.integer(input$seed)
+      
+      withProgress(message = "Running simulation...", value = 0.0, {
+        all_runs <- vector("list", n_runs)
+        for (i in seq_len(n_runs)) {
+          all_runs[[i]] <- run_simulation(
+            seed = base_seed + (i - 1L),
+            n = input$n,
+            k_min = input$k_min, k_shape = input$k_shape,
+            r_min = input$r_min, r_shape = input$r_shape,
+            rho_kr = input$rho_kr,
+            gamma = input$gamma,
+            epsilon = input$epsilon,
+            b = input$b,
+            n_steps = 50,
+            tau_r = input$tau_r,
+            tau_k = input$tau_k,
+            use_resource_signal = input$use_resource_signal,
+            n_pre_rounds = input$n_pre_rounds,
+            x_seed = input$x_seed,
+            M = 1500,
+            strategies = strats
+          )
+          setProgress(value = i / n_runs,
+                      detail = sprintf("seed %d of %d", i, n_runs))
+        }
+        
+        # Use first run as the representative for state-dependent plots
+        # (Funding Effects, Bottleneck, Pre-Round) and as the base for aggregation
+        res <- all_runs[[1]]
+        res$n_trials <- n_runs
+        res$seed_range <- c(base_seed, base_seed + n_runs - 1L)
+        
+        # Aggregate per-strategy metrics across runs
+        if (n_runs > 1L) {
+          for (s in seq_along(res$strategies)) {
+            if (is.null(res$strategies[[s]])) next
+            outs <- vapply(all_runs, function(r) {
+              v <- r$strategies[[s]]$total_output;     if (is.null(v)) NA_real_ else v
+            }, numeric(1))
+            exps <- vapply(all_runs, function(r) {
+              v <- r$strategies[[s]]$total_expected;   if (is.null(v)) NA_real_ else v
+            }, numeric(1))
+            alphas <- vapply(all_runs, function(r) {
+              v <- r$strategies[[s]]$alpha;            if (is.null(v)) NA_real_ else v
+            }, numeric(1))
+            
+            res$strategies[[s]]$total_output     <- mean(outs, na.rm = TRUE)
+            res$strategies[[s]]$se_total_output  <- sd(outs,   na.rm = TRUE) / sqrt(sum(!is.na(outs)))
+            res$strategies[[s]]$total_expected   <- mean(exps, na.rm = TRUE)
+            res$strategies[[s]]$se_total_expected<- sd(exps,   na.rm = TRUE) / sqrt(sum(!is.na(exps)))
+            res$strategies[[s]]$alpha            <- mean(alphas, na.rm = TRUE)
+            res$strategies[[s]]$se_alpha         <- sd(alphas, na.rm = TRUE) / sqrt(sum(!is.na(alphas)))
+          }
+        }
+        
         sim_result(res)
       })
       
-      # Auto-advance seed to a new value 1–100000 for the next run.
-      # User can still manually set the seed before clicking Run to reproduce.
-      updateNumericInput(session, "seed", value = sample.int(100000, 1))
+      # Auto-advance seed to a fresh random value for the next run.
+      # Advance past the range we just used to avoid overlap.
+      updateNumericInput(session, "seed", value = sample.int(1000000, 1))
     })
   })
   
@@ -1382,9 +1443,18 @@ server <- function(input, output, session) {
     res <- sim_result()
     req(res)
     
-    cat(sprintf("Seed: %d | n = %d | b = %.2f (B = %.1f/round) | Pre-rounds: %d\n",
-                res$params$seed, res$params$n, res$params$b,
-                res$params$B, res$params$n_pre_rounds))
+    multi <- !is.null(res$n_trials) && res$n_trials > 1
+    
+    if (multi) {
+      cat(sprintf("Trials: %d (seeds %d–%d) | n = %d | b = %.2f (B = %.1f/round) | Pre-rounds: %d\n",
+                  res$n_trials, res$seed_range[1], res$seed_range[2],
+                  res$params$n, res$params$b,
+                  res$params$B, res$params$n_pre_rounds))
+    } else {
+      cat(sprintf("Seed: %d | n = %d | b = %.2f (B = %.1f/round) | Pre-rounds: %d\n",
+                  res$params$seed, res$params$n, res$params$b,
+                  res$params$B, res$params$n_pre_rounds))
+    }
     cat(sprintf("K ~ Pareto(min=%.1f, shape=%.1f) | R ~ Pareto(min=%.1f, shape=%.1f) | rho = %.2f\n",
                 res$params$k_min, res$params$k_shape,
                 res$params$r_min, res$params$r_shape,
@@ -1393,12 +1463,21 @@ server <- function(input, output, session) {
                 cor(res$initial_state$K, res$initial_state$R),
                 cor(res$post_preround_state$K, res$post_preround_state$R)))
     
-    cat(sprintf("  %-30s %8s   %5s\n", "Strategy", "Output", "alpha"))
+    if (multi) {
+      cat(sprintf("  %-30s %16s   %5s\n", "Strategy", "Output (mean±SE)", "alpha"))
+    } else {
+      cat(sprintf("  %-30s %8s   %5s\n", "Strategy", "Output", "alpha"))
+    }
     for (s in seq_along(res$strategies)) {
       r <- res$strategies[[s]]
       if (is.null(r)) next
       alpha_str <- if (is.na(r$alpha)) "  —  " else sprintf("%.3f", r$alpha)
-      cat(sprintf("  %-30s %8.1f   %5s\n", r$name, r$total_expected, alpha_str))
+      if (multi) {
+        se <- if (is.null(r$se_total_expected) || is.na(r$se_total_expected)) 0 else r$se_total_expected
+        cat(sprintf("  %-30s %8.1f ± %4.2f   %5s\n", r$name, r$total_expected, se, alpha_str))
+      } else {
+        cat(sprintf("  %-30s %8.1f   %5s\n", r$name, r$total_expected, alpha_str))
+      }
     }
     cat("\n  alpha: round-1 share of total spent (fixed at 0.500 for strategies 2–6).\n")
   })
@@ -1407,28 +1486,46 @@ server <- function(input, output, session) {
     res <- sim_result()
     req(res)
     
-    df <- tibble(Strategy = character(), Total = numeric())
+    multi <- !is.null(res$n_trials) && res$n_trials > 1
+    
+    df <- tibble(Strategy = character(), Total = numeric(), SE = numeric())
     for (s in seq_along(res$strategies)) {
       r <- res$strategies[[s]]
       if (is.null(r)) next
-      df <- bind_rows(df, tibble(Strategy = r$name, Total = r$total_expected))
+      se_val <- if (!is.null(r$se_total_expected) && !is.na(r$se_total_expected)) r$se_total_expected else 0
+      df <- bind_rows(df, tibble(Strategy = r$name, Total = r$total_expected, SE = se_val))
     }
     df$Strategy <- factor(df$Strategy, levels = df$Strategy)
     
     baseline_val <- df$Total[df$Strategy == "No funding"]
     if (length(baseline_val) == 0) baseline_val <- 0
     
-    ggplot(df, aes(x = Strategy, y = Total, fill = Strategy)) +
+    subtitle_text <- if (multi) {
+      sprintf("n = %d, b = %.2f (B = %.1f/round), gamma = %.1f | mean ± SE over %d trials",
+              res$params$n, res$params$b, res$params$B, res$params$gamma, res$n_trials)
+    } else {
+      sprintf("n = %d, b = %.2f (B = %.1f/round), gamma = %.1f",
+              res$params$n, res$params$b, res$params$B, res$params$gamma)
+    }
+    
+    p <- ggplot(df, aes(x = Strategy, y = Total, fill = Strategy)) +
       geom_col(width = 0.7, alpha = 0.9) +
-      {if (baseline_val > 0) geom_hline(yintercept = baseline_val, linetype = "dashed", alpha = 0.5)} +
+      {if (baseline_val > 0) geom_hline(yintercept = baseline_val, linetype = "dashed", alpha = 0.5)}
+    
+    if (multi) {
+      p <- p + geom_errorbar(aes(ymin = Total - SE, ymax = Total + SE),
+                             width = 0.25, alpha = 0.7, linewidth = 0.5)
+    }
+    
+    p +
       geom_text(aes(label = sprintf("%.1f", Total)),
-                vjust = -0.5, size = 3.5, fontface = "bold") +
+                vjust = -0.5, size = 3.5, fontface = "bold",
+                nudge_y = if (multi) max(df$SE) * 1.1 else 0) +
       scale_fill_manual(values = STRATEGY_COLORS, drop = FALSE) +
       scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
       labs(
         title = "Total expected output by strategy (2 rounds)",
-        subtitle = sprintf("n = %d, b = %.2f (B = %.1f/round), gamma = %.1f",
-                           res$params$n, res$params$b, res$params$B, res$params$gamma),
+        subtitle = subtitle_text,
         x = NULL,
         y = "Total expected output (sum of lambdas)"
       ) +
@@ -1644,9 +1741,8 @@ server <- function(input, output, session) {
     
     comparisons <- tibble(
       Comparison = character(),
-      Without = numeric(),
-      With = numeric(),
-      Gain = numeric()
+      Without = numeric(), With = numeric(), Gain = numeric(),
+      SE_Without = numeric(), SE_With = numeric()
     )
     
     s4 <- res$strategies[[4]]; s5 <- res$strategies[[5]]
@@ -1654,7 +1750,8 @@ server <- function(input, output, session) {
       comparisons <- bind_rows(comparisons, tibble(
         Comparison = "Myopic:\ngrant signal",
         Without = s4$total_expected, With = s5$total_expected,
-        Gain = s5$total_expected - s4$total_expected
+        Gain = s5$total_expected - s4$total_expected,
+        SE_Without = se_or_zero(s4), SE_With = se_or_zero(s5)
       ))
     }
     
@@ -1663,7 +1760,8 @@ server <- function(input, output, session) {
       comparisons <- bind_rows(comparisons, tibble(
         Comparison = "Forward:\ngrant signal",
         Without = s7$total_expected, With = s8$total_expected,
-        Gain = s8$total_expected - s7$total_expected
+        Gain = s8$total_expected - s7$total_expected,
+        SE_Without = se_or_zero(s7), SE_With = se_or_zero(s8)
       ))
     }
     
@@ -1690,9 +1788,8 @@ server <- function(input, output, session) {
     
     comparisons <- tibble(
       Comparison = character(),
-      Without = numeric(),
-      With = numeric(),
-      Gain = numeric()
+      Without = numeric(), With = numeric(), Gain = numeric(),
+      SE_Without = numeric(), SE_With = numeric()
     )
     
     # Pairs at each information / intervention setting
@@ -1707,7 +1804,8 @@ server <- function(input, output, session) {
         comparisons <- bind_rows(comparisons, tibble(
           Comparison = p$label,
           Without = sm$total_expected, With = sf$total_expected,
-          Gain = sf$total_expected - sm$total_expected
+          Gain = sf$total_expected - sm$total_expected,
+          SE_Without = se_or_zero(sm), SE_With = se_or_zero(sf)
         ))
       }
     }
@@ -1735,9 +1833,8 @@ server <- function(input, output, session) {
     
     comparisons <- tibble(
       Comparison = character(),
-      Without = numeric(),
-      With = numeric(),
-      Gain = numeric()
+      Without = numeric(), With = numeric(), Gain = numeric(),
+      SE_Without = numeric(), SE_With = numeric()
     )
     
     # Pairs at each planner type (no grant signal in either side, so the
@@ -1752,7 +1849,8 @@ server <- function(input, output, session) {
         comparisons <- bind_rows(comparisons, tibble(
           Comparison = p$label,
           Without = s_no$total_expected, With = s_ye$total_expected,
-          Gain = s_ye$total_expected - s_no$total_expected
+          Gain = s_ye$total_expected - s_no$total_expected,
+          SE_Without = se_or_zero(s_no), SE_With = se_or_zero(s_ye)
         ))
       }
     }
