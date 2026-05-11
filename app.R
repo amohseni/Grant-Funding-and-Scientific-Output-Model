@@ -1447,4 +1447,430 @@ server <- function(input, output, session) {
     
     if (multi) {
       cat(sprintf("Trials: %d (seeds %d–%d) | n = %d | b = %.2f (B = %.1f/round) | Pre-rounds: %d\n",
-                  re
+                  res$n_trials, res$seed_range[1], res$seed_range[2],
+                  res$params$n, res$params$b,
+                  res$params$B, res$params$n_pre_rounds))
+    } else {
+      cat(sprintf("Seed: %d | n = %d | b = %.2f (B = %.1f/round) | Pre-rounds: %d\n",
+                  res$params$seed, res$params$n, res$params$b,
+                  res$params$B, res$params$n_pre_rounds))
+    }
+    cat(sprintf("K ~ Pareto(min=%.1f, shape=%.1f) | R ~ Pareto(min=%.1f, shape=%.1f) | rho = %.2f\n",
+                res$params$k_min, res$params$k_shape,
+                res$params$r_min, res$params$r_shape,
+                res$params$rho_kr))
+    cat(sprintf("K-R correlation: initial = %.3f, post-pre-rounds = %.3f\n\n",
+                cor(res$initial_state$K, res$initial_state$R),
+                cor(res$post_preround_state$K, res$post_preround_state$R)))
+    
+    if (multi) {
+      cat(sprintf("  %-30s %16s   %5s\n", "Strategy", "Output (mean±SE)", "alpha"))
+    } else {
+      cat(sprintf("  %-30s %8s   %5s\n", "Strategy", "Output", "alpha"))
+    }
+    for (s in seq_along(res$strategies)) {
+      r <- res$strategies[[s]]
+      if (is.null(r)) next
+      alpha_str <- if (is.na(r$alpha)) "  —  " else sprintf("%.3f", r$alpha)
+      if (multi) {
+        se <- if (is.null(r$se_total_expected) || is.na(r$se_total_expected)) 0 else r$se_total_expected
+        cat(sprintf("  %-30s %8.1f ± %4.2f   %5s\n", r$name, r$total_expected, se, alpha_str))
+      } else {
+        cat(sprintf("  %-30s %8.1f   %5s\n", r$name, r$total_expected, alpha_str))
+      }
+    }
+    cat("\n  alpha: round-1 share of total spent (fixed at 0.500 for strategies 2–6).\n")
+  })
+  
+  output$fig_strategy_comparison <- renderPlot({
+    res <- sim_result()
+    req(res)
+    
+    multi <- !is.null(res$n_trials) && res$n_trials > 1
+    
+    df <- tibble(Strategy = character(), Total = numeric(), SE = numeric())
+    for (s in seq_along(res$strategies)) {
+      r <- res$strategies[[s]]
+      if (is.null(r)) next
+      se_val <- if (!is.null(r$se_total_expected) && !is.na(r$se_total_expected)) r$se_total_expected else 0
+      df <- bind_rows(df, tibble(Strategy = r$name, Total = r$total_expected, SE = se_val))
+    }
+    df$Strategy <- factor(df$Strategy, levels = df$Strategy)
+    
+    baseline_val <- df$Total[df$Strategy == "No funding"]
+    if (length(baseline_val) == 0) baseline_val <- 0
+    
+    subtitle_text <- if (multi) {
+      sprintf("n = %d, b = %.2f (B = %.1f/round), gamma = %.1f | mean ± SE over %d trials",
+              res$params$n, res$params$b, res$params$B, res$params$gamma, res$n_trials)
+    } else {
+      sprintf("n = %d, b = %.2f (B = %.1f/round), gamma = %.1f",
+              res$params$n, res$params$b, res$params$B, res$params$gamma)
+    }
+    
+    p <- ggplot(df, aes(x = Strategy, y = Total, fill = Strategy)) +
+      geom_col(width = 0.7, alpha = 0.9) +
+      {if (baseline_val > 0) geom_hline(yintercept = baseline_val, linetype = "dashed", alpha = 0.5)}
+    
+    if (multi) {
+      p <- p + geom_errorbar(aes(ymin = Total - SE, ymax = Total + SE),
+                             width = 0.25, alpha = 0.7, linewidth = 0.5)
+    }
+    
+    p +
+      geom_text(aes(label = sprintf("%.1f", Total)),
+                vjust = -0.5, size = 3.5, fontface = "bold",
+                nudge_y = if (multi) max(df$SE) * 1.1 else 0) +
+      scale_fill_manual(values = STRATEGY_COLORS, drop = FALSE) +
+      scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+      labs(
+        title = "Total expected output by strategy (2 rounds)",
+        subtitle = subtitle_text,
+        x = NULL,
+        y = "Total expected output (sum of lambdas)"
+      ) +
+      theme_sim(base_size = 13) +
+      theme(
+        legend.position = "none",
+        axis.text.x = element_text(size = 9, angle = 30, hjust = 1),
+        plot.subtitle = element_text(color = "grey40", size = 11)
+      )
+  }, res = 110)
+  
+  output$fig_preround_effects <- renderPlot({
+    res <- sim_result()
+    req(res)
+    
+    df_init <- tibble(
+      K = res$initial_state$K,
+      R = res$initial_state$R,
+      D = (res$initial_state$K - res$initial_state$R) /
+        (res$initial_state$K + res$initial_state$R),
+      Phase = "Initial (raw draws)"
+    )
+    cor_init <- cor(res$initial_state$K, res$initial_state$R)
+    
+    n_pre <- res$params$n_pre_rounds
+    phase_label <- if (n_pre > 0) {
+      sprintf("After %d pre-round%s", n_pre, if (n_pre > 1) "s" else "")
+    } else {
+      "After 0 pre-rounds (unchanged)"
+    }
+    
+    df_post <- tibble(
+      K = res$post_preround_state$K,
+      R = res$post_preround_state$R,
+      D = (res$post_preround_state$K - res$post_preround_state$R) /
+        (res$post_preround_state$K + res$post_preround_state$R),
+      Phase = phase_label
+    )
+    cor_post <- cor(res$post_preround_state$K, res$post_preround_state$R)
+    
+    df_all <- bind_rows(df_init, df_post)
+    df_all$Phase <- factor(df_all$Phase, levels = c("Initial (raw draws)", phase_label))
+    
+    max_val <- max(c(df_all$K, df_all$R), na.rm = TRUE) * 1.05
+    
+    ann <- tibble(
+      Phase = factor(c("Initial (raw draws)", phase_label),
+                     levels = levels(df_all$Phase)),
+      label = c(sprintf("r = %.3f", cor_init), sprintf("r = %.3f", cor_post))
+    )
+    
+    ggplot(df_all, aes(x = R, y = K, color = D)) +
+      geom_abline(slope = 1, intercept = 0, linetype = "dashed", alpha = 0.4) +
+      geom_point(size = 1.8, alpha = 0.8) +
+      scale_color_gradient2(
+        low = "#2166ac", mid = "grey80", high = "#b2182b",
+        midpoint = 0, name = "Bottleneck\ndirection (D)",
+        limits = c(-1, 1)
+      ) +
+      geom_text(data = ann, aes(x = max_val * 0.05, y = max_val * 0.95, label = label),
+                inherit.aes = FALSE, hjust = 0, size = 4, fontface = "bold") +
+      facet_wrap(~ Phase) +
+      coord_cartesian(xlim = c(0, max_val), ylim = c(0, max_val)) +
+      labs(
+        title = "Pre-round effects: how naive funding history reshapes the population",
+        subtitle = sprintf("K ~ Pareto(%.1f, %.1f), R ~ Pareto(%.1f, %.1f), rho = %.1f",
+                           res$params$k_min, res$params$k_shape,
+                           res$params$r_min, res$params$r_shape,
+                           res$params$rho_kr),
+        x = "Resources (R)",
+        y = "Knowledge (K)"
+      ) +
+      theme_sim(base_size = 12) +
+      theme(plot.subtitle = element_text(color = "grey40", size = 10))
+  }, res = 110)
+  
+  output$fig_funding_effects <- renderPlot({
+    res <- sim_result()
+    req(res)
+    
+    s_idx <- as.integer(input$fe_strategy)
+    strat <- res$strategies[[s_idx]]
+    req(strat)
+    
+    n <- res$params$n
+    
+    df_start <- tibble(
+      K = res$K_at_start,
+      R = res$R0_at_start,
+      D = (res$K_at_start - res$R0_at_start) /
+        (res$K_at_start + res$R0_at_start),
+      id = seq_len(n),
+      Stage = "Before funding"
+    )
+    
+    df_r1 <- tibble(
+      K = strat$K1,
+      R = strat$R1,
+      D = (strat$K1 - strat$R1) / (strat$K1 + strat$R1),
+      id = seq_len(n),
+      Stage = "Round 1"
+    )
+    
+    df_r2 <- tibble(
+      K = strat$K2,
+      R = strat$R2,
+      D = (strat$K2 - strat$R2) / (strat$K2 + strat$R2),
+      id = seq_len(n),
+      Stage = "Round 2"
+    )
+    
+    df_all <- bind_rows(df_start, df_r1, df_r2)
+    df_all$Stage <- factor(df_all$Stage,
+                           levels = c("Before funding", "Round 1", "Round 2"))
+    
+    max_k <- max(df_all$K, na.rm = TRUE) * 1.05
+    max_r <- max(df_all$R, na.rm = TRUE) * 1.05
+    max_val <- max(max_k, max_r)
+    
+    cor_start <- cor(res$K_at_start, res$R0_at_start)
+    cor_r1 <- cor(strat$K1, strat$R1)
+    cor_r2 <- cor(strat$K2, strat$R2)
+    ann <- tibble(
+      Stage = factor(c("Before funding", "Round 1", "Round 2"),
+                     levels = levels(df_all$Stage)),
+      label = c(sprintf("r = %.3f", cor_start),
+                sprintf("r = %.3f", cor_r1),
+                sprintf("r = %.3f", cor_r2))
+    )
+    
+    df_arrows <- tibble(
+      x_start = res$R0_at_start,
+      y_start = res$K_at_start,
+      x_end = strat$R2,
+      y_end = strat$K2,
+      moved = abs(strat$R2 - res$R0_at_start) > 0.01 | abs(strat$K2 - res$K_at_start) > 0.01,
+      Stage = factor("Round 2", levels = levels(df_all$Stage))
+    ) %>% filter(moved)
+    
+    ggplot(df_all, aes(x = R, y = K, color = D)) +
+      geom_abline(slope = 1, intercept = 0, linetype = "dashed", alpha = 0.4) +
+      geom_segment(data = df_arrows,
+                   aes(x = x_start, y = y_start, xend = x_end, yend = y_end),
+                   inherit.aes = FALSE,
+                   arrow = arrow(length = unit(0.08, "inches"), type = "closed"),
+                   color = "grey50", alpha = 0.25, linewidth = 0.3) +
+      geom_point(size = 1.8, alpha = 0.8) +
+      scale_color_gradient2(
+        low = "#2166ac", mid = "grey80", high = "#b2182b",
+        midpoint = 0, name = "Bottleneck\ndirection (D)",
+        limits = c(-1, 1)
+      ) +
+      geom_text(data = ann,
+                aes(x = max_val * 0.05, y = max_val * 0.95, label = label),
+                inherit.aes = FALSE, hjust = 0, size = 3.8, fontface = "bold") +
+      facet_wrap(~ Stage) +
+      coord_cartesian(xlim = c(0, max_val), ylim = c(0, max_val)) +
+      labs(
+        title = sprintf("Funding effects on (K, R) distribution: %s", strat$name),
+        subtitle = sprintf("b = %.2f (B = %.1f/round) | alpha = %s | Arrows show start-to-round-2 movement",
+                           res$params$b, res$params$B,
+                           if (is.na(strat$alpha)) "NA" else sprintf("%.3f", strat$alpha)),
+        x = "Resources (R)",
+        y = "Knowledge (K)"
+      ) +
+      theme_sim(base_size = 12) +
+      theme(plot.subtitle = element_text(color = "grey40", size = 10))
+  }, res = 110)
+  
+  output$fig_bottleneck <- renderPlot({
+    res <- sim_result()
+    req(res)
+    
+    s_idx <- as.integer(input$bn_strategy)
+    strat <- res$strategies[[s_idx]]
+    req(strat)
+    
+    bn0 <- compute_bottleneck(res$K_at_start, res$R0_at_start)
+    bn1 <- compute_bottleneck(strat$K1, strat$R1)
+    bn2 <- compute_bottleneck(strat$K2, strat$R2)
+    
+    df_bn <- bind_rows(
+      tibble(D = bn0$D, S = bn0$S, Stage = "Initial"),
+      tibble(D = bn1$D, S = bn1$S, Stage = "After Round 1"),
+      tibble(D = bn2$D, S = bn2$S, Stage = "After Round 2")
+    )
+    df_bn$Stage <- factor(df_bn$Stage, levels = c("Initial", "After Round 1", "After Round 2"))
+    
+    df_d <- df_bn %>% select(Stage, value = D) %>% mutate(Measure = "Direction (D)")
+    df_s <- df_bn %>% select(Stage, value = S) %>% mutate(Measure = "Severity (S)")
+    
+    df_long <- bind_rows(df_d, df_s)
+    df_long$Measure <- factor(df_long$Measure,
+                              levels = c("Direction (D)", "Severity (S)"))
+    
+    ggplot(df_long, aes(x = value, fill = Stage)) +
+      geom_density(alpha = 0.4, linewidth = 0.4) +
+      facet_wrap(~ Measure, scales = "free") +
+      scale_fill_manual(values = c("Initial" = "#bdbdbd", "After Round 1" = "#42a5f5", "After Round 2" = "#1565c0")) +
+      labs(
+        title = sprintf("Bottleneck measures: %s", strat$name),
+        x = "Value",
+        y = "Density",
+        fill = "Stage"
+      ) +
+      theme_sim(base_size = 12) +
+      theme(legend.position = "bottom")
+  }, res = 110)
+  
+  output$fig_signal_value <- renderPlot({
+    res <- sim_result()
+    req(res)
+    
+    comparisons <- tibble(
+      Comparison = character(),
+      Without = numeric(), With = numeric(), Gain = numeric(),
+      SE_Without = numeric(), SE_With = numeric()
+    )
+    
+    s4 <- res$strategies[[4]]; s5 <- res$strategies[[5]]
+    if (!is.null(s4) && !is.null(s5)) {
+      comparisons <- bind_rows(comparisons, tibble(
+        Comparison = "Myopic:\ngrant signal",
+        Without = s4$total_expected, With = s5$total_expected,
+        Gain = s5$total_expected - s4$total_expected,
+        SE_Without = se_or_zero(s4), SE_With = se_or_zero(s5)
+      ))
+    }
+    
+    s7 <- res$strategies[[7]]; s8 <- res$strategies[[8]]
+    if (!is.null(s7) && !is.null(s8)) {
+      comparisons <- bind_rows(comparisons, tibble(
+        Comparison = "Forward:\ngrant signal",
+        Without = s7$total_expected, With = s8$total_expected,
+        Gain = s8$total_expected - s7$total_expected,
+        SE_Without = se_or_zero(s7), SE_With = se_or_zero(s8)
+      ))
+    }
+    
+    if (nrow(comparisons) == 0) {
+      plot.new()
+      text(0.5, 0.5, "Run strategies 4, 5, 7, 8 to see signal value comparisons",
+           cex = 1.2)
+      return(invisible(NULL))
+    }
+    
+    comparisons$Comparison <- factor(comparisons$Comparison, levels = comparisons$Comparison)
+    make_value_plot(
+      comparisons,
+      title = "Value of grant signals",
+      subtitle = "Gain from adding grant signal to pubs-only strategies",
+      baseline_label = "Without signal", treatment_label = "With signal",
+      baseline_color = "#90caf9",         treatment_color = "#1565c0"
+    )
+  }, res = 110)
+  
+  output$fig_forward_value <- renderPlot({
+    res <- sim_result()
+    req(res)
+    
+    comparisons <- tibble(
+      Comparison = character(),
+      Without = numeric(), With = numeric(), Gain = numeric(),
+      SE_Without = numeric(), SE_With = numeric()
+    )
+    
+    # Pairs at each information / intervention setting
+    pairs <- list(
+      list(label = "Pubs only",      m = 4, f = 7),
+      list(label = "Pubs + grant",   m = 5, f = 8),
+      list(label = "Pubs + seed",    m = 6, f = 9)
+    )
+    for (p in pairs) {
+      sm <- res$strategies[[p$m]]; sf <- res$strategies[[p$f]]
+      if (!is.null(sm) && !is.null(sf)) {
+        comparisons <- bind_rows(comparisons, tibble(
+          Comparison = p$label,
+          Without = sm$total_expected, With = sf$total_expected,
+          Gain = sf$total_expected - sm$total_expected,
+          SE_Without = se_or_zero(sm), SE_With = se_or_zero(sf)
+        ))
+      }
+    }
+    
+    if (nrow(comparisons) == 0) {
+      plot.new()
+      text(0.5, 0.5, "Run at least one matched (myopic, forward) pair: 4↔7, 5↔8, or 6↔9",
+           cex = 1.1)
+      return(invisible(NULL))
+    }
+    
+    comparisons$Comparison <- factor(comparisons$Comparison, levels = comparisons$Comparison)
+    make_value_plot(
+      comparisons,
+      title    = "Value of forward-looking planning",
+      subtitle = "Gain from upgrading myopic to forward (CE) planner, holding signal and seed fixed",
+      baseline_label = "Myopic",  treatment_label = "Forward",
+      baseline_color = "#1e88e5", treatment_color = "#c62828"
+    )
+  }, res = 110)
+  
+  output$fig_seed_value <- renderPlot({
+    res <- sim_result()
+    req(res)
+    
+    comparisons <- tibble(
+      Comparison = character(),
+      Without = numeric(), With = numeric(), Gain = numeric(),
+      SE_Without = numeric(), SE_With = numeric()
+    )
+    
+    # Pairs at each planner type (no grant signal in either side, so the
+    # comparison isolates the seed intervention)
+    pairs <- list(
+      list(label = "Myopic",  no = 4, ye = 6),
+      list(label = "Forward", no = 7, ye = 9)
+    )
+    for (p in pairs) {
+      s_no <- res$strategies[[p$no]]; s_ye <- res$strategies[[p$ye]]
+      if (!is.null(s_no) && !is.null(s_ye)) {
+        comparisons <- bind_rows(comparisons, tibble(
+          Comparison = p$label,
+          Without = s_no$total_expected, With = s_ye$total_expected,
+          Gain = s_ye$total_expected - s_no$total_expected,
+          SE_Without = se_or_zero(s_no), SE_With = se_or_zero(s_ye)
+        ))
+      }
+    }
+    
+    if (nrow(comparisons) == 0) {
+      plot.new()
+      text(0.5, 0.5, "Run at least one matched (no-seed, seed) pair: 4↔6 or 7↔9",
+           cex = 1.1)
+      return(invisible(NULL))
+    }
+    
+    comparisons$Comparison <- factor(comparisons$Comparison, levels = comparisons$Comparison)
+    make_value_plot(
+      comparisons,
+      title    = "Value of seed grants",
+      subtitle = "Gain from adding uniform seed to pubs-only strategies (grant signal off in both)",
+      baseline_label = "No seed",  treatment_label = "With seed",
+      baseline_color = "#42a5f5",  treatment_color = "#7e57c2"
+    )
+  }, res = 110)
+}
+
+shinyApp(ui, server)
