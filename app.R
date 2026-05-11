@@ -1,29 +1,37 @@
 # app.R
 # ============================================================
-# Grant-funding model explorer (Shiny) — v3 (free split)
+# Grant-funding model explorer (Shiny) — v5 (CE-forward consolidated)
 # ------------------------------------------------------------
-# Changes from v2:
+# Changes from v4:
 #
-#   (1) Knowledge dynamics confirmed as harmonic mean growth:
-#       K_2 = K_1 + ε · K_1 R_1 / (K_1 + R_1)
-#       κ (knowledge ceiling) fully removed from codebase,
-#       function signatures, UI, and params list. The old
-#       logistic form K + εK(1 − K/(κR)) is gone.
+#   The CE machinery introduced in v4 as a separate Strategy 10
+#   ("Optimal Bayes") is now folded directly into the Forward
+#   planner. All three forward strategies (7, 8, 9) inherit it.
 #
-#   (2) Strategies 7–9 (forward-looking Bayesian) now optimize
-#       over the joint allocation (g1, g2) with total budget 2B
-#       via a single greedy pass over 2n candidate moves. The
-#       round-1 budget share α = sum(g1)/(2B) is no longer
-#       fixed at 0.5; it emerges from optimization and is
-#       recorded in every strategy's result list.
+#   Rationale: "Forward" is intended to denote the maximally
+#   forward-looking Bayesian planner. The v3/v4 forward planner
+#   omitted Forces D and E (information value of round-1 grants),
+#   which made it not truly forward-looking. Keeping a separate
+#   "Optimal" strategy implicitly conceded that Forward was
+#   suboptimal — an awkward taxonomy.
 #
-#       Two new helpers: posterior_marginal_joint_{A,B}.
+#   After v5, the three Forward variants form a clean orthogonal
+#   ablation along (signal, intervention):
+#     S7: pubs only,         no seed
+#     S8: pubs + grant,      no seed
+#     S9: pubs only,         seed  (no grant signal)
 #
-#   The myopic strategies (1–6) are unchanged in substance;
-#   only their kappa arguments were dropped.
+#   The planner is CE-approximate: imagined round-1 observations
+#   are replaced by their prior-predictive mean rather than
+#   Monte-Carlo-integrated. CE introduces an upward bias on α
+#   (Jensen). An exact MC reference is a separate validation
+#   script, not a strategy.
 #
-#   Bottleneck plot now shows only D (direction) and S
-#   (severity); ceiling tightness T = K/(κR) is gone with κ.
+#   Carryovers from v4 (still in force):
+#     - Closed-loop execution: round 2 is re-greedied under the
+#       actual posterior π1 built from the realized p1.
+#     - Harmonic-mean knowledge dynamics. κ fully absent.
+#     - Free inter-round budget split. α emerges from optimization.
 # ============================================================
 
 options(shiny.sanitize.errors = FALSE)
@@ -132,6 +140,16 @@ loglik_pubs <- function(p_obs, K, R, gamma) {
   dpois(p_obs, lambda = pmax(lam, 1e-12), log = TRUE)
 }
 
+# Continuous extension of the Poisson log-pmf used for CE reweighting in
+# the Forward planner. The CE planner conditions on an imagined
+# p̄_1 = E^(0)[λ_1], which is non-integer in general. The natural extension
+# log f(x | λ) = x·log(λ) − λ − log Γ(x+1) coincides with dpois at integer
+# x and varies smoothly off the integers.
+loglik_pubs_continuous <- function(p_value, K, R, gamma) {
+  lam <- pmax(lambda_rate(K, R, gamma), 1e-12)
+  p_value * log(lam) - lam - lgamma(p_value + 1)
+}
+
 loglik_resource_signal <- function(sigma_r, R, tau_r) {
   dnorm(sigma_r, mean = R, sd = tau_r, log = TRUE)
 }
@@ -237,22 +255,90 @@ posterior_expected_two_round <- function(post, g1, g2, gamma, epsilon) {
   sum(post$w * (lam1 + lam2))
 }
 
-# ----- NEW: Joint-greedy marginals for free-split strategies 7–9 -----
+# ----- CE machinery for the Forward planner -----
+#
+# A fully optimal Bayesian planner would compute
+#   V_2*(π0, g1) = E^(0)[ V_2*(π1) | g1 ],
+# where π1 is the (random) post-round-1 posterior. We use a
+# certainty-equivalent (CE) approximation: replace the expectation
+# over realizations of p1 with a single deterministic conditioning
+# at the prior-predictive mean p̄_1,i(g1) = E^(0)[λ(K_i, R_{0,i}+g1)].
+#
+# CE bias is upward on α (CE underestimates the option value of round 2,
+# so puts too much in round 1). Acceptable for a heuristic planner;
+# diagnostics below include ESS to flag where importance weights collapse.
 
-# Type-A marginal: effect of adding δ to g1[i].
-# Captures both the direct round-1 gain AND the indirect round-2
-# gain via knowledge growth K2(g1).
-posterior_marginal_joint_A <- function(post, g1, g2, dg, gamma, epsilon) {
-  v_base <- posterior_expected_two_round(post, g1,      g2, gamma, epsilon)
-  v_plus <- posterior_expected_two_round(post, g1 + dg, g2, gamma, epsilon)
-  (v_plus - v_base) / dg
+effective_sample_size <- function(w) {
+  s <- sum(w)
+  if (s <= 0) return(0)
+  w_norm <- w / s
+  1 / sum(w_norm^2)
 }
 
-# Type-B marginal: effect of adding δ to g2[i].
-# Round-2 only; K2 is fixed conditional on g1[i].
-posterior_marginal_joint_B <- function(post, g1, g2, dg, gamma, epsilon) {
-  (posterior_expected_lambda_r2(post, g1, g2 + dg, gamma, epsilon) -
-     posterior_expected_lambda_r2(post, g1, g2,      gamma, epsilon)) / dg
+# CE reweight: imagine observing p̄_1,i at current g1[i] and update π0 → π̄1.
+# Keeps the same (K, R) sample atoms; only weights change.
+# If ESS falls below ess_floor (default M/4), perform an SIR resampling
+# step: draw M atoms with replacement using the current weights, reset
+# weights to 1/M, then re-apply the CE Poisson likelihood. This refreshes
+# the sample pool without leaving the existing posterior support.
+ce_reweight_posterior <- function(post0, g1_i, gamma, ess_floor = NULL) {
+  M <- length(post0$w)
+  if (is.null(ess_floor)) ess_floor <- M / 4
+  
+  K_s <- post0$K0
+  R_s <- post0$R0
+  w_s <- post0$w
+  
+  # Imagined observation: prior-predictive mean of round-1 publications
+  lam_at_g <- lambda_rate(K_s, R_s + g1_i, gamma)
+  p_bar <- sum(w_s * lam_at_g)
+  
+  # Reweight by Poisson(p_bar | λ)
+  log_lik <- loglik_pubs_continuous(p_bar, K_s, R_s + g1_i, gamma)
+  log_w <- log(pmax(w_s, 1e-300)) + log_lik
+  log_w <- log_w - max(log_w)
+  w_new <- exp(log_w); w_new <- w_new / sum(w_new)
+  
+  if (effective_sample_size(w_new) < ess_floor) {
+    # SIR resample from π0 using current π0 weights, then re-apply CE
+    idx <- sample.int(M, size = M, replace = TRUE, prob = w_s)
+    K_s <- K_s[idx]; R_s <- R_s[idx]
+    lam_at_g <- lambda_rate(K_s, R_s + g1_i, gamma)
+    p_bar <- mean(lam_at_g)                        # uniform weights post-SIR
+    log_lik <- loglik_pubs_continuous(p_bar, K_s, R_s + g1_i, gamma)
+    log_w <- log_lik - max(log_lik)
+    w_new <- exp(log_w); w_new <- w_new / sum(w_new)
+  }
+  
+  list(K0 = K_s, R0 = R_s, w = w_new, p_bar = p_bar)
+}
+
+# Type-A marginal under CE: effect of adding δ to g1[i].
+# Captures (a) direct round-1 expected return at π0,
+#          (b) knowledge dynamics into round 2 (K2 depends on g1),
+#          (c) information value of g1 via the imagined posterior π̄1.
+# Total derivative is computed by finite difference: re-reweight at g1+δ.
+posterior_marginal_forward_A <- function(post0, g1, g2, dg, gamma, epsilon) {
+  # Round-1 expectation always evaluated at π0 (the actual round-1 posterior
+  # before any imagined observation); this isolates Force A from Forces D/E.
+  v1_base <- posterior_expected_lambda(post0, g1,        gamma)
+  v1_plus <- posterior_expected_lambda(post0, g1 + dg,   gamma)
+  
+  # Round-2 expectation evaluated at the CE-reweighted posterior π̄1
+  pb_base <- ce_reweight_posterior(post0, g1,      gamma)
+  pb_plus <- ce_reweight_posterior(post0, g1 + dg, gamma)
+  v2_base <- posterior_expected_lambda_r2(pb_base, g1,      g2, gamma, epsilon)
+  v2_plus <- posterior_expected_lambda_r2(pb_plus, g1 + dg, g2, gamma, epsilon)
+  
+  ((v1_plus + v2_plus) - (v1_base + v2_base)) / dg
+}
+
+# Type-B marginal under CE: effect of adding δ to g2[i].
+# Round-2 only; π̄1 is unchanged by g2.
+posterior_marginal_forward_B <- function(post_bar1, g1, g2, dg, gamma, epsilon) {
+  v_base <- posterior_expected_lambda_r2(post_bar1, g1, g2,      gamma, epsilon)
+  v_plus <- posterior_expected_lambda_r2(post_bar1, g1, g2 + dg, gamma, epsilon)
+  (v_plus - v_base) / dg
 }
 
 # ============================================================
@@ -433,19 +519,37 @@ run_myopic_seed <- function(
   )
 }
 
-# ----- Forward-looking Bayes (FREE SPLIT): Strategies 7, 8, 9 -----
+# ----- Forward-looking Bayes (CE PLANNER, CLOSED-LOOP) -----
+#                                            Strategies 7, 8, 9
 #
-# Allocates total budget 2B jointly across (g1, g2) via a single
-# greedy pass over 2n candidate moves. Round-1 share alpha =
-# sum(g1)/(2B) is not constrained; it emerges from optimization.
+# Planning: for each researcher i, an imagined posterior π̄1[i] is
+# maintained alongside the pre-round posterior π0[i]. π̄1[i] is obtained
+# by reweighting π0[i] with the Poisson likelihood at the prior-predictive
+# mean p̄_1,i(g1[i]) = E^(0)[λ(K_i, R_{0,i} + g1[i])]. This lets the
+# planner internalize Forces D and E (information value of round-1
+# grants) in addition to A, B, C — making it forward-looking in the
+# full Bayesian sense.
 #
-# Planning uses a posterior built from pre-round observations
-# (p_init, sigma_r, sigma_k). The joint plan is treated as
-# pre-commitment: round-2 execution uses the jointly-optimized
-# g2 without re-planning after observing p1.
+# Greedy operates over 2n candidate moves under remaining budget
+# (2B − Σg1 − Σg2). Type-A marginals evaluate round-1 at π0 and round-2
+# at π̄1; Type-B marginals evaluate round-2 only at π̄1. After a Type-A
+# move on i*, π̄1[i*] is refreshed; Type-B moves leave π̄1 untouched.
 #
-# use_grant_signal = TRUE      → strategy 8
-# use_seed = TRUE, x_seed > 0  → strategy 9
+# Closed-loop execution: after observing the real p1, the posterior is
+# rebuilt incorporating the actual Poisson likelihood (π1) and g2 is
+# re-greedied under remaining budget. The planning g2 is discarded;
+# only g1 carries over from planning to execution.
+#
+# CE is an approximation. The exact Bayesian planner would integrate
+# over realizations of p1 (Monte Carlo or stochastic programming),
+# which is too expensive for interactive Shiny. CE biases α upward
+# (Jensen on round-2 option value). The MC reference is a separate
+# validation script.
+#
+# Strategy variants:
+#   use_grant_signal = TRUE   → strategy 8 (pubs + grant)
+#   use_seed = TRUE           → strategy 9 (pubs + seed, no grant)
+#   neither                   → strategy 7 (pubs only)
 run_forward_bayes <- function(
     K_true, R0, p_init, sigma_r, sigma_k,
     B, delta, gamma, epsilon,
@@ -456,8 +560,8 @@ run_forward_bayes <- function(
 ) {
   n <- length(K_true)
   
-  # Planning posteriors (pre-round observations only)
-  posts <- build_posteriors(
+  # ---- Planning stage ----
+  posts0 <- build_posteriors(
     p_obs = p_init, sigma_r = sigma_r, sigma_k = sigma_k,
     M = M, k_min = k_min, k_shape = k_shape,
     r_min = r_min, r_shape = r_shape, gamma = gamma,
@@ -466,30 +570,29 @@ run_forward_bayes <- function(
     use_grant_signal    = use_grant_signal
   )
   
-  # Initialize joint allocation
   total_budget <- 2 * B
-  dg <- delta                           # same resolution as myopic (B / n_steps)
+  dg <- delta
   
   if (use_seed) {
-    g1 <- rep(x_seed * B / n, n)       # strategy 9: seed counts toward round 1
+    g1 <- rep(x_seed * B / n, n)        # uniform seed counts toward round 1
   } else {
     g1 <- rep(0, n)
   }
-  g2 <- rep(0, n)
-  remaining <- total_budget - sum(g1) - sum(g2)
+  g2_plan <- rep(0, n)
+  remaining <- total_budget - sum(g1) - sum(g2_plan)
   
-  # Initial marginals for all 2n candidate moves
+  # CE-imagined posteriors at current g1 (one per researcher)
+  posts_bar1 <- lapply(seq_len(n), function(i) {
+    ce_reweight_posterior(posts0[[i]], g1[i], gamma)
+  })
+  
   mv_A <- vapply(seq_len(n), function(i) {
-    posterior_marginal_joint_A(posts[[i]], g1[i], g2[i], dg, gamma, epsilon)
+    posterior_marginal_forward_A(posts0[[i]], g1[i], g2_plan[i], dg, gamma, epsilon)
   }, numeric(1))
   mv_B <- vapply(seq_len(n), function(i) {
-    posterior_marginal_joint_B(posts[[i]], g1[i], g2[i], dg, gamma, epsilon)
+    posterior_marginal_forward_B(posts_bar1[[i]], g1[i], g2_plan[i], dg, gamma, epsilon)
   }, numeric(1))
   
-  # Joint greedy: at each step select (move_type, researcher) with highest mv.
-  # Always recompute both mv_A[i*] and mv_B[i*] after applying a move:
-  #   mv_A depends on (g1[i*], g2[i*])
-  #   mv_B depends on (g1[i*], g2[i*]) via K2(g1)
   while (remaining >= delta) {
     iA <- which.max(mv_A); vA <- mv_A[iA]
     iB <- which.max(mv_B); vB <- mv_B[iB]
@@ -497,28 +600,46 @@ run_forward_bayes <- function(
     if (vA >= vB) {
       i_star <- iA
       g1[i_star] <- g1[i_star] + delta
+      # Type-A move shifts g1[i_star], so refresh π̄1[i_star]
+      posts_bar1[[i_star]] <- ce_reweight_posterior(
+        posts0[[i_star]], g1[i_star], gamma
+      )
     } else {
       i_star <- iB
-      g2[i_star] <- g2[i_star] + delta
+      g2_plan[i_star] <- g2_plan[i_star] + delta
+      # Type-B move leaves π̄1[i_star] unchanged
     }
     remaining <- remaining - delta
     
-    mv_A[i_star] <- posterior_marginal_joint_A(
-      posts[[i_star]], g1[i_star], g2[i_star], dg, gamma, epsilon
+    mv_A[i_star] <- posterior_marginal_forward_A(
+      posts0[[i_star]], g1[i_star], g2_plan[i_star], dg, gamma, epsilon
     )
-    mv_B[i_star] <- posterior_marginal_joint_B(
-      posts[[i_star]], g1[i_star], g2[i_star], dg, gamma, epsilon
+    mv_B[i_star] <- posterior_marginal_forward_B(
+      posts_bar1[[i_star]], g1[i_star], g2_plan[i_star], dg, gamma, epsilon
     )
   }
   
-  # Realize round 1 under TRUE state
+  # ---- Round-1 realization under TRUE state ----
   R1        <- R0 + g1
   lam1_true <- lambda_rate(K_true, R1, gamma)
   p1        <- rpois(n, pmax(lam1_true, 1e-12))
   K2_true   <- update_knowledge(K_true, R1, epsilon)
   
-  # Realize round 2 using COMMITTED g2 from joint plan
-  # (no re-optimization after observing p1: forward-looking is pre-commitment)
+  # ---- Closed-loop reallocation ----
+  # Rebuild posterior with the actual p1 observation, then re-greedy g2.
+  posts1 <- build_posteriors(
+    p_obs = p_init, sigma_r = sigma_r, sigma_k = sigma_k,
+    M = M, k_min = k_min, k_shape = k_shape,
+    r_min = r_min, r_shape = r_shape, gamma = gamma,
+    tau_r = tau_r, tau_k = tau_k,
+    use_resource_signal = use_resource_signal,
+    use_grant_signal    = use_grant_signal,
+    p1_obs = p1, g1 = g1
+  )
+  remaining_budget <- max(total_budget - sum(g1), 0)
+  g2 <- allocate_greedy_round2(posts1, remaining_budget, delta, gamma, g1, epsilon)
+  
+  # ---- Round-2 realization under TRUE state ----
   R2        <- R0 + g2
   lam2_true <- lambda_rate(K2_true, R2, gamma)
   p2        <- rpois(n, pmax(lam2_true, 1e-12))
@@ -805,6 +926,34 @@ theme_sim <- function(base_size = 12, base_family = "") {
     )
 }
 
+# Helper for "Value of X" comparison bar plots (signals, forward looking, seed).
+# Expects a tibble with columns: Comparison (factor), Without, With, Gain.
+make_value_plot <- function(comparisons, title, subtitle,
+                            baseline_label, treatment_label,
+                            baseline_color, treatment_color) {
+  df_long <- comparisons %>%
+    pivot_longer(cols = c(Without, With), names_to = "Info", values_to = "Output")
+  df_long$Info <- factor(df_long$Info, levels = c("Without", "With"))
+  
+  y_max <- max(c(comparisons$With, comparisons$Without))
+  
+  ggplot(df_long, aes(x = Comparison, y = Output, fill = Info)) +
+    geom_col(position = position_dodge(width = 0.7), width = 0.6, alpha = 0.9) +
+    geom_text(data = comparisons,
+              aes(x = Comparison,
+                  y = pmax(With, Without) + y_max * 0.02,
+                  label = sprintf("%+.1f", Gain)),
+              inherit.aes = FALSE, size = 4, fontface = "bold", color = "#c62828") +
+    scale_fill_manual(values = c("Without" = baseline_color, "With" = treatment_color),
+                      labels = c("Without" = baseline_label, "With" = treatment_label)) +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.12))) +
+    labs(title = title, subtitle = subtitle, x = NULL,
+         y = "Total expected output", fill = NULL) +
+    theme_sim(base_size = 13) +
+    theme(legend.position = "bottom",
+          plot.subtitle = element_text(color = "grey40", size = 11))
+}
+
 # ============================================================
 # Shiny UI
 # ============================================================
@@ -858,12 +1007,6 @@ ui <- fluidPage(
         margin-bottom: 12px;
         line-height: 1.4;
       }
-      .primary-controls {
-        background-color: #fff;
-        padding: 12px 0;
-        margin-bottom: 8px;
-      }
-      .primary-controls .form-group { margin-bottom: 14px; }
       .plot-explanation {
         background-color: #f0f4f8;
         border-left: 3px solid #4a90d9;
@@ -884,6 +1027,18 @@ ui <- fluidPage(
         border-radius: 4px;
         padding: 12px;
         margin-bottom: 12px;
+      }
+      .summary-title {
+        margin: 0 0 6px 0;
+        font-size: 15px;
+        font-weight: 600;
+        color: #2c3e50;
+      }
+      .summary-box pre {
+        margin: 0;
+        padding: 6px 0 0 0;
+        background: transparent;
+        border: none;
       }
     "))
   ),
@@ -911,29 +1066,49 @@ ui <- fluidPage(
     sidebarPanel(
       width = 3,
       
-      div(class = "primary-controls",
-          sliderInput("n", "Number of researchers", min = 10, max = 500, value = 100, step = 10),
-          div(class = "param-help", "Population size."),
-          
-          sliderInput("b", "Budget fraction (b = B / n·E[R])", min = 0.0, max = 2.0, value = 0.5, step = 0.05),
-          div(class = "param-help", "Per-round budget as a multiple of aggregate expected resource: b = 1 means total budget equals the population's total expected resource endowment."),
-          
-          sliderInput("gamma", "Output scaling (\\(\\gamma\\))", min = 0.1, max = 5, value = 1.0, step = 0.1),
-          div(class = "param-help", "Scales the paper production rate \\(\\lambda = \\gamma K R / (K+R)\\)."),
-          
-          checkboxGroupInput("strategies", "Strategies to compare",
-                             choices = setNames(1:9, STRATEGY_NAMES),
-                             selected = 1:9
-          ),
-          
-          numericInput("seed", "Random seed", value = 1, min = 1, step = 1),
-          div(class = "param-help", "Controls random draws; change to see different populations.")
-      ),
-      
       actionButton("run", "Run Simulation", class = "btn-primary btn-run"),
       actionButton("reset", "Reset to Defaults", class = "btn-default btn-run"),
       
+      numericInput("seed", "Random seed", value = 1, min = 1, max = 100000, step = 1),
+      div(class = "param-help", "Auto-advances to a new random value (1–100000) after each run; set manually to reproduce a specific draw."),
+      
       hr(),
+      
+      tags$div(class = "panel",
+               tags$div(class = "panel-heading",
+                        `data-toggle` = "collapse", `data-target` = "#panel-strategies",
+                        tags$h4(class = "panel-title",
+                                "Strategies to compare",
+                                tags$span(class = "caret-icon", HTML("&#9662;"))
+                        )
+               ),
+               tags$div(id = "panel-strategies", class = "collapse panel-body",
+                        checkboxGroupInput("strategies", NULL,
+                                           choices = setNames(1:9, STRATEGY_NAMES),
+                                           selected = 1:9
+                        )
+               )
+      ),
+      
+      tags$div(class = "panel",
+               tags$div(class = "panel-heading",
+                        `data-toggle` = "collapse", `data-target` = "#panel-popbudget",
+                        tags$h4(class = "panel-title",
+                                "Population & Budget",
+                                tags$span(class = "caret-icon", HTML("&#9662;"))
+                        )
+               ),
+               tags$div(id = "panel-popbudget", class = "collapse panel-body",
+                        sliderInput("n", "Number of researchers", min = 10, max = 500, value = 100, step = 10),
+                        div(class = "param-help", "Population size."),
+                        
+                        sliderInput("b", "Budget fraction (b = B / n·E[R])", min = 0.0, max = 2.0, value = 0.5, step = 0.05),
+                        div(class = "param-help", "Per-round budget as a multiple of aggregate expected resource: b = 1 means total budget equals the population's total expected resource endowment."),
+                        
+                        sliderInput("gamma", "Output scaling (\\(\\gamma\\))", min = 0.1, max = 5, value = 1.0, step = 0.1),
+                        div(class = "param-help", "Scales the paper production rate \\(\\lambda = \\gamma K R / (K+R)\\).")
+               )
+      ),
       
       tags$div(class = "panel",
                tags$div(class = "panel-heading",
@@ -1031,6 +1206,7 @@ ui <- fluidPage(
       width = 9,
       
       div(class = "summary-box",
+          tags$h4("Simulation results", class = "summary-title"),
           verbatimTextOutput("summary", placeholder = TRUE)
       ),
       
@@ -1043,20 +1219,6 @@ ui <- fluidPage(
                   each selected strategy. Higher bars = more total output.")
                            ),
                            plotOutput("fig_strategy_comparison", height = 520)
-                  ),
-                  
-                  tabPanel("Pre-Round Effects",
-                           div(class = "plot-explanation",
-                               HTML("<strong>What this shows:</strong> How pre-rounds of naive
-                  (publication-proportional) funding reshape the population
-                  <em>before</em> the main strategies begin. <strong>Left:</strong>
-                  initial \\((K, R)\\) as drawn from the power law distributions.
-                  <strong>Right:</strong> \\((K, R)\\) after all pre-rounds complete.
-                  Points colored by bottleneck direction \\(D_i = (K-R)/(K+R)\\):
-                  blue = knowledge-bottlenecked, red = resource-bottlenecked.
-                  Pearson correlation annotated.")
-                           ),
-                           plotOutput("fig_preround_effects", height = 480)
                   ),
                   
                   tabPanel("Funding Effects",
@@ -1081,6 +1243,37 @@ ui <- fluidPage(
                            plotOutput("fig_funding_effects", height = 500)
                   ),
                   
+                  tabPanel("Value of Grant Signals",
+                           div(class = "plot-explanation",
+                               HTML("<strong>What this shows:</strong> Compares strategies that differ
+                  only in their information set to quantify the value of the grant
+                  signal.")
+                           ),
+                           plotOutput("fig_signal_value", height = 480)
+                  ),
+                  
+                  tabPanel("Value of Seed Grants",
+                           div(class = "plot-explanation",
+                               HTML("<strong>What this shows:</strong> Compares no-seed and uniform-seed
+                  variants of the pubs-only strategies to isolate the value of the
+                  seeding intervention. Two matched pairs: 4↔6 (myopic) and 7↔9
+                  (forward). Both sides of each pair use only the publication
+                  signal, so the comparison is clean.")
+                           ),
+                           plotOutput("fig_seed_value", height = 480)
+                  ),
+                  
+                  tabPanel("Value of Forward Looking",
+                           div(class = "plot-explanation",
+                               HTML("<strong>What this shows:</strong> Compares myopic and forward
+                  (CE) planners at matched information / intervention settings to
+                  isolate the value of optimizing over two rounds rather than one.
+                  Three matched pairs: 4↔7 (pubs only), 5↔8 (pubs + grant),
+                  6↔9 (pubs + seed).")
+                           ),
+                           plotOutput("fig_forward_value", height = 480)
+                  ),
+                  
                   tabPanel("Bottleneck Analysis",
                            div(class = "plot-explanation",
                                HTML("<strong>What this shows:</strong> Distribution of bottleneck
@@ -1098,13 +1291,18 @@ ui <- fluidPage(
                            plotOutput("fig_bottleneck", height = 520)
                   ),
                   
-                  tabPanel("Value of Signals",
+                  tabPanel("Pre-Round Effects",
                            div(class = "plot-explanation",
-                               HTML("<strong>What this shows:</strong> Compares strategies that differ
-                  only in their information set to quantify the value of the grant
-                  signal.")
+                               HTML("<strong>What this shows:</strong> How pre-rounds of naive
+                  (publication-proportional) funding reshape the population
+                  <em>before</em> the main strategies begin. <strong>Left:</strong>
+                  initial \\((K, R)\\) as drawn from the power law distributions.
+                  <strong>Right:</strong> \\((K, R)\\) after all pre-rounds complete.
+                  Points colored by bottleneck direction \\(D_i = (K-R)/(K+R)\\):
+                  blue = knowledge-bottlenecked, red = resource-bottlenecked.
+                  Pearson correlation annotated.")
                            ),
-                           plotOutput("fig_signal_value", height = 480)
+                           plotOutput("fig_preround_effects", height = 480)
                   )
       )
     )
@@ -1173,6 +1371,10 @@ server <- function(input, output, session) {
         incProgress(0.9)
         sim_result(res)
       })
+      
+      # Auto-advance seed to a new value 1–100000 for the next run.
+      # User can still manually set the seed before clicking Run to reproduce.
+      updateNumericInput(session, "seed", value = sample.int(100000, 1))
     })
   })
   
@@ -1180,34 +1382,25 @@ server <- function(input, output, session) {
     res <- sim_result()
     req(res)
     
-    cat("==================================================================\n")
-    cat("                         KEY RESULTS\n")
-    cat("==================================================================\n\n")
-    cat(sprintf("Population: n = %d | Budget fraction: b = %.2f (B = %.1f/round) | Pre-rounds: %d\n",
-                res$params$n, res$params$b, res$params$B, res$params$n_pre_rounds))
-    cat(sprintf("K ~ Pareto(min=%.1f, shape=%.1f) | R ~ Pareto(min=%.1f, shape=%.1f) | rho = %.1f\n\n",
+    cat(sprintf("Seed: %d | n = %d | b = %.2f (B = %.1f/round) | Pre-rounds: %d\n",
+                res$params$seed, res$params$n, res$params$b,
+                res$params$B, res$params$n_pre_rounds))
+    cat(sprintf("K ~ Pareto(min=%.1f, shape=%.1f) | R ~ Pareto(min=%.1f, shape=%.1f) | rho = %.2f\n",
                 res$params$k_min, res$params$k_shape,
                 res$params$r_min, res$params$r_shape,
                 res$params$rho_kr))
+    cat(sprintf("K-R correlation: initial = %.3f, post-pre-rounds = %.3f\n\n",
+                cor(res$initial_state$K, res$initial_state$R),
+                cor(res$post_preround_state$K, res$post_preround_state$R)))
     
-    cat("TOTAL EXPECTED OUTPUT (lambda_1 + lambda_2 summed over researchers)\n")
-    cat("------------------------------------------------------------------\n")
     cat(sprintf("  %-30s %8s   %5s\n", "Strategy", "Output", "alpha"))
-    cat("  ------------------------------    --------   -----\n")
-    
     for (s in seq_along(res$strategies)) {
       r <- res$strategies[[s]]
       if (is.null(r)) next
       alpha_str <- if (is.na(r$alpha)) "  —  " else sprintf("%.3f", r$alpha)
       cat(sprintf("  %-30s %8.1f   %5s\n", r$name, r$total_expected, alpha_str))
     }
-    cat("\n")
-    cat("alpha = sum(g1) / (sum(g1) + sum(g2)); round-1 share of total spend.\n")
-    cat("Strategies 2-6 are fixed at 0.5 by construction; strategies 7-9 are free.\n\n")
-    
-    cat(sprintf("K-R Pearson correlation: initial = %.3f, post-pre-rounds = %.3f\n",
-                cor(res$initial_state$K, res$initial_state$R),
-                cor(res$post_preround_state$K, res$post_preround_state$R)))
+    cat("\n  alpha: round-1 share of total spent (fixed at 0.500 for strategies 2–6).\n")
   })
   
   output$fig_strategy_comparison <- renderPlot({
@@ -1456,24 +1649,20 @@ server <- function(input, output, session) {
       Gain = numeric()
     )
     
-    s4 <- res$strategies[[4]]
-    s5 <- res$strategies[[5]]
+    s4 <- res$strategies[[4]]; s5 <- res$strategies[[5]]
     if (!is.null(s4) && !is.null(s5)) {
       comparisons <- bind_rows(comparisons, tibble(
         Comparison = "Myopic:\ngrant signal",
-        Without = s4$total_expected,
-        With = s5$total_expected,
+        Without = s4$total_expected, With = s5$total_expected,
         Gain = s5$total_expected - s4$total_expected
       ))
     }
     
-    s7 <- res$strategies[[7]]
-    s8 <- res$strategies[[8]]
+    s7 <- res$strategies[[7]]; s8 <- res$strategies[[8]]
     if (!is.null(s7) && !is.null(s8)) {
       comparisons <- bind_rows(comparisons, tibble(
         Comparison = "Forward:\ngrant signal",
-        Without = s7$total_expected,
-        With = s8$total_expected,
+        Without = s7$total_expected, With = s8$total_expected,
         Gain = s8$total_expected - s7$total_expected
       ))
     }
@@ -1485,34 +1674,104 @@ server <- function(input, output, session) {
       return(invisible(NULL))
     }
     
-    comparisons$Comparison <- factor(comparisons$Comparison,
-                                     levels = comparisons$Comparison)
+    comparisons$Comparison <- factor(comparisons$Comparison, levels = comparisons$Comparison)
+    make_value_plot(
+      comparisons,
+      title = "Value of grant signals",
+      subtitle = "Gain from adding grant signal to pubs-only strategies",
+      baseline_label = "Without signal", treatment_label = "With signal",
+      baseline_color = "#90caf9",         treatment_color = "#1565c0"
+    )
+  }, res = 110)
+  
+  output$fig_forward_value <- renderPlot({
+    res <- sim_result()
+    req(res)
     
-    df_long <- comparisons %>%
-      pivot_longer(cols = c(Without, With), names_to = "Info", values_to = "Output")
-    df_long$Info <- factor(df_long$Info, levels = c("Without", "With"))
+    comparisons <- tibble(
+      Comparison = character(),
+      Without = numeric(),
+      With = numeric(),
+      Gain = numeric()
+    )
     
-    ggplot(df_long, aes(x = Comparison, y = Output, fill = Info)) +
-      geom_col(position = position_dodge(width = 0.7), width = 0.6, alpha = 0.9) +
-      geom_text(data = comparisons,
-                aes(x = Comparison, y = With + max(comparisons$With) * 0.02,
-                    label = sprintf("+%.1f", Gain)),
-                inherit.aes = FALSE, size = 4, fontface = "bold", color = "#c62828") +
-      scale_fill_manual(values = c("Without" = "#90caf9", "With" = "#1565c0"),
-                        labels = c("Without" = "Without signal", "With" = "With signal")) +
-      scale_y_continuous(expand = expansion(mult = c(0, 0.12))) +
-      labs(
-        title = "Value of additional signals",
-        subtitle = "Gain from adding grant signal to pubs-only strategies",
-        x = NULL,
-        y = "Total expected output",
-        fill = NULL
-      ) +
-      theme_sim(base_size = 13) +
-      theme(
-        legend.position = "bottom",
-        plot.subtitle = element_text(color = "grey40", size = 11)
-      )
+    # Pairs at each information / intervention setting
+    pairs <- list(
+      list(label = "Pubs only",      m = 4, f = 7),
+      list(label = "Pubs + grant",   m = 5, f = 8),
+      list(label = "Pubs + seed",    m = 6, f = 9)
+    )
+    for (p in pairs) {
+      sm <- res$strategies[[p$m]]; sf <- res$strategies[[p$f]]
+      if (!is.null(sm) && !is.null(sf)) {
+        comparisons <- bind_rows(comparisons, tibble(
+          Comparison = p$label,
+          Without = sm$total_expected, With = sf$total_expected,
+          Gain = sf$total_expected - sm$total_expected
+        ))
+      }
+    }
+    
+    if (nrow(comparisons) == 0) {
+      plot.new()
+      text(0.5, 0.5, "Run at least one matched (myopic, forward) pair: 4↔7, 5↔8, or 6↔9",
+           cex = 1.1)
+      return(invisible(NULL))
+    }
+    
+    comparisons$Comparison <- factor(comparisons$Comparison, levels = comparisons$Comparison)
+    make_value_plot(
+      comparisons,
+      title    = "Value of forward-looking planning",
+      subtitle = "Gain from upgrading myopic to forward (CE) planner, holding signal and seed fixed",
+      baseline_label = "Myopic",  treatment_label = "Forward",
+      baseline_color = "#1e88e5", treatment_color = "#c62828"
+    )
+  }, res = 110)
+  
+  output$fig_seed_value <- renderPlot({
+    res <- sim_result()
+    req(res)
+    
+    comparisons <- tibble(
+      Comparison = character(),
+      Without = numeric(),
+      With = numeric(),
+      Gain = numeric()
+    )
+    
+    # Pairs at each planner type (no grant signal in either side, so the
+    # comparison isolates the seed intervention)
+    pairs <- list(
+      list(label = "Myopic",  no = 4, ye = 6),
+      list(label = "Forward", no = 7, ye = 9)
+    )
+    for (p in pairs) {
+      s_no <- res$strategies[[p$no]]; s_ye <- res$strategies[[p$ye]]
+      if (!is.null(s_no) && !is.null(s_ye)) {
+        comparisons <- bind_rows(comparisons, tibble(
+          Comparison = p$label,
+          Without = s_no$total_expected, With = s_ye$total_expected,
+          Gain = s_ye$total_expected - s_no$total_expected
+        ))
+      }
+    }
+    
+    if (nrow(comparisons) == 0) {
+      plot.new()
+      text(0.5, 0.5, "Run at least one matched (no-seed, seed) pair: 4↔6 or 7↔9",
+           cex = 1.1)
+      return(invisible(NULL))
+    }
+    
+    comparisons$Comparison <- factor(comparisons$Comparison, levels = comparisons$Comparison)
+    make_value_plot(
+      comparisons,
+      title    = "Value of seed grants",
+      subtitle = "Gain from adding uniform seed to pubs-only strategies (grant signal off in both)",
+      baseline_label = "No seed",  treatment_label = "With seed",
+      baseline_color = "#42a5f5",  treatment_color = "#7e57c2"
+    )
   }, res = 110)
 }
 
