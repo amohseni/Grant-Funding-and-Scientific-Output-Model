@@ -101,8 +101,9 @@ masked by the SIR noise. So: *forward value = compounding value (∝ε) + inform
   **not built** (deliberately deferred). Optional rigor for the paper.
 - **(f) b-axes were capped at [0.1, 1]** per instruction: `funder_scale`, `seed_value`, `regime_map`
   dropped the spec's b-values above 1. Note if a reviewer expects the wider range.
-- **(g) Superseded buggy data** lives in the project root at `sweep_results/T_run/` (M=200, pre-fix).
-  **Not** in this package. Do not analyze it — use `data/` here (from `sweep_results/T_run_fixed/`).
+- **(g) Superseded buggy data** lives in the repo at `sweep_results/legacy/T_round_buggy_M200/`
+  (M=200, pre-fix). **Not** in this package. Do not analyze it — use `data/` here (the corrected
+  run, from `sweep_results/T_run_fixed/`).
 
 ## 7. Suggested next steps
 

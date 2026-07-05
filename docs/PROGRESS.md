@@ -1,6 +1,6 @@
 # PROGRESS — T-Round Extension + Final Parameter Sweep
 
-> **📦 Organized deliverable: [`T_round_extension/`](T_round_extension/).** That folder is the
+> **📦 Organized deliverable: [`T_round_extension/`](../T_round_extension/).** That folder is the
 > clean, self-contained analysis package — start at `T_round_extension/README.md`
 > (model + findings + how to use), `STATE_OF_PLAY.md` (status, the bug story, loose ends,
 > next steps), and `DATA_DICTIONARY.md` (data schema). This PROGRESS.md is the raw running

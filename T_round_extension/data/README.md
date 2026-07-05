@@ -12,8 +12,8 @@
 Load anything with `readRDS("data/<file>.rds")` → returns a data.frame. No project/code setup needed.
 
 **Provenance:** generated from the **fixed** planner (deterministic `ce_reweight`, M=400) by
-`../validation/launch_manifest_fixed.R`. A superseded, buggy pre-fix run exists in the project root
-at `sweep_results/T_run/` — **do not use it**; these files are the corrected version.
+`../validation/launch_manifest_fixed.R`. A superseded, buggy pre-fix run is archived in the repo at
+`sweep_results/legacy/T_round_buggy_M200/` — **do not use it**; these files are the corrected version.
 
 Quick sanity check that you've got the right data:
 ```r
