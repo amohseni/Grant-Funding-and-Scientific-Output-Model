@@ -1,0 +1,16 @@
+=== Full-manifest wall-clock projection (§8) ===
+cores available            : 7
+total cells (post b-trim)  : 188
+seeds per cell             : 200
+total runs                 : 37600
+
+per-run cost T=1..5 (s)    : 0.0216 0.0704 0.1454 0.2552 0.4031
+O(T^2) check cost5/cost2   : 5.72 (vs 6.25 if pure T^2)
+stress: n200/T2=0.188 htail/T5=0.407 b1/T5=0.407
+
+serial estimate            : 4171 s (1.16 h)
+serial + 1.3x safety       : 5422 s (1.51 h)
+PARALLEL (7 cores)         : 0.22 h
+
+GO/NO-GO (< 20h budget)    : GO — launch full manifest, no dials needed
+generated (this machine)   : cost anchored to 10-seed timing

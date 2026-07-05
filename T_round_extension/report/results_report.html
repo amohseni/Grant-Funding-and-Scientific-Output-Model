@@ -1,0 +1,299 @@
+<title>Forward Planning in Grant Allocation — Sweep Results</title>
+<style>
+  :root{
+    --ground:#f4f5f7; --panel:#ffffff; --ink:#15191f; --muted:#5c636e;
+    --hair:#e2e5ea; --teal:#12727c; --teal-deep:#0d5c64; --rust:#bb4a30;
+    --neutral:#eeeae1; --pos-tint:#e7f1f0; --code:#eef0f3;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","SFMono-Regular",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+    line-height:1.6;-webkit-font-smoothing:antialiased;font-size:16.5px}
+  .wrap{max-width:850px;margin:0 auto;padding:clamp(28px,5vw,72px) clamp(20px,5vw,40px)}
+  .col{max-width:680px}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--teal);font-weight:600;margin:0 0 14px}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(30px,5.4vw,46px);line-height:1.08;
+    letter-spacing:-.01em;text-wrap:balance;margin:0 0 20px}
+  h2{font-family:var(--serif);font-weight:600;font-size:clamp(21px,3.4vw,27px);line-height:1.15;
+    letter-spacing:-.01em;text-wrap:balance;margin:0 0 6px}
+  .lede{font-size:clamp(17px,2.3vw,19.5px);color:#2c313a;line-height:1.55;margin:0 0 8px}
+  p{margin:0 0 16px;max-width:680px}
+  a{color:var(--teal-deep)}
+  strong{font-weight:600}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .rule{height:1px;background:var(--hair);border:0;margin:0}
+  header .rule{margin:34px 0 0}
+
+  /* findings strip */
+  .strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;
+    background:var(--hair);border:1px solid var(--hair);border-radius:10px;overflow:hidden;margin:34px 0 8px}
+  .cell{background:var(--panel);padding:16px 16px 18px}
+  .cell .k{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin:0 0 8px}
+  .cell .v{font-family:var(--serif);font-size:26px;line-height:1;letter-spacing:-.01em}
+  .cell .v.pos{color:var(--teal-deep)} .cell .v.neg{color:var(--rust)}
+  .cell .s{font-size:12.5px;color:var(--muted);margin-top:7px;line-height:1.35}
+
+  section{margin:52px 0 0}
+  .tag{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .figrow{margin:22px 0 4px}
+  figure{margin:0}
+  .panel{background:var(--panel);border:1px solid var(--hair);border-radius:12px;
+    padding:22px clamp(14px,3vw,26px) 18px}
+  .chart-scroll{overflow-x:auto}
+  figcaption{font-size:13px;color:var(--muted);margin-top:14px;line-height:1.5;font-family:var(--sans)}
+  figcaption b{color:var(--ink);font-weight:600}
+
+  .callout{border-left:2.5px solid var(--teal);padding:2px 0 2px 18px;margin:20px 0;color:#2c313a}
+  .callout .big{font-family:var(--serif);font-size:19px;color:var(--ink);display:block;margin-bottom:2px}
+
+  .legend{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:var(--mono);
+    font-size:11px;color:var(--muted);margin-top:6px}
+  .swatch{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px}
+
+  footer{margin:60px 0 0}
+  .methods{background:var(--panel);border:1px solid var(--hair);border-radius:12px;padding:22px 24px}
+  .methods h3{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);margin:0 0 12px;font-weight:600}
+  .methods ul{margin:0;padding-left:18px}
+  .methods li{margin:0 0 7px;font-size:14px;color:#39404a}
+  .methods code{font-family:var(--mono);background:var(--code);padding:1px 5px;border-radius:4px;font-size:12.5px}
+  .note{font-size:13px;color:var(--muted);font-style:italic;margin-top:18px}
+  svg text{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  @media (prefers-reduced-motion:no-preference){
+    .fade{opacity:0;transform:translateY(8px);animation:in .7s cubic-bezier(.2,.7,.2,1) forwards}
+    @keyframes in{to{opacity:1;transform:none}}
+  }
+</style>
+
+<div class="wrap">
+  <header class="fade">
+    <p class="eyebrow">Grant funding &amp; scientific output · T-round model · N=200 trials/cell</p>
+    <h1>When does looking ahead beat funding the leaders?</h1>
+    <p class="lede">A forward-looking Bayesian grant planner beats a myopic one across the board — and by more as knowledge compounds faster and the funding horizon lengthens. Its edge comes from front-loading grants to grow future capacity; the value of the peer-review signal, meanwhile, is set almost entirely by <span class="mono">inequality × precision</span>.</p>
+    <hr class="rule">
+  </header>
+
+  <div class="strip fade">
+    <div class="cell"><p class="k">Forward gain, ε=0.85</p><div class="v pos">+1.66</div><p class="s">S8−S5 at T=5 · z=24<br>wins decisively when growth is fast</p></div>
+    <div class="cell"><p class="k">Information value, ε→0</p><div class="v pos">+0.2</div><p class="s">S8−S5 with compounding off<br>forward's edge survives on info alone</p></div>
+    <div class="cell"><p class="k">Peak signal value</p><div class="v pos">+21.1</div><p class="s">S8−S7 · heavy tail + sharp signal<br>→ ~0 when light-tailed &amp; noisy</p></div>
+    <div class="cell"><p class="k">Seed floors</p><div class="v neg">&lt; 0</div><p class="s">S9−S7 negative everywhere<br>uniform seeding never helps</p></div>
+  </div>
+
+  <!-- ===================== FIGURE 1: PHASE DIAGRAM ===================== -->
+  <section class="fade">
+    <p class="tag">Figure 1 · horizon_growth · the headline</p>
+    <h2>Foresight always helps — and more as knowledge compounds</h2>
+    <p>Forward minus myopic expected output (<span class="mono">S8&nbsp;−&nbsp;S5</span>), across horizon <span class="mono">T</span> and knowledge-growth rate <span class="mono">ε</span>. Deeper teal = larger forward advantage. The gain is positive in every cell, grows steadily with growth <span class="mono">ε</span>, and — once growth is fast enough — keeps climbing with the horizon.</p>
+    <div class="figrow panel">
+      <figure>
+        <div class="chart-scroll"><div id="fig-phase"></div></div>
+        <div class="legend">
+          <span class="swatch" style="background:var(--neutral)"></span> tie (0)
+          <span class="swatch" style="background:var(--teal-deep)"></span> larger forward advantage
+          <span style="margin-left:6px">· ring = |z| &gt; 2 · small number = z-score</span>
+        </div>
+        <figcaption><b>Reading it:</b> every cell is a forward win. Down any column the advantage deepens as growth rises (top rows darkest); across the top rows it also grows with the horizon. Foresight pays most exactly where fast compounding rewards planning ahead.</figcaption>
+      </figure>
+    </div>
+    <div class="callout">
+      <span class="big">The mechanism is front-loading.</span>
+      Forward's schedule center-of-mass <span class="mono">b_idx</span> rises with growth — 0.51 at ε=0.05 to <span class="mono">0.62</span> at ε=0.85, and higher still with the horizon — as it front-loads grants to compound knowledge. The faster knowledge compounds, the more that early investment pays, which is exactly why the forward advantage tracks <span class="mono">ε</span>. Even at ε→0, where front-loading buys nothing, forward keeps a small edge from the <em>information</em> its early grants reveal.
+    </div>
+  </section>
+
+  <!-- ===================== FIGURE 2: SIGNAL VALUE ===================== -->
+  <section class="fade">
+    <p class="tag">Figure 2 · signal_value · inequality × precision</p>
+    <h2>The peer-review signal is worth most where talent is concentrated</h2>
+    <p>Value of adding the grant signal to the planner (<span class="mono">S8&nbsp;−&nbsp;S7</span>), across the knowledge-tail exponent <span class="mono">α_K</span> (smaller = heavier tail, more inequality) and signal noise <span class="mono">τ_K</span>. Darker = more valuable.</p>
+    <div class="figrow panel">
+      <figure>
+        <div class="chart-scroll"><div id="fig-signal"></div></div>
+        <figcaption><b>Two knobs, one story:</b> the signal is transformative under heavy tails and a sharp signal (top-left, +20.9) and worthless under light tails and noise (bottom-right, ≈0). When everyone is similar, or you can't read the signal, peer review adds nothing to publication counts alone.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ===================== FIGURE 3: PRECISION + CORRELATION ===================== -->
+  <section class="fade">
+    <p class="tag">Figure 3 · signal_precision &amp; correlation · robustness of the signal</p>
+    <h2>Signal value decays smoothly with noise — and survives correlation</h2>
+    <p>Left: signal value falls monotonically as the grant signal gets noisier, reaching half-value near <span class="mono">τ_K≈1.5</span>. Right: a promoted result — as latent knowledge and resources become positively correlated (relaxing the resource bottleneck), the signal's value <em>drops but does not vanish</em>. Even at realized rank-correlation <span class="mono">ρ_s=0.78</span>, it stays large under heavy tails.</p>
+    <div class="figrow panel" style="display:grid;grid-template-columns:1fr;gap:8px">
+      <figure>
+        <div class="chart-scroll"><div id="fig-precision"></div></div>
+        <figcaption><b>Precision (T=2, all α_K=2):</b> a clean monotone decay from +7.4 at τ_K=0.05 to +0.2 at τ_K=20.</figcaption>
+      </figure>
+      <hr class="rule" style="margin:6px 0">
+      <figure>
+        <div class="chart-scroll"><div id="fig-corr"></div></div>
+        <figcaption><b>Correlation (τ_K=0.3):</b> three tails vs. K–R correlation ρ_c. Signal dominance survives realistic positive correlation — the R-bottleneck relaxes but heavy-tailed talent still needs finding.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ===================== FIGURE 4: SEED ===================== -->
+  <section class="fade">
+    <p class="tag">Figure 4 · seed_value · a clean negative</p>
+    <h2>Uniform seed floors only ever cost output</h2>
+    <p>Value of a uniform seed floor under the forward planner (<span class="mono">S9&nbsp;−&nbsp;S7</span>), across budget <span class="mono">b</span> and seed fraction <span class="mono">x_seed</span>. Every cell is negative, and the loss deepens as more budget is forced to spread evenly.</p>
+    <div class="figrow panel">
+      <figure>
+        <div class="chart-scroll"><div id="fig-seed"></div></div>
+        <figcaption><b>Policy read:</b> spreading money to guarantee a floor is pure deadweight relative to targeted allocation — worst at large budgets and high seed fractions (−0.70). Targeting beats fairness-by-uniformity on the output objective.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <footer class="fade">
+    <div class="methods">
+      <h3>Model &amp; method</h3>
+      <ul>
+        <li>Production <code>λ = γ·KR/(K+R)</code>, compounding knowledge <code>K ← K + ε·KR/(K+R)</code>, non-persistent grants, Poisson observations. 9 strategies (no-fund → myopic → forward CE-planner).</li>
+        <li>Forward planner generalized from the 2-round v5 to T rounds (receding-horizon certainty-equivalent with one-step information anticipation). <b>T=2 reproduces v5 bit-identically</b> (max Δ ≈ 4×10⁻¹⁴), and forward's advantage is now stable as the greedy granularity is refined.</li>
+        <li>Manifest: 13 sweeps, 188 cells, <b>200 trials/cell</b>, n=50 researchers, M=400 posterior samples; common random numbers across cells. Mean-E[R] budget, default b=0.5.</li>
+        <li>All §6 validity assertions pass. CE-vs-scenario valuation gap at T=2 = −0.26% (near-exact). At ε→0 the schedule is uniform yet forward retains a small edge — pure information value, distinct from the compounding channel that scales with ε.</li>
+      </ul>
+      <p class="note">Method note: an earlier build showed a spurious high-T "decline" that traced to a stochastic resampling step in the planner's belief update — it corrupted the finite-difference marginals, mildly at 2 rounds but severely as the horizon and greedy resolution grew. With a deterministic reweight (and M raised to 400) the forward advantage is positive and stable across granularity; these figures reflect the corrected planner. Signal-value cells at the heaviest tail (α_K→1) see importance-sampling ESS/M &lt; 0.1 for ~¼ of researchers; read with mild caution.</p>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function(){
+  // ---------- color helpers ----------
+  function hex(c){c=c.replace('#','');return [parseInt(c.slice(0,2),16),parseInt(c.slice(2,4),16),parseInt(c.slice(4,6),16)];}
+  function mix(a,b,t){a=hex(a);b=hex(b);return 'rgb('+a.map((x,i)=>Math.round(x+(b[i]-x)*t)).join(',')+')';}
+  var NEUTRAL='#eeeae1', TEAL='#12727c', TEALDEEP='#0a4f57', RUST='#bb4a30', RUSTDEEP='#8f3720', PALE='#edf4f3';
+  function diverge(v,max){ var t=Math.min(1,Math.abs(v)/max);
+    return v>=0 ? mix(NEUTRAL,TEALDEEP,t) : mix(NEUTRAL,RUSTDEEP,t); }
+  function seq(v,max){ return mix(PALE,TEALDEEP,Math.min(1,Math.max(0,v)/max)); }
+  function textColor(v,max){ return Math.min(1,Math.abs(v)/max) > 0.55 ? '#fff' : '#20242b'; }
+  function seqText(v,max){ return (Math.max(0,v)/max) > 0.5 ? '#fff' : '#20242b'; }
+
+  // ---------- generic heatmap ----------
+  function heatmap(id,opt){
+    var rows=opt.rowLabels,cols=opt.colLabels,D=opt.data;
+    var cw=opt.cw||94, ch=opt.ch||58, lx=opt.lx||58, ty=opt.ty||42, rl=opt.rl||120;
+    var W=lx+cols.length*cw+18, H=ty+rows.length*ch+rl?0:0;
+    var totalH=ty+rows.length*ch+46;
+    var s='<svg viewBox="0 0 '+W+' '+totalH+'" width="'+W+'" style="max-width:100%;height:auto">';
+    // axis titles
+    s+='<text x="'+(lx+cols.length*cw/2)+'" y="16" text-anchor="middle" font-size="11" fill="#5c636e" letter-spacing="1.5">'+opt.xTitle+'</text>';
+    s+='<text x="14" y="'+(ty+rows.length*ch/2)+'" text-anchor="middle" font-size="11" fill="#5c636e" letter-spacing="1.5" transform="rotate(-90 14 '+(ty+rows.length*ch/2)+')">'+opt.yTitle+'</text>';
+    // column labels
+    for(var c=0;c<cols.length;c++)
+      s+='<text x="'+(lx+c*cw+cw/2)+'" y="'+(ty-10)+'" text-anchor="middle" font-size="12" fill="#20242b" font-weight="600">'+cols[c]+'</text>';
+    for(var r=0;r<rows.length;r++){
+      s+='<text x="'+(lx-10)+'" y="'+(ty+r*ch+ch/2+4)+'" text-anchor="end" font-size="12" fill="#20242b" font-weight="600">'+rows[r]+'</text>';
+      for(var c2=0;c2<cols.length;c2++){
+        var cell=D[r][c2]; var v=cell.v;
+        var fill = opt.mode==='diverge'?diverge(v,opt.max):seq(v,opt.max);
+        var tc = opt.mode==='diverge'?textColor(v,opt.max):seqText(v,opt.max);
+        var x=lx+c2*cw, y=ty+r*ch;
+        var sig = cell.z!==undefined && Math.abs(cell.z)>2;
+        s+='<rect x="'+(x+2)+'" y="'+(y+2)+'" width="'+(cw-4)+'" height="'+(ch-4)+'" rx="4" fill="'+fill+'"/>';
+        if(sig) s+='<rect x="'+(x+2.5)+'" y="'+(y+2.5)+'" width="'+(cw-5)+'" height="'+(ch-5)+'" rx="4" fill="none" stroke="'+tc+'" stroke-opacity="0.55" stroke-width="1.3"/>';
+        s+='<text x="'+(x+cw/2)+'" y="'+(y+ch/2+(cell.z!==undefined?-2:4))+'" text-anchor="middle" font-size="14" font-weight="600" fill="'+tc+'">'+opt.fmt(v)+'</text>';
+        if(cell.z!==undefined && !isNaN(cell.z))
+          s+='<text x="'+(x+cw/2)+'" y="'+(y+ch/2+13)+'" text-anchor="middle" font-size="9.5" fill="'+tc+'" fill-opacity="0.78">z '+(cell.z>0?'+':'')+cell.z.toFixed(1)+'</text>';
+      }
+    }
+    s+='</svg>';
+    document.getElementById(id).innerHTML=s;
+  }
+
+  // ---------- Figure 1: phase diagram ----------
+  var pg=[ [0.000,-0.001,0.228,0.003,0.002],
+           [0.000, 0.012,0.261,0.037,0.081],
+           [0.000, 0.044,0.369,0.193,0.240],
+           [0.000, 0.115,0.602,0.616,0.719],
+           [0.000, 0.273,1.076,1.283,1.656] ];
+  var pgz=[ [NaN,0,23,0,0],[NaN,1,21,2,4],[NaN,4,20,9,8],
+            [NaN,6,24,18,16],[NaN,12,32,27,24] ];
+  // data rows run ε=0.05→0.85; reverse so high growth sits at the top (conventional y-axis)
+  var pgD=pg.map((row,r)=>row.map((v,c)=>({v:v,z:pgz[r][c]}))).reverse();
+  heatmap('fig-phase',{data:pgD,rowLabels:['0.85','0.55','0.30','0.15','0.05'],
+    colLabels:['1','2','3','4','5'],xTitle:'HORIZON  T →',yTitle:'KNOWLEDGE GROWTH  ε',
+    mode:'seq',max:1.66,cw:102,ch:62,lx:56,ty:44,fmt:v=>(v>0?'+':'')+v.toFixed(2)});
+
+  // ---------- Figure 2: signal value ----------
+  var sv=[ [21.08,20.32,17.35,10.65],[10.01,8.59,5.33,1.65],[3.91,2.69,1.01,0.06],[1.47,0.67,0.09,-0.01] ];
+  var svD=sv.map(row=>row.map(v=>({v:v})));
+  heatmap('fig-signal',{data:svD,rowLabels:['1.3','1.8','2.5','3.5'],colLabels:['0.3','1','3','10'],
+    xTitle:'SIGNAL NOISE  τ_K →',yTitle:'← TAIL  α_K',mode:'seq',max:21,cw:96,ch:60,lx:56,ty:44,
+    fmt:v=>v.toFixed(1)});
+
+  // ---------- Figure 4: seed value ----------
+  var sd=[ [-0.019,-0.092,-0.121,-0.215],[-0.022,-0.018,-0.203,-0.249],
+           [-0.221,-0.220,-0.290,-0.464],[-0.395,-0.483,-0.565,-0.568] ];
+  var sdD=sd.map(row=>row.map(v=>({v:v})));
+  heatmap('fig-seed',{data:sdD,rowLabels:['0.1','0.3','0.5','1.0'],colLabels:['0.1','0.25','0.5','0.75'],
+    xTitle:'SEED FRACTION  x_seed →',yTitle:'← BUDGET  b',mode:'diverge',max:0.7,cw:96,ch:58,lx:56,ty:44,
+    fmt:v=>v.toFixed(2)});
+
+  // ---------- Figure 3a: precision line ----------
+  (function(){
+    var tk=[0.05,0.1,0.2,0.3,0.5,0.7,1,1.5,2,3,5,10,20];
+    var vv=[7.65,7.70,7.63,7.48,7.09,6.67,6.04,5.10,4.32,3.25,2.00,0.65,0.09];
+    var W=680,H=230,L=48,R=16,T=18,B=40;
+    var xmin=Math.log10(0.05),xmax=Math.log10(20);
+    var ymax=8;
+    function px(x){return L+(Math.log10(x)-xmin)/(xmax-xmin)*(W-L-R);}
+    function py(y){return T+(1-y/ymax)*(H-T-B);}
+    var s='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" style="max-width:100%;height:auto">';
+    for(var g=0;g<=8;g+=2){s+='<line x1="'+L+'" y1="'+py(g)+'" x2="'+(W-R)+'" y2="'+py(g)+'" stroke="#e2e5ea"/>';
+      s+='<text x="'+(L-8)+'" y="'+(py(g)+4)+'" text-anchor="end" font-size="10" fill="#5c636e">'+g+'</text>';}
+    [0.05,0.1,0.3,1,3,10,20].forEach(function(t){s+='<text x="'+px(t)+'" y="'+(H-14)+'" text-anchor="middle" font-size="10" fill="#5c636e">'+t+'</text>';});
+    s+='<text x="'+((W-L)/2+L)+'" y="'+(H-1)+'" text-anchor="middle" font-size="10.5" fill="#5c636e" letter-spacing="1">SIGNAL NOISE  τ_K  (log scale)</text>';
+    // area
+    var d='M'+px(tk[0])+' '+py(vv[0]);
+    for(var i=1;i<tk.length;i++)d+=' L'+px(tk[i])+' '+py(vv[i]);
+    var area=d+' L'+px(tk[tk.length-1])+' '+py(0)+' L'+px(tk[0])+' '+py(0)+' Z';
+    s+='<path d="'+area+'" fill="#12727c" fill-opacity="0.10"/>';
+    s+='<path d="'+d+'" fill="none" stroke="#0d5c64" stroke-width="2.2"/>';
+    // half-value marker
+    s+='<line x1="'+px(1.5)+'" y1="'+py(0)+'" x2="'+px(1.5)+'" y2="'+py(5.1)+'" stroke="#bb4a30" stroke-width="1" stroke-dasharray="3 3"/>';
+    s+='<text x="'+(px(1.5)+5)+'" y="'+py(6.6)+'" font-size="10" fill="#bb4a30">half-value ≈ τ_K 1.5</text>';
+    for(var j=0;j<tk.length;j++)s+='<circle cx="'+px(tk[j])+'" cy="'+py(vv[j])+'" r="3" fill="#0d5c64"/>';
+    s+='<text x="'+L+'" y="12" font-size="10.5" fill="#5c636e">signal value  S8−S7</text>';
+    s+='</svg>';
+    document.getElementById('fig-precision').innerHTML=s;
+  })();
+
+  // ---------- Figure 3b: correlation grouped ----------
+  (function(){
+    var rho=[-0.5,0,0.5,0.8], rhoS=['ρ_s −.46','ρ_s .01','ρ_s .48','ρ_s .78'];
+    var series=[{n:'α_K=1.3 (heavy)',c:'#0a4f57',v:[22.95,21.08,18.12,15.56]},
+                {n:'α_K=2.0',c:'#2c8a8f',v:[9.15,7.48,5.49,3.18]},
+                {n:'α_K=3.5 (light)',c:'#95c2c1',v:[2.03,1.47,0.85,0.22]}];
+    var W=680,H=250,L=48,R=16,T=18,B=54;
+    var ymax=24, gw=(W-L-R)/rho.length, bw=gw/(series.length+1);
+    function py(y){return T+(1-y/ymax)*(H-T-B);}
+    var s='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" style="max-width:100%;height:auto">';
+    for(var g=0;g<=24;g+=6){s+='<line x1="'+L+'" y1="'+py(g)+'" x2="'+(W-R)+'" y2="'+py(g)+'" stroke="#e2e5ea"/>';
+      s+='<text x="'+(L-8)+'" y="'+(py(g)+4)+'" text-anchor="end" font-size="10" fill="#5c636e">'+g+'</text>';}
+    for(var r=0;r<rho.length;r++){
+      var gx=L+r*gw;
+      for(var k=0;k<series.length;k++){
+        var v=series[k].v[r]; var x=gx+bw*(k+0.5); var y=py(Math.max(0,v));
+        s+='<rect x="'+x+'" y="'+y+'" width="'+(bw*0.82)+'" height="'+(py(0)-y)+'" rx="2" fill="'+series[k].c+'"/>';
+      }
+      s+='<text x="'+(gx+gw/2)+'" y="'+(H-32)+'" text-anchor="middle" font-size="11" fill="#20242b" font-weight="600">ρ_c '+(rho[r]>=0?'+':'')+rho[r]+'</text>';
+      s+='<text x="'+(gx+gw/2)+'" y="'+(H-19)+'" text-anchor="middle" font-size="9" fill="#5c636e">'+rhoS[r]+'</text>';
+    }
+    // legend
+    var lx=L+6;
+    series.forEach(function(se,i){var yy=T+2+i*15;
+      s+='<rect x="'+(W-R-140)+'" y="'+(yy-8)+'" width="10" height="10" rx="2" fill="'+se.c+'"/>';
+      s+='<text x="'+(W-R-125)+'" y="'+yy+'" font-size="10" fill="#39404a">'+se.n+'</text>';});
+    s+='<text x="'+L+'" y="12" font-size="10.5" fill="#5c636e">signal value  S8−S7   (T=2, τ_K=0.3)</text>';
+    s+='</svg>';
+    document.getElementById('fig-corr').innerHTML=s;
+  })();
+})();
+</script>

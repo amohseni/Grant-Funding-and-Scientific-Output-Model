@@ -1,0 +1,18 @@
+================ §6 ASSERTIONS (generated) ================
+[INFO] #1 anchor: see tests/test_T2_reduction.R -> bit-identical (max Δ ~4e-14).
+[PASS] 2_T1_fwd_eq_myo            PG=0.00e+00, b_idx_S8=0.5000 (expect 0, 0.5)
+[PASS] 3_eps0_uniform_schedule    b_idx_S8=0.4978 (~0.5, compounding off => no front-load); residual PG=0.215 = info value
+[PASS] 4_tauK_sharp_signal        signal_fwd sharp=7.56 vague=-0.011
+[PASS] 4_tauK_vague_useless       signal_fwd(tau_k=1e3)=-0.011 (se 0.020) -> ~0
+[PASS] 6_heavytail_finite         winsorized(0.99) K means finite across 20 seeds; low-ESS(<0.1) researcher-count=251/1000
+[PASS] 7_budget_conservation      max overspend = 1.99e-13
+[INFO] #8 M-convergence (default cell, 40 seeds):
+        M=200  alpha_S8=0.4590(se0.0022)  signal_fwd=5.894(se0.714)
+        M=400  alpha_S8=0.4618(se0.0023)  signal_fwd=5.927(se0.780)
+        M=800  alpha_S8=0.4625(se0.0024)  signal_fwd=5.751(se0.760)
+[PASS] 8_M_convergence            |Δalpha_S8|(800-200)=0.0035, |Δsignal_fwd|=0.143 (pooled se 1.043)
+[INFO] #9 CE-vs-SP (T=2, 12 seeds, 40 scenarios): V_CE=92.54 V_SP=92.30 gap=-0.242 (-0.26% of value)
+[PASS] 9_CE_vs_SP_bounded         CE valuation gap = -0.26% of 2-round value (CE over-values)
+[INFO] #10 sign-path PG(T) = S8-S5: see tests/pg_focused.R / sweep_results/pg_focused_summary.rds.
+        Non-monotonic, eps-gated: eps=0.1 -> negative at high T; eps=0.6 -> stays positive; peaks ~T=3.
+================ end (8 checks logged) ================

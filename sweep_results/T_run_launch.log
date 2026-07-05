@@ -1,0 +1,79 @@
+Launch: 200 seeds, 7 cores,  13 sweeps
+
+=== Sweep: horizon_growth (tier 1) ===
+Horizon T vs knowledge-growth epsilon. Headline: does forward beat myopic as T grows, and how does growth modulate it?
+  25 cells x 200 seeds done in 277s (0.055s/run)
+  saved -> sweep_results/T_run/
+
+=== Sweep: horizon_noise (tier 1) ===
+Horizon T vs grant-signal noise tau_k.
+  25 cells x 200 seeds done in 280s (0.056s/run)
+  saved -> sweep_results/T_run/
+
+=== Sweep: horizon_scale (tier 1) ===
+Horizon T vs budget scale b (clamped to [0.1,1]; spec 0.05 dropped).
+  20 cells x 200 seeds done in 219s (0.055s/run)
+  saved -> sweep_results/T_run/
+
+=== Sweep: signal_precision (tier 2) ===
+Fine sweep of grant-signal noise tau_k at T=2.
+  13 cells x 200 seeds done in 59s (0.023s/run)
+`geom_line()`: Each group consists of only one observation.
+i Do you need to adjust the group aesthetic?
+  saved -> sweep_results/T_run/
+
+=== Sweep: signal_value (tier 2) ===
+Knowledge tail alpha_K vs grant-signal noise tau_k at T=2.
+  16 cells x 200 seeds done in 73s (0.023s/run)
+  saved -> sweep_results/T_run/
+
+=== Sweep: funder_scale (tier 2) ===
+Budget scale b at T=2 (clamped to [0.1,1]; spec 1.5/2.5/5 and 0.05 dropped).
+  6 cells x 200 seeds done in 28s (0.023s/run)
+`geom_line()`: Each group consists of only one observation.
+i Do you need to adjust the group aesthetic?
+  saved -> sweep_results/T_run/
+
+=== Sweep: seed_value (tier 2) ===
+Budget b vs seed fraction x_seed at T=2 (b clamped to [0.1,1]; spec 2 dropped).
+  16 cells x 200 seeds done in 75s (0.023s/run)
+  saved -> sweep_results/T_run/
+
+=== Sweep: alpha_regime (tier 2) ===
+Grant-signal noise tau_k vs growth epsilon: where does forward spend (b_idx / alpha)?
+  16 cells x 200 seeds done in 75s (0.023s/run)
+  saved -> sweep_results/T_run/
+
+=== Sweep: pre_rounds (tier 3) ===
+Pre-round baseline observations n_pre at T=2.
+  5 cells x 200 seeds done in 27s (0.027s/run)
+`geom_line()`: Each group consists of only one observation.
+i Do you need to adjust the group aesthetic?
+  saved -> sweep_results/T_run/
+
+=== Sweep: regime_map (tier 3) ===
+3D regime map: budget b x noise tau_k x tail alpha_K at T=2 (b clamped to [0.1,1]; spec 3 dropped).
+  27 cells x 200 seeds done in 125s (0.023s/run)
+  saved -> sweep_results/T_run/
+
+=== Sweep: correlation (tier 4) ===
+K-R Gaussian-copula correlation rho_c vs tail alpha_K at T=2, tau_k=0.3 (sharpest signal).
+  12 cells x 200 seeds done in 57s (0.024s/run)
+  saved -> sweep_results/T_run/
+
+=== Sweep: pop_size (tier 4) ===
+Population size n at T=2 (finite-n check).
+  4 cells x 200 seeds done in 29s (0.037s/run)
+`geom_line()`: Each group consists of only one observation.
+i Do you need to adjust the group aesthetic?
+  saved -> sweep_results/T_run/
+
+=== Sweep: resource_noise (tier 4) ===
+Resource-signal noise tau_r at T=2.
+  3 cells x 200 seeds done in 15s (0.024s/run)
+`geom_line()`: Each group consists of only one observation.
+i Do you need to adjust the group aesthetic?
+  saved -> sweep_results/T_run/
+
+All T-round sweeps complete -> sweep_results/T_run 
+TOTAL wall: 22.3 min
