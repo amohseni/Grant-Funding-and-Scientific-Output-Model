@@ -1,0 +1,15 @@
+# macOS / editor
+.DS_Store
+
+# R session state (not part of the project)
+.RData
+.Rhistory
+.Rproj.user/
+
+# Claude Code tooling: local settings, saved plans, and ephemeral agent worktrees.
+# None of this belongs in a shared repo or OSF upload.
+.claude/
+
+# Scratch / temp
+*.tmp
+scratch/

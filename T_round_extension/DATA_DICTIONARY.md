@@ -100,9 +100,18 @@ map is in README §5.
 | `correlation` | 12 | `rho_kr`={−0.5,0,0.5,0.8} × `k_shape`={1.3,2,3.5}, at `tau_k`=0.3 | **Does signal value survive K–R correlation?** (T=2). |
 | `pop_size` | 4 | `n`={20,50,100,200} | Finite-n check (T=2). |
 | `resource_noise` | 3 | `tau_r`={0.3,1,3} | Resource-signal noise effect (T=2). |
+| `tail_map` | 9 | `k_shape`={1.3,2,3.5} × `r_shape`={1.3,2,3.5}, at `tau_k`=0.3 | **Resource-side inequality.** `signal_fwd` by knowledge vs resource tail. ⚠ budget `B∝E[R]` co-varies with `r_shape` — interpret that axis as inequality *and* budget. |
+| `info_value` | 12 | `T_rounds`={2,3,4,5} × `tau_k`={0.3,1,3}, at `epsilon`=1e-4 | **Information channel isolated** (ε→0, no compounding): forward's residual edge is pure information value (`fwd_vs_myo_PG`). |
+| `horizon_long` | 10 | `T_rounds`={5,6,7,8,10} × `epsilon`={0.3,0.85} | Does the forward advantage saturate past T=5? **Uses `n_steps`=400** (not the base 50 — too coarse beyond T=5; see below). |
 
-**Only the three `horizon_*` sweeps vary T** (1→5). All others are at **T=2**. Tier-2/3/4 sweeps
-are T=2 cross-sections; they were essentially unchanged by the bug fix (see STATE_OF_PLAY).
+**Sweeps that vary T:** `horizon_growth`, `horizon_noise`, `horizon_scale` (T=1..5), `info_value`
+(T=2..5), and `horizon_long` (T=5..10). All others are at **T=2**.
+
+> **⚠ Granularity note for `horizon_long`.** The greedy step is `δ = B/n_steps`; at fixed
+> `n_steps=50` the per-round granularity thins as T grows, and beyond T=5 it inflates the
+> forward advantage severalfold (an artifact). `horizon_long` is therefore run at **`n_steps=400`**
+> (converged; verified in `tests/horizon_long_convergence.R`). The T=1..5 sweeps are unaffected —
+> `n_steps=50` is granularity-stable there. If you extend any horizon sweep past T=5, raise `n_steps`.
 
 ---
 

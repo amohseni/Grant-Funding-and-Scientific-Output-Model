@@ -9,10 +9,7 @@
 # ============================================================
 setwd("/Users/amohseni/Library/Mobile Documents/com~apple~CloudDocs/Documents/GitHub/Grant-Funding-and-Scientific-Output-Model")
 
-src <- readLines("app.R", warn = FALSE)
-end <- grep("^shinyApp\\(", src)[1] - 1L
-eval(parse(text = paste(src[1:end], collapse = "\n")), envir = globalenv())
-source("simulate_T.R")
+source("model.R")
 
 points <- list(
   list(tag = "default",      n = 30, tau_k = 1.0,  epsilon = 0.3,  k_shape = 2.0, b = 0.5, x_seed = 0.5),

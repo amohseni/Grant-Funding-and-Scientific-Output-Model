@@ -1,0 +1,6 @@
+
+=== Sweep: horizon_long (tier 1) ===
+Long horizon T=5..10 at eps in {0.3,0.85}: does the forward advantage saturate? Uses n_steps=400 (finer greedy granularity): the default n_steps=50 is too coarse beyond T=5 and inflates the advantage ~4x (see tests/horizon_long_convergence.R).
+  10 cells x 200 seeds done in 4971s (2.486s/run)
+  saved -> sweep_results/T_run_supplement/
+horizon_long (n_steps=400) done — 82.9 min

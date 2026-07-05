@@ -3,8 +3,7 @@
 # discretization artifact of the forward planner, not a structural model property.
 setwd("/Users/amohseni/Library/Mobile Documents/com~apple~CloudDocs/Documents/GitHub/Grant-Funding-and-Scientific-Output-Model")
 suppressPackageStartupMessages(library(parallel))
-src <- readLines("app.R", warn=FALSE); end <- grep("^shinyApp\\(", src)[1]-1L
-eval(parse(text=paste(src[1:end],collapse="\n")), envir=globalenv()); source("simulate_T.R")
+source("model.R")
 NC <- max(1, detectCores()-1)
 PG <- function(n,Tr,eps,ns,seeds){ v<-unlist(mclapply(seeds,function(sd){
   r<-run_simulation_T(seed=sd,T_rounds=Tr,n=n,epsilon=eps,b=0.5,tau_k=1,k_shape=2,

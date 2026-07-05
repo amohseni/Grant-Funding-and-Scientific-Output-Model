@@ -17,9 +17,7 @@
 # ============================================================
 setwd("/Users/amohseni/Library/Mobile Documents/com~apple~CloudDocs/Documents/GitHub/Grant-Funding-and-Scientific-Output-Model")
 suppressPackageStartupMessages(library(parallel))
-src <- readLines("app.R", warn=FALSE); end <- grep("^shinyApp\\(", src)[1]-1L
-eval(parse(text=paste(src[1:end],collapse="\n")), envir=globalenv())
-source("simulate_T.R")
+source("model.R")
 
 # CE self-valuation of a forward plan from posteriors `posts`, given executed
 # history g_hist (list of past grant vectors). Mirrors the greedy's objective.

@@ -1,0 +1,16 @@
+
+=== Sweep: tail_map (tier 2) ===
+Knowledge tail k_shape vs resource tail r_shape at T=2, sharp signal (tau_k=0.3). NOTE: budget B∝E[R] co-varies with r_shape (see NEXT_SIMULATIONS.md A1).
+  9 cells x 200 seeds done in 266s (0.148s/run)
+  saved -> sweep_results/T_run_supplement/
+
+=== Sweep: info_value (tier 1) ===
+Information channel isolated: eps~0 (no compounding) across horizon T and signal noise tau_k.
+  12 cells x 200 seeds done in 791s (0.330s/run)
+  saved -> sweep_results/T_run_supplement/
+
+=== Sweep: horizon_long (tier 1) ===
+Long horizon T=5..10 at eps in {0.3,0.85}: does the forward advantage saturate?
+  10 cells x 200 seeds done in 1029s (0.515s/run)
+  saved -> sweep_results/T_run_supplement/
+SUPPLEMENT DONE — 34.8 min

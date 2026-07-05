@@ -1,0 +1,36 @@
+cff-version: 1.2.0
+message: "If you use this software or data, please cite it as below."
+title: "Grant Funding and Scientific Output: A T-Round Bayesian Model of Research Allocation"
+# TODO: refine the title to match the paper.
+type: software
+authors:
+  - family-names: "Mohseni"
+    given-names: "Aydin"
+    email: "amohseni@andrew.cmu.edu"
+    affiliation: "Carnegie Mellon University"
+    # orcid: "https://orcid.org/0000-0000-0000-0000"   # TODO: add ORCID
+  # TODO: add co-authors (collaborators) here, e.g.:
+  # - family-names: "..."
+  #   given-names: "..."
+  #   affiliation: "..."
+repository-code: "https://github.com/amohseni/Grant-Funding-and-Scientific-Output-Model"
+# url: "https://osf.io/XXXXX/"        # TODO: add OSF project URL once created
+# doi: "10.17605/OSF.IO/XXXXX"        # TODO: add OSF DOI once registered
+version: "1.0.0"                       # TODO: set the release version
+date-released: "2026-01-01"            # TODO: set the actual release date
+license: MIT                           # code; data are CC-BY-4.0 (see LICENSE-DATA.md)
+keywords:
+  - science funding
+  - grant allocation
+  - Bayesian decision theory
+  - forward-looking planning
+  - agent-based simulation
+  - meta-science
+abstract: >-
+  A simulation model of how a science funder should allocate grants across
+  researchers and over T funding rounds to maximize scientific output, comparing
+  naive, myopic-Bayesian, and forward-looking (certainty-equivalent) planners.
+  Researchers differ in latent knowledge and resources; output is bottlenecked by
+  the scarcer input and knowledge compounds between rounds. Includes the model
+  engine, an interactive Shiny explorer, the full parameter-sweep dataset, and a
+  validation/reproducibility suite.

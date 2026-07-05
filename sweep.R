@@ -13,8 +13,8 @@
 #   - "Optimal with/without signal vs naive" frame → 9-strategy comparison
 #
 # Usage:
-#   Rscript -e 'source("app.R"); source("sweep.R"); main_sweep()'
-#   Or interactively in R after sourcing app.R.
+#   Rscript -e 'source("model.R"); source("sweep.R"); main_sweep()'
+#   Or interactively in R after sourcing model.R.
 #
 # Each sweep saves a raw .rds and an aggregated .rds under ./sweep_results/.
 # Plots are returned by plot_sweep_from_config() — save them with ggsave().

@@ -1,0 +1,6 @@
+setwd("/Users/amohseni/Library/Mobile Documents/com~apple~CloudDocs/Documents/GitHub/Grant-Funding-and-Scientific-Output-Model")
+suppressPackageStartupMessages({library(dplyr);library(tidyr);library(ggplot2)})
+source("model.R"); source("sweep.R"); source("sweep_T.R")
+t0 <- Sys.time()
+sweep_one_T("horizon_long", seeds = 1:200, out_dir = "sweep_results/T_run_supplement", resume = FALSE)
+cat(sprintf("horizon_long (n_steps=400) done — %.1f min\n", as.numeric(Sys.time()-t0, units="mins")))

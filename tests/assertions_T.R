@@ -6,9 +6,7 @@
 # manifest without oversubscribing cores.
 # ============================================================
 setwd("/Users/amohseni/Library/Mobile Documents/com~apple~CloudDocs/Documents/GitHub/Grant-Funding-and-Scientific-Output-Model")
-src <- readLines("app.R", warn=FALSE); end <- grep("^shinyApp\\(", src)[1]-1L
-eval(parse(text=paste(src[1:end],collapse="\n")), envir=globalenv())
-source("simulate_T.R")
+source("model.R")
 
 LOG <- c()
 say <- function(...) { line <- sprintf(...); LOG <<- c(LOG, line); cat(line, "\n") }

@@ -18,9 +18,7 @@
 setwd("/Users/amohseni/Library/Mobile Documents/com~apple~CloudDocs/Documents/GitHub/Grant-Funding-and-Scientific-Output-Model")
 
 # --- Source app.R without launching Shiny ---
-src <- readLines("app.R", warn = FALSE)
-end <- grep("^shinyApp\\(", src)[1] - 1L
-eval(parse(text = paste(src[1:end], collapse = "\n")), envir = globalenv())
+source("model.R")
 
 # --- Parameter points to snapshot (small, fast, representative) ---
 # Include the CURRENT default plus off-default points that exercise

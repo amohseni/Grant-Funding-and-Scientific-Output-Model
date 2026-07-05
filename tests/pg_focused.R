@@ -9,9 +9,7 @@
 setwd("/Users/amohseni/Library/Mobile Documents/com~apple~CloudDocs/Documents/GitHub/Grant-Funding-and-Scientific-Output-Model")
 suppressPackageStartupMessages(library(parallel))
 
-src <- readLines("app.R", warn = FALSE); end <- grep("^shinyApp\\(", src)[1] - 1L
-eval(parse(text = paste(src[1:end], collapse = "\n")), envir = globalenv())
-source("simulate_T.R")
+source("model.R")
 
 T_vals   <- 1:5
 eps_vals <- c(0.1, 0.3, 0.6)
