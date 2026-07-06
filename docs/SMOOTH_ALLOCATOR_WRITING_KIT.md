@@ -40,7 +40,8 @@ more defensible story, and we caught it before you presented.
    compound, planning ahead gives no advantage — and we can prove it (ε=0 ⇒ forward = myopic)."
 2. **Show this one figure:** `figures/smooth_preview/fig1_horizon_phase_diagram.png` — the ε×T surface.
 3. **The numbers to have in your pocket** (forward−myopic, grant contrast, at ε=0.85):
-   T=2: 0.29 · T=3: 0.84 · T=4: 1.43 · T=5: **1.99**. At ε≈0: **~0 at every T**.
+   T=2: 0.29 · T=3: 0.84 · T=4: 1.43 · T=5: 1.99 · … · T=10: **3.37** (keeps growing, no saturation).
+   At ε≈0: **~0 at every T**.
 4. **If asked "did anything change from earlier runs?"** — "Yes: we switched to an exact allocator, which
    sharpened the main result and removed a discretization artifact that had inflated some secondary
    effects. The core finding is cleaner and more robust for it."
@@ -88,6 +89,7 @@ Ready-to-paste methods sentence:
 | Sweep | Old (greedy, n_steps=50) | New (exact) | Verdict |
 |---|---|---|---|
 | **horizon_growth** (T × ε) — **the headline** | up to +1.66 | up to **+1.99** | **HOLDS, cleaner** |
+| **horizon_long** (T=5–10, strong ε) — *already fine-grained (ns=400) in the old run* | up to +3.37 | up to **+3.37** | **HOLDS — smooth ≈ old, z≈0** (advantage keeps growing to T=10, no saturation) |
 | alpha_regime | up to +0.25 | up to +0.26 | HOLDS |
 | horizon_growth (pubs contrast P) | up to +3.30 | up to +3.10 | HOLDS |
 | tail_map (heavy tails) | +0.50 | ~0.006 | **artifact → gone** |
@@ -161,8 +163,8 @@ untouched). Compare each against the old one before swapping.
 - **fig6_tail_map** — **biggest change**: the forward-advantage heat largely goes to ~0. Reframe as
   "advantage is tail-independent / near-zero without compounding."
 - **fig7_information_value** — at ε≈0, advantage ~0. **Reframe** as confirming the mechanism.
-- **fig8_horizon_long** — *pending the final sweep* (T=5–10). This is the one to watch for the "does the
-  advantage keep growing or saturate" point.
+- **fig8_horizon_long** — **done.** T=5–10 at strong ε: advantage **keeps growing** (1.99→3.37 at T=10),
+  no saturation yet, and smooth ≈ the old fine-grained run. **Keep, minimal change.**
 
 ---
 
@@ -194,22 +196,22 @@ The exact allocator is validated, not assumed:
   was inflated. Example (heavy-tail cell): coarse-old +0.50, fine-old +0.03, exact +0.005.
 - **Positive control:** the information-value sweep runs at ε≈0 and correctly gives ~0 advantage — the
   exact prediction of the mechanism.
+- **Internal consistency (the strongest single argument):** `horizon_long` was the *one* sweep the
+  original runs already did at fine granularity (`n_steps=400`). There, smooth **agrees** with the old
+  result almost exactly (z≈0 at nearly every cell). The sweeps that *changed* are precisely the ones run
+  at coarse `n_steps=50`. So the exact allocator **corrects the coarse runs and confirms the fine one** —
+  exactly the signature of removing a discretization artifact, not introducing a new bias.
 
 Scripts: `tests/gonogo_smooth.R`, `tests/validate_smooth_supp.R`, `tests/diff_smooth_vs_fixed.R`,
 `tests/waterfill_round_t.R`, `tests/plan_forward_smooth.R`.
 
 ---
 
-## What's still pending (deferred by choice — NOT needed for the talk)
+## Status: all 16 sweeps complete ✅
 
-- **`horizon_long` re-run (T=5–10 at ε ∈ {0.3, 0.85}) — fig8 only.** This sweep is slow under the exact
-  allocator and was **deferred** so you could present on time. It only extends the headline curve from
-  T=5 out to T=10 (does the advantage keep growing or saturate). Your core story to T=5 is complete
-  without it. For the talk, present the T≤5 result and, if asked, say the long-horizon extension is
-  in progress and consistent with the T≤5 trend. Re-run it after your talk for the paper:
-  `Rscript tests/launch_manifest_smooth.R` regenerates everything, or run just `horizon_long`.
-- **The 15 completed sweeps are the finished, verified core.** Nothing about the main result waits on
-  `horizon_long`.
+- **`horizon_long` finished** and is folded in above: the advantage keeps growing to +3.37 at T=10
+  (no saturation), and smooth matches the old fine-grained run — a strong validation, not a change.
+- **All 16 sweeps are done, analyzed, and figures regenerated** (`figures/smooth_preview/fig1–8`).
 - **Decisions for you (not done automatically):** whether to make the exact allocator the model default,
   re-point the canonical data folder to the new run, and edit `RESULTS.md` in place. All staged; one word
   and I'll do them.
