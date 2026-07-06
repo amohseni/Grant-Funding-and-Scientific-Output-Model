@@ -4,8 +4,8 @@
 # Drives run_simulation_T over the final parameter manifest and writes
 # per-sweep RDS (summary + raw + raw-long schedule) plus plots.
 #
-# Depends on: app.R primitives (sourced stripped of shinyApp), simulate_T.R,
-# and sweep.R (reuses summarize_sweep + plotting helpers + `%||%`).
+# Depends on: model.R (the model engine — run_simulation_T etc.) and sweep.R
+# (reuses summarize_sweep + plotting helpers + `%||%`). Source both first.
 #
 # Conventions / decisions (see PROGRESS.md):
 #   * Budget: mean-E[R] normalization, default b=0.5. b-axes clamped to [0.1,1].
@@ -184,6 +184,38 @@ SWEEP_CONFIGS_T <- list(
     primary_plot = list(type = "line", x_var = "tau_r", y_var = "signal_fwd_mean",
                         color_var = "tau_r", title = "Signal value vs resource-signal noise",
                         y_label = "S8 - S7"),
+    secondary_plot = NULL
+  ),
+
+  # ---------- Supplementary sweeps (Roadmap Stage 1.1; see NEXT_SIMULATIONS.md) ----------
+  tail_map = list(
+    name = "tail_map", tier = 2,
+    description = "Knowledge tail k_shape vs resource tail r_shape at T=2, sharp signal (tau_k=0.3). NOTE: budget B∝E[R] co-varies with r_shape (see NEXT_SIMULATIONS.md A1).",
+    grid_fn = function() cbind(expand.grid(k_shape = c(1.3, 2, 3.5), r_shape = c(1.3, 2, 3.5)), tau_k = 0.3),
+    varied_params = c("k_shape", "r_shape"),
+    primary_plot = list(type = "heatmap", x_var = "r_shape", y_var = "k_shape",
+                        fill_var = "signal_fwd_mean", text_var = "signal_fwd_mean",
+                        title = "Signal value vs knowledge and resource tails", fill_label = "S8-S7"),
+    secondary_plot = NULL
+  ),
+  info_value = list(
+    name = "info_value", tier = 1,
+    description = "Information channel isolated: eps~0 (no compounding) across horizon T and signal noise tau_k.",
+    grid_fn = function() cbind(expand.grid(T_rounds = c(2, 3, 4, 5), tau_k = c(0.3, 1, 3)), epsilon = 1e-4),
+    varied_params = c("T_rounds", "tau_k"),
+    primary_plot = list(type = "line", x_var = "T_rounds", y_var = "fwd_vs_myo_PG_mean",
+                        color_var = "tau_k", title = "Information value (eps->0) across horizon",
+                        y_label = "S8 - S5 (pure info value)"),
+    secondary_plot = NULL
+  ),
+  horizon_long = list(
+    name = "horizon_long", tier = 1,
+    description = "Long horizon T=5..10 at eps in {0.3,0.85}: does the forward advantage saturate? Uses n_steps=400 (finer greedy granularity): the default n_steps=50 is too coarse beyond T=5 and inflates the advantage ~4x (see tests/horizon_long_convergence.R).",
+    grid_fn = function() cbind(expand.grid(T_rounds = c(5, 6, 7, 8, 10), epsilon = c(0.3, 0.85)), n_steps = 400),
+    varied_params = c("T_rounds", "epsilon"),
+    primary_plot = list(type = "line", x_var = "T_rounds", y_var = "fwd_vs_myo_PG_mean",
+                        color_var = "epsilon", title = "Forward advantage at long horizons",
+                        y_label = "S8 - S5"),
     secondary_plot = NULL
   )
 )

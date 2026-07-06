@@ -2,7 +2,7 @@
 
 **What this is.** A self-contained snapshot of the T-round extension of the grant-funding /
 scientific-output model: the simulation code, the full corrected parameter-sweep dataset
-(13 sweeps, 172 cells, 200 trials each), the validation suite, the bug-hunt diagnostics, and
+(16 sweeps, 219 cells, 200 trials each), the validation suite, the bug-hunt diagnostics, and
 a visual results report. It is organized so someone **new to the project can understand the
 model and start analyzing the data in ~15 minutes**.
 
@@ -98,7 +98,7 @@ T_round_extension/
 ├── DATA_DICTIONARY.md     ← every data file & column explained (READ THIS to analyze data)
 ├── NEXT_SIMULATIONS.md    ← proposed additional sweeps (grids + rationale, ready to run)
 ├── code/                  ← the simulation code (reference snapshot) + how it fits together
-├── data/                  ← THE DATASET: 13 sweeps × {summary, raw, rawlong} .rds + plots/
+├── data/                  ← THE DATASET: 16 sweeps × {summary, raw, rawlong} .rds + plots/
 ├── validation/            ← tests + logs proving the code is correct (anchor, assertions, bench)
 ├── diagnostics/           ← the scripts that found & confirmed the bug (provenance)
 └── report/                ← results_report.html — self-contained visual report
@@ -156,4 +156,4 @@ varied axes per sweep are in `DATA_DICTIONARY.md` §3.
 ---
 
 *Generated as a housekeeping snapshot. Canonical live code lives in the project root
-(`app.R`, `simulate_T.R`, `sweep_T.R`); this package's `code/` is a matching copy.*
+(`model.R`, `app.R`, `sweep_T.R`); this package's `code/` is a matching copy.*

@@ -5,7 +5,7 @@ documented copy in [`../T_round_extension/data/`](../T_round_extension/data/)** 
 a data dictionary).
 
 ## Current (canonical)
-- **`T_run_fixed/`** — the **corrected T-round manifest**: 13 sweeps × {summary, raw, rawlong}
+- **`T_run_fixed/`** — the **corrected T-round manifest**: 16 sweeps × {summary, raw, rawlong}
   `.rds` + plots, 200 trials/cell, M=400, from the **fixed** planner. This is the real dataset.
   (`_run_launch.log` inside it is that run's console log.) Column meanings:
   `../T_round_extension/DATA_DICTIONARY.md`.

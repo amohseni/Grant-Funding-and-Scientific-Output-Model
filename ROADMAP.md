@@ -19,7 +19,7 @@ tagged **[you]** or **[assistant]** (things Claude can execute) and marked with 
 > below (ORCID + co-authors in `CITATION.cff`, GitHub push, Shiny redeploy, OSF creation).
 
 **Where we are now:** the T-round model is built, validated (bit-identical to the 2-round v5 at
-T=2), and a subtle planner bug was found and fixed. The full 13-sweep manifest has been run
+T=2), and a subtle planner bug was found and fixed. The full 16-sweep manifest has been run
 (corrected, 200 trials/cell) and packaged in `T_round_extension/`. The Shiny app is refactored to
 the T-round model. What remains is (1) a few supplementary sweeps to close analysis gaps, (2)
 paper-ready figures and stats, and (3) reproducibility + OSF packaging.

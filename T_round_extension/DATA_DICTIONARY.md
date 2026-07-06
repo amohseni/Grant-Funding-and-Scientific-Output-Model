@@ -3,7 +3,7 @@
 Everything in `data/`. All files are R serialized objects — load with `readRDS("data/<file>.rds")`,
 which returns a `data.frame` (technically a tibble for summaries). No project setup needed.
 
-Each of the 13 **sweeps** produces three files:
+Each of the 16 **sweeps** produces three files:
 
 | File | Grain (one row = …) | Rows | Use it for |
 |------|---------------------|------|------------|
@@ -80,7 +80,7 @@ Reconstruct any strategy's full spend schedule (α₁..α_T) by filtering `strat
 
 ---
 
-## 3. The 13 sweeps — varied axes, grid, and purpose
+## 3. The 16 sweeps — varied axes, grid, and purpose
 
 All at **200 trials/cell**. Unvaried parameters take the **base defaults** (§4). Symbol ↔ code
 map is in README §5.

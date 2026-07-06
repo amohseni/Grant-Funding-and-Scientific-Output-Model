@@ -59,7 +59,7 @@ Grant-Funding-and-Scientific-Output-Model/
 ├── model.R                ← THE DEFAULT MODEL ENGINE — run_simulation_T + planners (pure base R)
 ├── app.R                  ← Shiny app (T-round; sources model.R). Deployment entry point.
 ├── sweep.R                ← shared sweep infrastructure (aggregation, plotting)
-├── sweep_T.R              ← the T-round sweep manifest (13 sweeps) + runner
+├── sweep_T.R              ← the T-round sweep manifest (16 sweeps) + runner
 │                            (app.R, sweep*.R and tests all `source("model.R")`)
 │
 ├── T_round_extension/     ← ★ CURRENT WORK: self-contained analysis package
@@ -72,7 +72,7 @@ Grant-Funding-and-Scientific-Output-Model/
 │                             portable — meant to be analyzed on its own)
 │
 ├── sweep_results/         ← raw parameter-sweep outputs
-│   ├── T_run_fixed/           the CURRENT corrected T-round manifest (13 sweeps, 200 trials, M=400)
+│   ├── T_run_fixed/           the CURRENT corrected T-round manifest (16 sweeps, 200 trials, M=400)
 │   └── legacy/                superseded runs (see sweep_results/README.md):
 │       ├── T_round_buggy_M200/    pre-bugfix T-round run — DO NOT USE
 │       ├── sweep_2round_11-05-2026/  old 2-round (v5) sweep

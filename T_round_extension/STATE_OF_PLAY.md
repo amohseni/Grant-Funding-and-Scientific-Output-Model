@@ -1,138 +1,143 @@
 # State of Play — T-Round Extension
 
-*Housekeeping snapshot. Reflects everything built and validated to date. Read this before
-trusting any numbers you may have seen in earlier drafts — one substantive bug was found and
-fixed late, and it changed the horizon results.*
+*Housekeeping snapshot of the completed study. Reflects everything built and validated. Read this
+before trusting any numbers from earlier drafts — one substantive bug was found and fixed (§5), and
+two diligence checks refined the results (§4a). All data here is post-fix.*
+
+> **Note on scope of this file.** This `T_round_extension/` package is a self-contained analysis
+> bundle; its `code/` folder mirrors the current repo-root code (the model engine **`model.R`**,
+> slim `app.R`, `sweep.R`, `sweep_T.R` — the former `simulate_T.R` was absorbed into `model.R`; see
+> §2). For the current code and the path-to-publication, see the repo root `README.md`, `ROADMAP.md`,
+> and `RESULTS.md`.
 
 ---
 
 ## 1. Objective
 
-Extend the 2-round Bayesian grant-allocation model (`app.R`, "v5") to **T ∈ {1..5} rounds** and
-run the final parameter sweep for the paper. Prime directive: **generalize the existing planner,
-don't reinvent** — the T=2 path must reproduce v5 exactly.
+Extend the 2-round Bayesian grant-allocation model (v5) to **T ∈ {1..5+} rounds**, run the final
+parameter sweeps, and get the study analysis-ready and shareable. Prime directive: **generalize the
+existing planner, don't reinvent** — the T=2 path must reproduce v5 exactly (it does, bit-identically).
 
 ## 2. What was built (all complete)
 
-| Deliverable | File(s) | Status |
-|-------------|---------|--------|
-| T-round simulator + T-round forward/myopic/seed planners | `code/simulate_T.R` | ✅ done |
-| Manifest runner + output schema + checkpointing | `code/sweep_T.R` | ✅ done |
-| Full parameter sweep (13 sweeps, 172 cells, 200 trials) | `data/` | ✅ done (corrected) |
-| Validation suite (anchor, assertions, benchmark) | `validation/` | ✅ all pass |
-| Visual results report | `report/results_report.html` | ✅ done |
+| Deliverable | Where | Status |
+|-------------|-------|--------|
+| T-round model engine (`run_simulation_T` + forward/myopic/seed planners) | `model.R` (root) | ✅ |
+| Shiny app generalized to T rounds, sourcing the engine | `app.R` (root) | ✅ |
+| Manifest runner + output schema + checkpointing | `sweep_T.R` | ✅ |
+| **Full parameter sweep — 16 sweeps, 219 cells, 200 trials/cell** | `data/` | ✅ (corrected) |
+| Validation suite (anchor, assertions, benchmark) + diagnostics | `validation/`, `diagnostics/` | ✅ |
+| Publication figures (8×, PNG+PDF) | root `figures/` | ✅ |
+| Statistical digest for the paper | root `RESULTS.md` | ✅ |
+| Reproducibility + packaging (reproduce, license, citation, env, OSF plan) | root | ✅ |
 
-The **§3 model** (production, compounding, non-persistent grants, 9 strategies) matches v5's
-actual equations. The T-round forward planner is a **receding-horizon certainty-equivalent (CE)**
-generalization of v5's 2-round planner: at each round it plans the full remaining horizon
-(anticipating compounding + one-step information value via `ce_reweight`), executes the current
-round, and re-plans next round with the newly observed pubs. At T=2 it reduces **bit-identically**
-to v5.
+The model (production `λ=γKR/(K+R)`, compounding knowledge, non-persistent grants, 9 strategies)
+matches v5's equations. The T-round forward planner is a **receding-horizon certainty-equivalent
+(CE)** generalization: each round it plans the full remaining horizon (anticipating compounding +
+one-step information value), executes the current round, then re-plans with the newly observed pubs.
+At T=2 it reduces **bit-identically** to v5.
+
+**Code refactor (post-manifest):** the model was consolidated from `app.R` + `simulate_T.R` into a
+single base-R engine **`model.R`**; `app.R` became a slim Shiny layer (`source("model.R")` + UI) with
+a `T` rounds slider; all sweeps/tests now `source("model.R")`. T=2 stays bit-identical throughout.
 
 ## 3. Validation status (all green)
 
-- **T=2 anchor:** `validation/test_T2_reduction.R` — T-round model at T=2 reproduces v5 to
-  floating-point (max |Δ| ≈ 4×10⁻¹⁴, exact grants) across 7 param points × 5 seeds × 9 strategies.
-- **§6 assertions:** `validation/assertions_log.txt` — all pass. Covers: T=1 triviality, ε→0
-  limit, τ_K limits, heavy-tail finiteness + ESS monitoring, budget conservation, M-convergence,
-  CE-vs-scenario valuation gap (−0.26% at T=2, near-exact), sign-path.
-- **Granularity stability:** after the fix (§5), the forward advantage is **stable as the greedy
-  step `n_steps` is refined** (was the tell that exposed the bug). See `diagnostics/`.
-- **Benchmark:** `validation/benchmark_report.txt` — per-run cost O(T²); full manifest ~30 min
-  on 7 cores at M=400.
+- **T=2 anchor:** T-round model at T=2 reproduces v5 to floating point (max |Δ| ≈ 4×10⁻¹⁴, exact
+  grants) — `validation/test_T2_reduction.R`.
+- **§6 assertions:** all pass (`validation/assertions_log.txt`) — T=1 triviality, ε→0 limit, τ_K
+  limits, heavy-tail finiteness + ESS, budget conservation, M-convergence, CE-vs-scenario gap, sign-path.
+- **CE approximation quality (now checked at high T):** the CE-vs-scenario valuation gap stays
+  **within ±0.4% of forward output across T=2–5 and does not grow with T** (`tests/ce_tax_vs_T.R` on
+  the fixed model). So the headline results are not CE artifacts — the deferred full SP-lite planner
+  was **not needed**.
+- **Granularity stability:** forward's advantage is stable as the greedy step `n_steps` is refined —
+  for T≤5 at `n_steps=50`, and for T>5 at `n_steps=400` (see §4a).
+- **Benchmark:** per-run cost O(T²); the 16-sweep manifest ~30–35 min on ~8 cores at M=400.
 
 ## 4. Current results (the corrected story)
 
-See README §2 for the findings and `report/` for figures. In brief:
-**Forward beats myopic everywhere; the advantage grows with knowledge-growth ε (via front-loading
-to compound) and, at high ε, with the horizon. Grant-signal value is set by inequality × precision
-and survives K–R correlation. Seeding never helps.** All T=2 cross-sections are solid.
+Full digest with effect sizes/z in root `RESULTS.md`; figures in `figures/`. In brief:
+
+**Forward beats myopic everywhere, growing with knowledge-growth ε (via front-loading to compound)
+and, at high ε, with the horizon.** Grant-signal value is governed by **inequality × precision**
+(≈21 at heavy tail + sharp signal → ~0 at light tail + noisy) and **survives K–R correlation**
+(large even at ρ_s=0.78). **Uniform seeding never helps.** The forward edge **decomposes** into a
+compounding channel (∝ε) plus a small, T=3-peaked information channel. Robustness nulls: resource-
+signal noise irrelevant; no finite-n artifact; budget scale doesn't drive the gain.
+
+### 4a. Two diligence findings that refined the results
+
+- **`horizon_long` granularity artifact (caught & fixed).** At the manifest default `n_steps=50`,
+  the greedy's per-round granularity thins as T grows and **inflated the T>5 advantage ~4×** (an
+  artifact — it oscillated wildly with T). Re-run at converged `n_steps=400`, the true story is
+  clean and **monotone: forward's advantage keeps growing slowly with T, no saturation, no collapse**
+  (ε=0.3: +0.32→+0.85 over T=5→10; ε=0.85: +2.0→+3.4). T=1–5 was unaffected (granularity-stable at
+  50). Convergence verified in `tests/horizon_long_convergence.R`; `horizon_long` config now pins
+  `n_steps=400`.
+- **The T=3 information peak, isolated.** The `info_value` sweep (ε≈0, no compounding) shows the
+  information channel is **small and sharply peaked at T=3** (~+0.22, ~0 elsewhere) — a feature of
+  the planner's one-step information anticipation, now characterized rather than a mystery.
+- **`tail_map` (resource-side inequality).** Confirms knowledge inequality dominates signal value,
+  with resource inequality a secondary modulator (⚠ budget co-varies with the resource tail).
 
 ## 5. ⚠️ The bug that was found and fixed (important context)
 
-**Symptom.** The first manifest run (M=200, `n_steps=50`) showed the forward-vs-myopic gap
-`fwd_vs_myo_PG` *declining* and going *negative* at high T for low ε — a clean-looking
-"phase diagram." Follow-up diagnostics revealed this was **not real**: the high-T results flipped
-sign erratically with population size n, and *diverged* (to −7) as the greedy granularity `n_steps`
-was refined. A correct effect converges; divergence signals a bug.
+**Symptom.** The first manifest run (`n_steps=50`) showed `fwd_vs_myo_PG` declining/going negative at
+high T — a clean-looking phase diagram. Diagnostics showed it wasn't real: it flipped sign
+erratically with population size n and **diverged** (to −7) as `n_steps` was refined. A correct
+effect converges; divergence signals a bug.
 
-**Root cause.** `ce_reweight_posterior` (in `app.R`) did a **stochastic SIR resampling** step when
-the reweighted effective sample size dropped below M/4. The forward planner's marginals are finite
-differences that call this function twice (at `g₁` and `g₁+dg`); when SIR fired, the two calls drew
-**different random atoms**, so the marginal was dominated by O(1) resampling noise instead of the
-O(dg) signal. Negligible at 2 rounds / coarse steps (why v5 "worked"), catastrophic at long
-horizons / fine steps. It was **grant-signal-specific** because the grant signal sharpens the
-posterior → lower ESS → SIR fires (pubs-only forward, S7, was always stable).
+**Root cause.** `ce_reweight_posterior` did a **stochastic SIR resampling** step when the reweighted
+ESS dropped below M/4. The forward planner's marginals are finite differences that call it twice (at
+`g₁` and `g₁+dg`); when SIR fired, the two calls drew **different random atoms**, so the marginal was
+dominated by O(1) resampling noise instead of the O(dg) signal — negligible at 2 rounds/coarse steps
+(why v5 "worked"), catastrophic at long horizons/fine steps. **Grant-signal-specific** (a sharp K
+posterior lowers ESS → SIR fires; pubs-only forward S7 was always stable).
 
-**Proof it was a bug, not a real CE effect.** At fine granularity the forward greedy scored
-*below the myopic schedule on its own CE objective* — impossible for a correct optimizer, since the
-myopic schedule is a feasible plan. (`diagnostics/` has this test.)
+**Proof it was a bug, not a real CE effect.** At fine granularity the forward greedy scored *below
+the myopic schedule on its own CE objective* — impossible for a correct optimizer.
 
-**Fix.** Made `ce_reweight_posterior` a **deterministic reweight** (no resampling) — atoms fixed,
-only importance weights change — so the finite-difference marginals are exact. Bumped **M 200→400**
-for effective-sample headroom at heavy tails. After the fix: PG converges, is granularity-stable,
-and T=2 is still bit-identical to the (fixed) v5.
+**Fix.** Made `ce_reweight_posterior` a **deterministic reweight** (no resampling); bumped **M 200→400**
+for ESS headroom. After: PG converges, is granularity-stable, T=2 still bit-identical to fixed v5. A
+side benefit — the fix revealed the compounding + information decomposition (§4).
 
-**What changed in `app.R`.** Only `ce_reweight_posterior` (≈ lines 278–314) — the SIR branch was
-removed and the header comment updated to explain why. This is a **shared primitive**, so it also
-affects the **live v5 Shiny app's** forward strategies (S7–S9) — see loose end (a).
-
-**A side benefit:** the fix revealed a clean decomposition. At ε→0 (no compounding) the forward
-schedule is uniform yet forward still beats myopic by ~0.2 — pure **information value**, previously
-masked by the SIR noise. So: *forward value = compounding value (∝ε) + information value*.
+**What changed:** only `ce_reweight_posterior` (now in `model.R`). It's a shared primitive, so it
+also fixes the live Shiny app's forward strategies — **redeploy the app** (loose end (a)).
 
 ## 6. Loose ends & known caveats
 
-- **(a) The `app.R` fix changes your deployed Shiny app.** The forward planner (S7–S9) now uses the
-  deterministic reweight; its outputs differ slightly (for the better) from the previously deployed
-  version. **Redeploy the Shiny app when convenient** so the interactive tool matches these results.
-- **(b) Fixed params aren't stored per data row** (only the varied axes are). Context is documented
-  in `DATA_DICTIONARY.md` §3–4; keep it handy when comparing across sweeps. (Minor; a re-run could
-  embed them but isn't worth it.)
-- **(c) The ε=0.05 row has an isolated `fwd_vs_myo_PG` spike at T=3** (+0.23, z≈23) that returns to
-  ~0 at T=4–5. Likely a mild feature of the "one-step info anticipation, CE-beyond" approximation at
-  T=3 (exactly one anticipated round + one CE round). Small; worth a look if T=3 is load-bearing.
-- **(d) Heavy-tail cells (α_K→1):** importance-sampling ESS/M < 0.1 for ~¼ of researchers at
-  α_K≈1.1 (flagged by assertion #6). M=400 mitigates; read the heaviest-tail `signal_value` /
-  `regime_map` cells with mild caution.
-- **(e) CE approximation not bounded at high T by a full stochastic-programming reference.** The
-  CE-vs-scenario gap is −0.26% at T=2 (near-exact) and post-fix results are granularity-stable, so
-  CE is well-behaved — but a full SP-lite planner comparison at T≥3 (spec §6.9 extended) was
-  **not built** (deliberately deferred). Optional rigor for the paper.
-- **(f) b-axes were capped at [0.1, 1]** per instruction: `funder_scale`, `seed_value`, `regime_map`
-  dropped the spec's b-values above 1. Note if a reviewer expects the wider range.
-- **(g) Superseded buggy data** lives in the repo at `sweep_results/legacy/T_round_buggy_M200/`
-  (M=200, pre-fix). **Not** in this package. Do not analyze it — use `data/` here (the corrected
-  run, from `sweep_results/T_run_fixed/`).
+- **(a) Redeploy the Shiny app.** `app.R` now sources `model.R` and uses the fixed planner; the live
+  shinyapps.io app still has the pre-fix planner. Bundle must include both files. *(Open — yours.)*
+- **(b) Fixed params aren't stored per data row** (only varied axes). Context in `DATA_DICTIONARY.md`
+  §3–4.
+- **(c) T=3 information peak** — now isolated/characterized via `info_value` (§4a); a real feature of
+  one-step anticipation, small; report honestly, don't over-generalize to "information grows with T".
+- **(d) Heavy-tail cells (α_K→1):** IS ESS/M < 0.1 for ~¼ of researchers at α_K≈1.1; M=400 mitigates.
+  Read the heaviest-tail `signal_value`/`regime_map`/`tail_map` cells with mild caution.
+- **(e) `horizon_long` needs `n_steps=400`** (§4a); the manifest default 50 is too coarse past T=5.
+  If you extend any horizon result beyond T=5, raise `n_steps`. *(The CE-approximation concern this
+  used to flag is now resolved — see §3.)*
+- **(f) Budget confound in `tail_map`:** the α_R axis co-varies with the budget (B ∝ E[R]); interpret
+  it as inequality *and* budget scale, not pure resource inequality.
+- **(g) b-axes capped at [0.1, 1]** in `funder_scale`/`seed_value`/`regime_map`.
+- **(h) Superseded buggy data** at `sweep_results/legacy/T_round_buggy_M200/` (pre-fix). **Do not
+  analyze it** — use `data/` here (the corrected run).
 
-## 7. Suggested next steps
+## 7. What's left (path to publication)
 
-*Analysis (the reason for this package):*
-1. Nail the **information-value vs compounding-value decomposition** — the ε→0 intercept vs the
-   ε-slope of `fwd_vs_myo_PG`; separates the two channels cleanly for the paper.
-2. **Schedule analysis from `_rawlong`** — quantify front-loading (`b_idx`, `alpha_t` profiles)
-   vs ε and T; this is the mechanism behind the headline.
-3. Firm up the **signal-value law** (`signal_value`, `regime_map`, `signal_precision`): fit
-   `signal_fwd` as a function of tail heaviness and signal precision.
+The analysis and packaging are done. Remaining items are **yours** (see root `ROADMAP.md` for the
+full plan): fill `CITATION.cff` (ORCID, co-authors); **materialize the iCloud files** before any
+upload (`docs/OSF_UPLOAD.md`); commit/push to GitHub; redeploy the Shiny app; create + register the
+OSF project; write the paper (use `RESULTS.md` + `figures/`, and the handoff prompt in
+`docs/PAPER_HANDOFF.md`).
 
-*Additional parameter sweeps* — see **`NEXT_SIMULATIONS.md`** for the full proposal (grids +
-rationale, ready to paste into `SWEEP_CONFIGS_T`). Highlights: `tail_map` (resource-side
-inequality — the one real gap), `info_value` (isolates the information channel, backs the
-compounding-vs-information decomposition), `horizon_long` (does the advantage saturate?).
-Recommended minimum ≈ 31 cells / 5–10 min.
-
-*Optional model work:*
-4. Investigate caveat (c) (the T=3 spike) if it matters.
-5. Build the SP-lite planner (caveat e) to bound the CE tax at high T rigorously.
-6. If wider budgets are wanted, re-run `funder_scale`/`regime_map` with b > 1 (caveat f).
-
-## 8. How to reproduce (from the project root, not this folder)
+## 8. How to reproduce (from the project root)
 
 ```r
-# from the project root:
-source_app <- function() { src<-readLines("app.R"); eval(parse(text=paste(
-  src[1:(grep("^shinyApp\\(",src)[1]-1L)],collapse="\n")), envir=globalenv()) }
-source_app(); source("simulate_T.R"); source("sweep.R"); source("sweep_T.R")
-main_sweep_T(seeds = 1:200, out_dir = "sweep_results/T_run_fixed")   # ~30 min, 7 cores
+source("model.R"); source("sweep.R"); source("sweep_T.R")
+main_sweep_T(seeds = 1:200, out_dir = "sweep_results/T_run_fixed")   # ~30–35 min, ~8 cores
 ```
-`validation/launch_manifest_fixed.R` is the exact driver used for the production run.
+Or `Rscript reproduce.R` for the full end-to-end regeneration + validation. Environment/versions in
+`docs/ENVIRONMENT.md`. `horizon_long` self-pins `n_steps=400`; all other sweeps use the base
+`n_steps=50`.
