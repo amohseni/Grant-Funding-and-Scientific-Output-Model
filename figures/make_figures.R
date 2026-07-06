@@ -7,8 +7,12 @@
 setwd("/Users/amohseni/Library/Mobile Documents/com~apple~CloudDocs/Documents/GitHub/Grant-Funding-and-Scientific-Output-Model")
 suppressPackageStartupMessages({library(ggplot2); library(dplyr); library(tidyr); library(scales)})
 
-DATA <- "T_round_extension/data"
-OUT  <- "figures"; dir.create(OUT, showWarnings = FALSE)
+# DATA/OUT default to the canonical dirs but can be overridden via env vars, so
+# a candidate run (e.g. sweep_results/T_run_smooth) can be previewed into a
+# separate figures dir WITHOUT touching canonical data or the published figures:
+#   FIG_DATA=sweep_results/T_run_smooth FIG_OUT=figures/smooth_preview Rscript figures/make_figures.R
+DATA <- Sys.getenv("FIG_DATA", "T_round_extension/data")
+OUT  <- Sys.getenv("FIG_OUT", "figures"); dir.create(OUT, showWarnings = FALSE, recursive = TRUE)
 G    <- function(nm) as.data.frame(readRDS(file.path(DATA, paste0(nm, "_summary.rds"))))
 have <- function(nm) file.exists(file.path(DATA, paste0(nm, "_summary.rds")))
 
