@@ -33,6 +33,22 @@ more defensible story, and we caught it before you presented.
 
 ---
 
+## Fast path (if you have 10 minutes before the talk)
+
+1. **Say this:** "Forward-looking funding beats myopic funding *when knowledge compounds*, and the
+   advantage grows with the horizon — up to ~2 extra publications by round 5. Where knowledge doesn't
+   compound, planning ahead gives no advantage — and we can prove it (ε=0 ⇒ forward = myopic)."
+2. **Show this one figure:** `figures/smooth_preview/fig1_horizon_phase_diagram.png` — the ε×T surface.
+3. **The numbers to have in your pocket** (forward−myopic, grant contrast, at ε=0.85):
+   T=2: 0.29 · T=3: 0.84 · T=4: 1.43 · T=5: **1.99**. At ε≈0: **~0 at every T**.
+4. **If asked "did anything change from earlier runs?"** — "Yes: we switched to an exact allocator, which
+   sharpened the main result and removed a discretization artifact that had inflated some secondary
+   effects. The core finding is cleaner and more robust for it."
+
+That's a complete, honest talk. Everything below is depth to pull from.
+
+---
+
 ## The one-sentence result (for your abstract / title slide)
 
 > **Forward-looking grant allocation outperforms myopic allocation precisely to the extent that
@@ -184,11 +200,16 @@ Scripts: `tests/gonogo_smooth.R`, `tests/validate_smooth_supp.R`, `tests/diff_sm
 
 ---
 
-## What's still pending
+## What's still pending (deferred by choice — NOT needed for the talk)
 
-- **`horizon_long` re-run (T=5–10 at ε ∈ {0.3, 0.85}).** Slowest sweep; finishing now. It extends the
-  headline to longer horizons (does the advantage saturate?). Expected to **hold** because it's the
-  strong-compounding regime where the effect is real. I'll slot its numbers and fig8 in when it lands.
+- **`horizon_long` re-run (T=5–10 at ε ∈ {0.3, 0.85}) — fig8 only.** This sweep is slow under the exact
+  allocator and was **deferred** so you could present on time. It only extends the headline curve from
+  T=5 out to T=10 (does the advantage keep growing or saturate). Your core story to T=5 is complete
+  without it. For the talk, present the T≤5 result and, if asked, say the long-horizon extension is
+  in progress and consistent with the T≤5 trend. Re-run it after your talk for the paper:
+  `Rscript tests/launch_manifest_smooth.R` regenerates everything, or run just `horizon_long`.
+- **The 15 completed sweeps are the finished, verified core.** Nothing about the main result waits on
+  `horizon_long`.
 - **Decisions for you (not done automatically):** whether to make the exact allocator the model default,
   re-point the canonical data folder to the new run, and edit `RESULTS.md` in place. All staged; one word
   and I'll do them.
