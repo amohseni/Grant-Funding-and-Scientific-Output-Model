@@ -1059,6 +1059,159 @@ plan_forward_ce <- function(post0_list, B_rem, delta, gamma, epsilon, H,
 }
 
 # ============================================================
+# SMOOTH allocator (continuous KKT optimum; removes the greedy step delta)
+# ============================================================
+# Approach A (see docs/SMOOTH_ALLOCATOR_HANDOFF.md): replaces the discrete greedy
+# fills with the exact continuous optima of the SAME objectives.
+#   waterfill_round_t   <-> greedy_round_t   (myopic single round, S4/S5/S6)
+#   plan_forward_smooth <-> plan_forward_ce  (forward horizon, S7/S8/S9)
+# Both are validated in tests/waterfill_round_t.R and tests/plan_forward_smooth.R.
+# Selected via the `allocator = "smooth"` switch; "greedy" keeps the original path.
+
+# --- Single-round water-filling (exact KKT optimum of the round-t objective) ---
+# Every FUNDED researcher shares a common marginal (water level) nu:
+#   m_i(g_i) = sum_m w_im * gamma * K_im^2 / (K_im + R_im + g_i)^2 = nu
+# solved by an outer safeguarded-Newton on nu s.t. sum_i g_i(nu) = budget, with a
+# warm-started inner Newton per researcher. Mixture-aware over the M posterior
+# atoms (NOT lambda at the posterior mean). init_g = seed floor (S6).
+waterfill_round_t <- function(posts, budget, gamma, epsilon, g_hist = list(),
+                              init_g = NULL, tol = 1e-9) {
+  n <- length(posts); M <- length(posts[[1]]$w)
+  g0 <- if (is.null(init_g)) rep(0, n) else init_g
+  if (budget <= tol) return(g0)
+  Amat <- matrix(0, n, M); Rmat <- matrix(0, n, M); Wmat <- matrix(0, n, M)
+  for (i in seq_len(n)) {
+    K <- posts[[i]]$K0
+    for (gh in g_hist) K <- update_knowledge(K, posts[[i]]$R0 + gh[i], epsilon)
+    Amat[i, ] <- K; Rmat[i, ] <- posts[[i]]$R0; Wmat[i, ] <- posts[[i]]$w
+  }
+  base <- Amat + Rmat + g0
+  num  <- gamma * Wmat * Amat^2
+  m0   <- rowSums(num / base^2)
+  gcur <- rep(0, n)
+  eval_nu <- function(nu) {
+    active <- m0 > nu; g <- gcur; g[!active] <- 0
+    for (k in 1:6) {
+      d <- base + g; m <- rowSums(num / d^2); mp <- rowSums(-2 * num / d^3)
+      step <- (m - nu) / mp; step[!active] <- 0
+      g <- pmax(0, g - step)
+    }
+    g[!active] <- 0; gcur <<- g
+    d <- base + g; mp <- rowSums(-2 * num / d^3)
+    list(g = g, S = sum(g), Sp = sum(ifelse(active, 1 / mp, 0)))
+  }
+  lo <- max(m0) * 1e-13; hi <- max(m0)
+  nu <- hi / 2
+  for (it in 1:40) {
+    e <- eval_nu(nu); diff <- e$S - budget
+    if (abs(diff) < tol * budget) break
+    if (diff > 0) lo <- nu else hi <- nu
+    nu_n <- nu - diff / e$Sp
+    nu <- if (is.finite(nu_n) && nu_n > lo && nu_n < hi) nu_n else (lo + hi) / 2
+  }
+  g0 + eval_nu(nu)$g
+}
+
+# --- Euclidean projection onto {x >= L, sum x = z} (simplex w/ lower bounds) ---
+proj_simplex_lb <- function(v, z, L) {
+  d  <- v - L
+  zz <- z - sum(L)
+  if (zz <= 0) return(L)
+  u   <- sort(d, decreasing = TRUE)
+  css <- cumsum(u)
+  j   <- seq_along(u)
+  rho <- max(which(u - (css - zz) / j > 0))
+  theta <- (css[rho] - zz) / rho
+  L + pmax(d - theta, 0)
+}
+
+# --- Gradient of one researcher's H-round value w.r.t. its plan ---
+# Central differences of fwd_researcher_value (the faithful CE objective). Slot
+# s=1 also moves bar1 (the info term), so it is re-reweighted at g1 +/- dg; slots
+# s>=2 keep bar1 fixed. Forward difference for a slot pinned at its lower bound.
+researcher_grad <- function(post0, g_hist_i, g_path, dg, gamma, epsilon,
+                            lo = rep(0, length(g_path))) {
+  H <- length(g_path); grad <- numeric(H)
+  bar1_fixed <- ce_reweight_posterior(post0, g_path[1], gamma)
+  for (s in seq_len(H)) {
+    central <- (g_path[s] - dg) >= lo[s]
+    gp <- g_path; gp[s] <- gp[s] + dg
+    gm <- g_path; if (central) gm[s] <- gm[s] - dg
+    if (s == 1L) {
+      vp <- fwd_researcher_value(post0, ce_reweight_posterior(post0, gp[1], gamma),
+                                 g_hist_i, gp, gamma, epsilon)
+      vm <- fwd_researcher_value(post0, ce_reweight_posterior(post0, gm[1], gamma),
+                                 g_hist_i, gm, gamma, epsilon)
+    } else {
+      vp <- fwd_researcher_value(post0, bar1_fixed, g_hist_i, gp, gamma, epsilon)
+      vm <- fwd_researcher_value(post0, bar1_fixed, g_hist_i, gm, gamma, epsilon)
+    }
+    grad[s] <- (vp - vm) / (if (central) 2 * dg else dg)
+  }
+  grad
+}
+
+# --- Continuous forward planner (projected-gradient ascent on the budget simplex) ---
+# Signature mirrors plan_forward_ce (minus `delta`). Returns an n x H plan; the
+# caller executes column 1 only. H == 1 delegates to the single-round water-fill.
+plan_forward_smooth <- function(post0_list, B_rem, gamma, epsilon, H,
+                                g_hist = list(), seed_round1 = NULL,
+                                dg = 1e-4, max_iter = 400, tol = 1e-10) {
+  n   <- length(post0_list)
+  ghi <- function(i) vapply(g_hist, function(gh) gh[i], numeric(1))
+
+  if (H == 1L) {
+    seed_sum <- if (is.null(seed_round1)) 0 else sum(seed_round1)
+    g <- waterfill_round_t(post0_list, B_rem - seed_sum, gamma, epsilon,
+                           g_hist = g_hist, init_g = seed_round1)
+    return(matrix(g, nrow = n, ncol = 1))
+  }
+
+  L <- matrix(0, n, H)
+  if (!is.null(seed_round1)) L[, 1] <- seed_round1
+  if (B_rem <= sum(L) + tol) return(L)
+
+  recompute_bar1 <- function(plan)
+    lapply(seq_len(n), function(i) ce_reweight_posterior(post0_list[[i]], plan[i, 1], gamma))
+  value <- function(plan, bar1) {
+    v <- 0
+    for (i in seq_len(n))
+      v <- v + fwd_researcher_value(post0_list[[i]], bar1[[i]], ghi(i), plan[i, ], gamma, epsilon)
+    v
+  }
+  grad <- function(plan) {
+    G <- matrix(0, n, H)
+    for (i in seq_len(n))
+      G[i, ] <- researcher_grad(post0_list[[i]], ghi(i), plan[i, ], dg, gamma, epsilon,
+                                lo = L[i, ])
+    G
+  }
+
+  plan <- L + (B_rem - sum(L)) / (n * H)
+  bar1 <- recompute_bar1(plan); V <- value(plan, bar1)
+
+  eta <- NA_real_; prevV <- V
+  for (iter in seq_len(max_iter)) {
+    G <- grad(plan)
+    if (is.na(eta)) eta <- 0.5 * (B_rem / (n * H)) / max(abs(G), 1e-12)
+    accepted <- FALSE
+    for (bt in 1:50) {
+      cand <- matrix(proj_simplex_lb(as.vector(plan + eta * G), B_rem, as.vector(L)), n, H)
+      bar1c <- recompute_bar1(cand); Vc <- value(cand, bar1c)
+      if (Vc > V + 1e-13 * abs(V)) {
+        plan <- cand; bar1 <- bar1c; V <- Vc; accepted <- TRUE; eta <- eta * 1.3
+        break
+      }
+      eta <- eta * 0.5
+    }
+    if (!accepted) break
+    if (abs(V - prevV) < tol * max(1, abs(V))) break
+    prevV <- V
+  }
+  plan
+}
+
+# ============================================================
 # Per-strategy allocation for the CURRENT round t
 # ============================================================
 # Returns the executed grant vector g_t (n) for round t under strategy S.
@@ -1066,9 +1219,23 @@ plan_forward_ce <- function(post0_list, B_rem, delta, gamma, epsilon, H,
 # Forward strategies ignore `tranche` and plan the full remaining budget.
 allocate_round <- function(
     S, t, T_rounds, posts, tranche, B_total, delta, gamma, epsilon,
-    x_seed, p_prev, B_rem, g_hist
+    x_seed, p_prev, B_rem, g_hist, allocator = "greedy"
 ) {
   n <- length(p_prev)                              # posts is NULL for S1/S2/S3
+  smooth <- identical(allocator, "smooth")
+  # Myopic single-round solve: exact water-fill (smooth) or greedy delta-fill.
+  myopic <- function(budget, init_g = NULL)
+    if (smooth) waterfill_round_t(posts, budget, gamma, epsilon,
+                                  g_hist = g_hist, init_g = init_g)
+    else        greedy_round_t(posts, budget, delta, gamma, epsilon,
+                               g_hist = g_hist, init_g = init_g)
+  # Forward horizon plan: projected-gradient (smooth) or greedy delta-fill.
+  forward <- function(H, seed_round1 = NULL)
+    if (smooth) plan_forward_smooth(posts, B_rem, gamma, epsilon, H,
+                                    g_hist = g_hist, seed_round1 = seed_round1)
+    else        plan_forward_ce(posts, B_rem, delta, gamma, epsilon, H,
+                                g_hist = g_hist, seed_round1 = seed_round1)
+
   if (S == 1L) {                                   # No funding
     return(rep(0, n))
   } else if (S == 2L) {                            # Uniform every round
@@ -1076,24 +1243,20 @@ allocate_round <- function(
   } else if (S == 3L) {                            # Naive ∝ observed pubs
     return(allocate_naive(p_prev, tranche))
   } else if (S %in% c(4L, 5L)) {                   # Myopic (pubs [+ grant])
-    return(greedy_round_t(posts, tranche, delta, gamma, epsilon, g_hist = g_hist))
+    return(myopic(tranche))
   } else if (S == 6L) {                            # Myopic + round-1 seed floor
     if (t == 1L) {
       seed <- rep(x_seed * tranche / n, n)
-      return(greedy_round_t(posts, (1 - x_seed) * tranche, delta, gamma, epsilon,
-                            g_hist = g_hist, init_g = seed))
+      return(myopic((1 - x_seed) * tranche, init_g = seed))
     }
-    return(greedy_round_t(posts, tranche, delta, gamma, epsilon, g_hist = g_hist))
+    return(myopic(tranche))
   } else if (S %in% c(7L, 8L)) {                   # Forward (pubs [+ grant])
     H <- T_rounds - t + 1L
-    plan <- plan_forward_ce(posts, B_rem, delta, gamma, epsilon, H, g_hist = g_hist)
-    return(plan[, 1])
+    return(forward(H)[, 1])
   } else if (S == 9L) {                            # Forward + round-1 seed floor
     H <- T_rounds - t + 1L
     seed <- if (t == 1L) rep(x_seed * tranche / n, n) else NULL
-    plan <- plan_forward_ce(posts, B_rem, delta, gamma, epsilon, H,
-                            g_hist = g_hist, seed_round1 = seed)
-    return(plan[, 1])
+    return(forward(H, seed_round1 = seed)[, 1])
   }
   stop("unknown strategy ", S)
 }
@@ -1113,7 +1276,7 @@ simulate_trial_T <- function(
     S, T_rounds, K_true, R0, p_init, sigma_r, sigma_k,
     B_total, delta, gamma, epsilon, x_seed,
     M, k_min, k_shape, r_min, r_shape, tau_r, tau_k,
-    use_resource_signal, detail = FALSE
+    use_resource_signal, detail = FALSE, allocator = "greedy"
 ) {
   n       <- length(K_true)
   tranche <- B_total / T_rounds
@@ -1145,7 +1308,8 @@ simulate_trial_T <- function(
     p_prev <- if (t == 1L) p_init else p_hist[[t - 1L]]
 
     g_t <- allocate_round(S, t, T_rounds, posts, tranche, B_total, delta,
-                          gamma, epsilon, x_seed, p_prev, B_rem, g_hist)
+                          gamma, epsilon, x_seed, p_prev, B_rem, g_hist,
+                          allocator = allocator)
 
     R_t   <- R0 + g_t
     lam_t <- lambda_rate(K_cur, R_t, gamma)          # TRUE expected output
@@ -1209,7 +1373,7 @@ run_simulation_T <- function(
     n_steps = 50, tau_r = 1.0, tau_k = 1.0,
     use_resource_signal = TRUE, n_pre_rounds = 0,
     x_seed = 0.25, M = 200, strategies = 1:9, verbose = FALSE,
-    detail = FALSE
+    detail = FALSE, allocator = "greedy"
 ) {
   set.seed(seed)
 
@@ -1248,7 +1412,7 @@ run_simulation_T <- function(
       S, T_rounds, K_current, R0_current, p_cumul, sigma_r, sigma_k,
       B_total, delta, gamma, epsilon, x_seed,
       M, k_min, k_shape, r_min, r_shape, tau_r, tau_k, use_resource_signal,
-      detail = detail
+      detail = detail, allocator = allocator
     )
   }
 
@@ -1258,7 +1422,8 @@ run_simulation_T <- function(
                   tau_r = tau_r, k_shape = k_shape, r_shape = r_shape,
                   k_min = k_min, r_min = r_min, gamma = gamma,
                   rho_kr = rho_kr, x_seed = x_seed, M = M, n_steps = n_steps,
-                  n_pre_rounds = n_pre_rounds, use_resource_signal = use_resource_signal),
+                  n_pre_rounds = n_pre_rounds, use_resource_signal = use_resource_signal,
+                  allocator = allocator),
     rho_s = rho_s,
     strategies = results
   )
