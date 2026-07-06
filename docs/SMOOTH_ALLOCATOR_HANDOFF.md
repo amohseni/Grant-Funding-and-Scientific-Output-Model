@@ -13,10 +13,11 @@ isolated **spike in the forward-vs-myopic contrast at b=0.3, T=2, ε=0.1** (`fwd
 localized to `fwd_vs_myo_P` = S7−S4). We **diagnosed it as a greedy-discretization *artifact*, not a
 bug** (proof below), and decided (**"Approach A"**) to **replace the discrete greedy allocator with a
 smooth continuous optimizer** — water-filling for the single-round problem, projected-gradient for the
-forward planner — which removes the discretization step δ entirely and is more faithful. **Phase 1
-(single-round water-filling) is built and validated. Phase 2 (the forward optimizer) is NOT started —
-that is the crux and the next task.** Nothing in the production model (`model.R`), the manifest, or the
-results has been changed yet; the work so far is a validated prototype + diagnostics sitting alongside.
+forward planner — which removes the discretization step δ entirely and is more faithful. **Phases 1 and
+2 are both built, validated, and integrated into `model.R` behind an `allocator="smooth"` switch. The
+decisive go/no-go test PASSED (GO).** The `"greedy"` default remains bit-identical, so nothing published
+has changed yet. **Next task: flip the default to `"smooth"` and re-run the 16-sweep manifest + figures +
+prose (§8)** — the "re-run everything" the user signed up for.
 
 ---
 
@@ -69,14 +70,21 @@ resonance, before touching the forward planner.**
 |---|---|---|
 | Part 1 — diagnose the resonance | ✅ **Done**, artifact confirmed | `tests/diag_b03_resonance.R` + `.log` |
 | **Phase 1 — single-round water-filling** | ✅ **Built & validated** (exact, fast) | `tests/waterfill_round_t.R` |
-| **Phase 2 — forward continuous optimizer** | ⏳ **NOT STARTED** — the crux; next task | — (plan in §6) |
-| Decisive go/no-go test (ε=0 ⇒ S7−S4→0 at low `n_steps`) | ⏳ Not run (needs Phase 2) | — |
-| Integrate into `model.R` (myopic + forward paths) | ⏳ Not started | §7 |
-| Re-run 16 sweeps · regen figures · update docs | ⏳ Not started | §8 |
+| **Phase 2 — forward continuous optimizer** | ✅ **Built & validated** (dominates greedy, KKT ✓) | `tests/plan_forward_smooth.R` |
+| Decisive go/no-go test (ε=0 ⇒ S7−S4→0 at low `n_steps`) | ✅ **PASS → GO** (100 seeds) | `tests/gonogo_smooth.R` + `.log` |
+| Integrate into `model.R` (myopic + forward paths) | ✅ **Done** — behind `allocator="smooth"` switch | §7 (model.R:1061 block) |
+| Re-run 16 sweeps · regen figures · update docs | ⏳ **NEXT** — flip default + re-run | §8 |
 
-**Reversibility: total.** `model.R`, `sweep_results/T_run_fixed/`, `T_round_extension/data/`, figures,
-and `RESULTS.md` are all **untouched**. The only new files are the prototype + diagnostics under
-`tests/` and this doc. If we abandon A for the fallback, delete nothing critical.
+**Go/no-go result (2026-07-05, `tests/gonogo_smooth.log`):** A) at ε=0, `max|smooth S7−S4| = 0.0056`
+(all |z|≤1.4 ≈ 0) vs the greedy-ns50 comb (+0.096/+0.121/+0.142 at b=0.24/0.30/0.32). B) at ε=0.1,
+`max|smooth − greedy800| = 0.0127` vs greedy50-vs-greedy800 = 0.1507 (12× closer). **Approach A works.**
+At ε=0 greedy-ns800 still shows a faint positive lean at the resonance b's while smooth is dead-flat — the
+exact optimizer is if anything *more* correct than fine greedy.
+
+**Reversibility: still total.** The `allocator="greedy"` default is **bit-identical** to before
+(T2 anchor PASS, max |Δ| = 4e-14); `sweep_results/T_run_fixed/`, `T_round_extension/data/`, figures, and
+`RESULTS.md` are all **untouched**. To ship Approach A, flip the default to `"smooth"` and run §8; to
+abandon it, delete the new `tests/` files and the model.R smooth block.
 
 ---
 
