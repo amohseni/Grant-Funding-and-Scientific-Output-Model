@@ -126,8 +126,9 @@ using `fwd_marginal` as the gradient and recomputing `bar1 = ce_reweight_posteri
 - **Why it should work at ε=0** (the target): no compounding ⇒ rounds couple only through the budget;
   the water-fill value per round is concave in that round's budget, so the optimal split is uniform
   (Jensen) — *identical to the myopic equal-tranche + water-fill*. Hence S7−S4 → 0 **without** large
-  `n_steps`. With ε>0, compounding makes early rounds worth more ⇒ the optimizer front-loads (the
-  `b_idx > 0.5` story in `RESULTS.md`), reproducing the real forward advantage exactly.
+  `n_steps`. With ε>0, compounding makes LATER rounds more productive (resources aren't wasted once K has
+  compounded up) ⇒ the optimizer **back-loads** (`b_idx > 0.5` = spending mass on later rounds — the
+  b_idx story in `RESULTS.md`), reproducing the real forward advantage exactly.
 - **Risk:** the `ce_reweight` information term may make the objective **non-concave**. If projected
   gradient stalls or is path-dependent, fall back to **Frank-Wolfe** (linear oracle = all remaining
   budget to the single top-marginal slot; no projection needed) or multi-start. Flagged in the original

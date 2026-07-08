@@ -117,11 +117,17 @@ Narrative beats:
 
 1. **Setup.** A funder allocates a fixed budget over T rounds. Myopic = maximize this round. Forward =
    plan the whole horizon, anticipating how today's funding raises tomorrow's productivity (compounding).
-2. **Core finding.** When knowledge compounds, forward planning front-loads to let the gains compound
-   longer, and this beats myopic by a margin that **grows with both the compounding rate ε and the
-   horizon T** — up to ~2 extra publications at strong ε and T=5. (Fig 1, the clean ε×T surface.)
-3. **Mechanism.** The advantage is exactly the value of anticipated compounding: at ε=0 it is provably
-   zero (forward = myopic), and it rises monotonically in ε.
+2. **Core finding.** When knowledge compounds, forward planning **back-loads grants — lean early, heavy
+   late, growing resources in step with accumulated knowledge** — and this beats myopic by a margin that
+   **grows with both the compounding rate ε and the horizon T** (up to ~2 extra publications at strong ε,
+   T=5; +3.4 by T=10). (Fig 1, the clean ε×T surface.)
+3. **Mechanism (why back-load).** Output `λ = γKR/(K+R)` **saturates in R** — a big grant is wasted on a
+   low-knowledge researcher (when K is small, λ≈γK regardless of R). Because knowledge compounds, the
+   forward funder holds back early and concentrates resources **late**, once K has grown enough to convert
+   resources into output. The advantage is the value of this timing: at ε=0 there is nothing to anticipate,
+   so it is provably zero (forward = myopic), and it rises monotonically in ε. The forward schedule's
+   center-of-mass `b_idx_S8` is **>0.5 (back-loaded) in every cell** and tracks ε and T (correlation 0.97
+   with the advantage). Concretely at T=10, ε=0.85: round 1 gets 2.4% of the budget, round 10 gets 26.4%.
 4. **Boundary / honesty.** Where compounding is weak or absent, forward planning gives essentially no
    advantage. (This is where careful, exact optimization matters — coarse optimization can manufacture a
    spurious advantage; we show it disappears under exact optimization.)

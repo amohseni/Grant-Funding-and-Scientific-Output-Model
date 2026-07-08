@@ -27,7 +27,10 @@ low-variance.
 - **Positive in every cell**; the advantage **grows with knowledge-growth ε** (rows increase
   monotonically), and at high ε it also grows with the horizon T.
 - **Mechanism:** forward's schedule center-of-mass `b_idx_S8` rises with ε (0.51 at ε=0.05 → 0.62
-  at ε=0.85) — it front-loads grants to compound knowledge, and the payoff scales with ε.
+  at ε=0.85; **b_idx > 0.5 means spending mass shifts to LATER rounds**) — it **back-loads** grants,
+  concentrating resources late once knowledge has compounded up (λ=γKR/(K+R) saturates in R, so early
+  resources are wasted on low-K researchers). The payoff scales with ε. [Corrected 2026-07-06: earlier
+  drafts said "front-loads" — the schedule is back-loaded; verified from the raw per-round shares.]
 - The T=3 column is elevated at *all* ε (a small extra bump even at ε≈0); see §7 — this is the
   information channel, isolated separately.
 
@@ -116,7 +119,7 @@ below and `horizon_long`):
 - **No finite-n artifact:** PG ≈ 0 at T=2 across n = 20…200 (`pop_size`); results aren't small-n.
 - **Budget scale doesn't drive the forward gain:** PG ≈ 0 at T=2 across b (`funder_scale`) —
   *horizon*, not budget, is what makes forward pay.
-- **Front-loading is a compounding response:** `b_idx_S8` tracks ε, ~independent of τ_K
+- **Back-loading is a compounding response:** `b_idx_S8` (>0.5, spending shifted to later rounds) tracks ε, ~independent of τ_K
   (`alpha_regime`).
 - **Pre-round data:** `signal_fwd` rises with baseline observations (`pre_rounds`), but this is
   partly a scale artifact (naive pre-round funding inflates K, R, λ); interpret in relative terms.
