@@ -29,8 +29,9 @@ allocates a fixed budget under one of **9 strategies** (no-funding → naive →
 > `simulate_T.R` has been absorbed into `model.R`.
 
 **Headline result (from the corrected data):** forward planning beats myopic across the board, and
-by more as knowledge compounds faster (higher ε) and the horizon lengthens — via *front-loading*
-grants to compound knowledge. The value of the peer-review signal is set by *inequality × precision*.
+by more as knowledge compounds faster (higher ε) and the horizon lengthens — via *back-loading*
+grants (lean early, heavy late) so resources arrive once knowledge has compounded up. The value of the
+peer-review signal is set by *inequality × precision*.
 Full findings: [`T_round_extension/README.md`](T_round_extension/README.md).
 
 ---
