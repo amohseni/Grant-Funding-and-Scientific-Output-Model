@@ -1373,12 +1373,21 @@ run_simulation_T <- function(
     n_steps = 50, tau_r = 1.0, tau_k = 1.0,
     use_resource_signal = TRUE, n_pre_rounds = 0,
     x_seed = 0.25, M = 200, strategies = 1:9, verbose = FALSE,
-    detail = FALSE, allocator = "greedy"
+    detail = FALSE, allocator = "greedy", budget_ref = "R"
 ) {
   set.seed(seed)
 
-  E_R     <- r_min * r_shape / (r_shape - 1)     # Pareto mean (mean-E[R] norm.)
-  B       <- b * n * E_R
+  # Budget reference scale. Default "R" is the historical mean-E[R] normalization
+  # (B = b·n·E[R]), which ties the funder's purse to the community's own baseline
+  # resources. "K" references the talent mean instead (B = b·n·E[K]), DECOUPLING
+  # the budget from r_min so baseline resources can be driven toward zero while the
+  # funder keeps a fixed purse. At base params (r_min=k_min=1, r_shape=k_shape=2)
+  # E[R]=E[K]=2, so "K" is bit-identical to "R"; they differ only when r_min varies.
+  E_ref   <- switch(budget_ref,
+                    R = r_min * r_shape / (r_shape - 1),   # Pareto mean of R (historical)
+                    K = k_min * k_shape / (k_shape - 1),   # Pareto mean of K (r_min-independent)
+                    stop("budget_ref must be \"R\" or \"K\", got: ", budget_ref))
+  B       <- b * n * E_ref
   B_total <- 2 * B                               # total budget across T rounds
   delta   <- B / n_steps
 

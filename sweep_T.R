@@ -217,6 +217,102 @@ SWEEP_CONFIGS_T <- list(
                         color_var = "epsilon", title = "Forward advantage at long horizons",
                         y_label = "S8 - S5"),
     secondary_plot = NULL
+  ),
+
+  # ---------- Tier 1: the resource-poverty question (front-load reversal) ----------
+  # Does a resource-poor community make the forward planner FRONT-load (invest early
+  # to bootstrap growth + learning), reversing the paper's back-loading? Requires the
+  # DECOUPLED budget (budget_ref="K"): under the default coupling B=b·n·E[R], driving
+  # r_min->0 also zeroes the budget (a trivial null). With budget_ref="K" the funder
+  # keeps a fixed purse (B=b·n·E[K], r_min-independent) while baseline resources vary.
+  # Axes: baseline resources r_min (poor -> rich) x compounding rate epsilon (info-
+  # dominated -> knowledge-dominated). Focal metric b_idx_S8 (schedule center-of-mass;
+  # <0.5 front-load, >0.5 back-load) and its 0.5 contour = the reversal boundary.
+  # T=5 fixed (back-loading is clearer at longer T); base tau_k=1, k_shape=2.
+  resource_regime = list(
+    name = "resource_regime", tier = 1,
+    description = "Baseline resources r_min x compounding epsilon at fixed decoupled purse (budget_ref=K), T=5, smooth. Maps the front-load<->back-load reversal (b_idx_S8=0.5 contour).",
+    grid_fn = function() cbind(
+      expand.grid(r_min   = c(0.001, 0.03, 0.3, 1, 3),
+                  epsilon = c(1e-4, 0.01, 0.03, 0.1, 0.3, 0.85)),
+      T_rounds = 5, budget_ref = "K", n_steps = 50),
+    varied_params = c("r_min", "epsilon"),
+    primary_plot = list(type = "heatmap", x_var = "epsilon", y_var = "r_min",
+                        fill_var = "b_idx_S8_mean", text_var = "b_idx_S8_mean",
+                        title = "Forward schedule b_idx (S8): <0.5 front-load, >0.5 back-load",
+                        fill_label = "b_idx"),
+    secondary_plot = list(type = "line", x_var = "epsilon", y_var = "b_idx_S8_mean",
+                          color_var = "r_min", title = "Schedule center-of-mass vs compounding, by baseline resources",
+                          y_label = "b_idx (S8)")
+  ),
+
+  # ---------- Tier 1: the pure-exploration corner (paid information isolated) ----------
+  # The resource_regime sweep held tau_k=1 — a readable FREE peer-review signal, which
+  # violates the "you learn nothing without funding" premise. Here the free signal is
+  # switched off (tau_k=100 ≈ uninformative vs K~Pareto(1.3)), the community is poor
+  # (r_min=0.001 -> initial pubs ~0, uninformative), and the talent tail is heavy
+  # (k_shape=1.3: identifying winners is most of the problem). All information must then
+  # be PAID FOR via funded output (force D pure). Axes: tau_k (free-info kill switch) x
+  # epsilon (growth force off->on). Watch b_idx_S8 (<0.5 = money front-loaded),
+  # alpha_S8 (round-1 share), and the full alpha_t schedule in rawlong (distinguishes
+  # true front-loading from "seed-and-harvest": positive early seed, mass late).
+  exploration_corner = list(
+    name = "exploration_corner", tier = 1,
+    description = "Paid-information corner: free signal off (tau_k up to 100), poor community (r_min=0.001), heavy tail (k_shape=1.3), T=6, decoupled purse. Does the planner front-load money to buy learning?",
+    grid_fn = function() cbind(
+      expand.grid(tau_k   = c(1, 3, 10, 100),
+                  epsilon = c(1e-4, 0.03, 0.1, 0.3)),
+      r_min = 0.001, k_shape = 1.3, T_rounds = 6, budget_ref = "K"),
+    varied_params = c("tau_k", "epsilon"),
+    primary_plot = list(type = "heatmap", x_var = "epsilon", y_var = "tau_k",
+                        fill_var = "b_idx_S8_mean", text_var = "b_idx_S8_mean",
+                        title = "Schedule b_idx (S8) in the paid-info corner (r_min=0.001)",
+                        fill_label = "b_idx"),
+    secondary_plot = list(type = "line", x_var = "tau_k", y_var = "fwd_vs_myo_PG_mean",
+                          color_var = "epsilon", title = "Planning value as the free signal degrades",
+                          y_label = "S8 - S5")
+  ),
+
+  # Companion: fix eps~0 (pure information) and vary poverty x signal. Does the
+  # exploration tilt require poverty, or only signal absence?
+  exploration_poverty = list(
+    name = "exploration_poverty", tier = 1,
+    description = "Pure-info schedule tilt across baseline resources r_min x free-signal noise tau_k, at eps~0, T=6, heavy tail, decoupled purse.",
+    grid_fn = function() cbind(
+      expand.grid(r_min = c(0.001, 0.03, 0.3, 1),
+                  tau_k = c(1, 100)),
+      epsilon = 1e-4, k_shape = 1.3, T_rounds = 6, budget_ref = "K"),
+    varied_params = c("r_min", "tau_k"),
+    primary_plot = list(type = "line", x_var = "r_min", y_var = "b_idx_S8_mean",
+                        color_var = "tau_k", title = "Pure-info schedule tilt vs baseline resources",
+                        y_label = "b_idx (S8)"),
+    secondary_plot = list(type = "line", x_var = "r_min", y_var = "fwd_vs_myo_PG_mean",
+                          color_var = "tau_k", title = "Planning value vs baseline resources (eps~0)",
+                          y_label = "S8 - S5")
+  ),
+
+  # Depth: paid information requires grants deep enough that output is TALENT-limited.
+  # With lambda = K·g/(K+g), a small grant (g << K) pins output to the grant size
+  # (lambda ~ g), so funded output reveals almost nothing about K — probe showed the
+  # planner ties uniform funding in the poverty/no-signal corner at b=0.5 (per-round
+  # per-capita grant ~0.33 << K~Pareto(1.3, min 1)). Talent-revealing output needs
+  # g >~ K, i.e. per-capita depth 2bE[K]/T >~ E[K] -> b >~ T/2. Axis: budget scale b
+  # from thin to deep x free-signal on/off, in the poverty corner at eps~0 (pure info).
+  # Watch: out_S8 - out_S2 (does paid info beat uniform at depth?), alpha_S8, b_idx_S8.
+  exploration_depth = list(
+    name = "exploration_depth", tier = 1,
+    description = "Funding depth b x free-signal tau_k in the poverty corner (r_min=0.001, eps~0, heavy tail, T=6): does deep funding make paid information work, and which way does it tilt the schedule?",
+    grid_fn = function() cbind(
+      expand.grid(b     = c(0.5, 1.5, 3, 6),
+                  tau_k = c(1, 100)),
+      epsilon = 1e-4, r_min = 0.001, k_shape = 1.3, T_rounds = 6, budget_ref = "K"),
+    varied_params = c("b", "tau_k"),
+    primary_plot = list(type = "line", x_var = "b", y_var = "b_idx_S8_mean",
+                        color_var = "tau_k", title = "Schedule tilt vs funding depth (poverty, eps~0)",
+                        y_label = "b_idx (S8)"),
+    secondary_plot = list(type = "line", x_var = "b", y_var = "fwd_vs_myo_PG_mean",
+                          color_var = "tau_k", title = "Planning value vs funding depth",
+                          y_label = "S8 - S5")
   )
 )
 

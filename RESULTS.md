@@ -33,6 +33,22 @@ low-variance.
   drafts said "front-loads" — the schedule is back-loaded; verified from the raw per-round shares.]
 - The T=3 column is elevated at *all* ε (a small extra bump even at ε≈0); see §7 — this is the
   information channel, isolated separately.
+- **Back-loading is over-determined, and resource poverty does NOT reverse it** (`resource_regime`
+  sweep, decoupled purse `budget_ref="K"`; see [`T_round_extension/RESOURCE_REGIME_RESULTS.md`] and
+  `figures/resource_regime/`). Conjecture was that a resource-poor community (R₀≈0, no free growth or
+  observation) would flip the planner to **front-loading**. It does not: the front↔back reversal is
+  governed by **ε (crossing ≈0.02), essentially independent of baseline resources**. Scarcity mutes
+  back-loading toward an even split and pushes the round-1 share up, but never into strict front-loading
+  for ε>0.02 — because the funder's own early grants manufacture the compounding that rewards spending
+  late. Front-loading appears only at ε≲0.02 and is worthless there (`S8−S5 ≤ 0`). Paid knowledge (B)
+  dominates paid information (D) in setting the schedule.
+- **The pure-exploration corner (no free signal + poverty) also does NOT front-load money**
+  (`exploration_corner/poverty/depth` sweeps; RESOURCE_REGIME_RESULTS.md Part 2). Thin grants are
+  talent-uninformative (λ≈g when g≪K), so paying for information requires depth (b≳T/2); once deep
+  enough it works (S8−S2: 0.9→39 at b=3) but produces **seed-and-harvest** — round-1 share 0.107 vs
+  even 0.167, mass deployed once informed. Learning front-loads the *observation*, back-loads the
+  *money*. And myopic re-deciding captures the paid information for free (S8−S5<0 at depth): the
+  paid forces (B, D) resupply the free ones (C, E) even when their exogenous sources are off.
 
 ## 2. The grant-signal value is governed by inequality × precision  [Fig 2, 3]
 

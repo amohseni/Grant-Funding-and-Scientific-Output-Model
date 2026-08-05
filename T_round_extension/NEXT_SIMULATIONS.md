@@ -1,5 +1,23 @@
 # Next Simulations to Run
 
+> **DONE (2026-08-04) — `resource_regime` + the exploration suite.** Four tier-1 sweeps answering
+> "does a resource-poor community flip the forward planner to front-loading?" were added to
+> `sweep_T.R`, run, and written up in [`RESOURCE_REGIME_RESULTS.md`](RESOURCE_REGIME_RESULTS.md)
+> (data: `sweep_results/T_run_smooth_supplement/`, figures: `figures/resource_regime/`). Required a
+> new `budget_ref="K"` switch in `run_simulation_T` to decouple the funder's purse from baseline
+> resources. Findings: (1) the front↔back-load reversal is governed by **ε (≈0.02), not baseline
+> resources**; (2) thin grants are talent-uninformative (λ≈g when g≪K) — paying for information
+> requires depth b≳T/2; (3) at depth, learning produces **seed-and-harvest** (round-1 share 0.107 vs
+> even 0.167), never front-loading; (4) paid forces resupply the free ones (B→C, D→E), so myopic
+> re-deciding captures paid information automatically.
+>
+> **Candidate follow-ups from this work:** (i) `depth_horizon` — trace the b≳T/2 informativeness law
+> across T (does the depth threshold scale as predicted?); (ii) re-run `exploration_depth` under
+> `allocator="greedy"` — the CE/PG planner misprices information at depth (S8−S5 = −16 to −45), so
+> check the seed-and-harvest schedule is allocator-robust; (iii) n-robustness of the exploration
+> findings (per-capita depth at fixed B scales as 1/n).
+
+
 Proposed additional parameter sweeps for the T-round model, beyond the 13 in `data/`. Each is
 motivated by a specific analysis question, sized to slot into `SWEEP_CONFIGS_T` (`code/sweep_T.R`)
 as a new entry, and cheap to run (all ~200 seeds; the full set below is ~90 cells ≈ 15–20 min on
