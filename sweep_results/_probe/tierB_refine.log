@@ -1,0 +1,6 @@
+
+=== Sweep: sigma_tierB_refine (tier 1) ===
+Refinement: bracket the interior gini maximum (ces_gamma -4, -9) at k_shape=3.5, b in {0.5, 1.0}, 400 seeds.
+  4 cells x 400 seeds done in 50s (0.031s/run)
+  saved -> sweep_results/sigma_tierB_concentration/
+TIER B REFINEMENT DONE
