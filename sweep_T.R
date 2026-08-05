@@ -313,6 +313,85 @@ SWEEP_CONFIGS_T <- list(
     secondary_plot = list(type = "line", x_var = "b", y_var = "fwd_vs_myo_PG_mean",
                           color_var = "tau_k", title = "Planning value vs funding depth",
                           y_label = "S8 - S5")
+  ),
+
+  # ---------- Diagnostics (SWEEP_HANDOFF_2026-08-05, Package A) ----------
+  # D3: the seed floor imposed on the SIGNAL strategies (S10 = S5+seed, S11 = S8+seed),
+  # where targeting is worth most. Readouts: seed_sig_myo = S10-S5, seed_sig_fwd = S11-S8,
+  # vs the family targeting value S5-S2 (P-A1: cost ~ kappa * targeting * floored share).
+  D3_seed_signal = list(
+    name = "D3_seed_signal", tier = 1,
+    description = "Seed floor on the signal strategies (S10, S11) across b x x_seed, base and heavy+sharp regimes, T=2 smooth.",
+    grid_fn = function() rbind(
+      cbind(expand.grid(b = c(0.1, 0.3, 0.5, 1.0), x_seed = c(0.1, 0.25, 0.5, 0.75)),
+            k_shape = 2.0, tau_k = 1.0),
+      cbind(expand.grid(b = c(0.1, 0.3, 0.5, 1.0), x_seed = c(0.1, 0.25, 0.5, 0.75)),
+            k_shape = 1.3, tau_k = 0.3)),
+    varied_params = c("b", "x_seed", "k_shape"),
+    primary_plot = list(type = "line", x_var = "x_seed", y_var = "seed_sig_fwd_mean",
+                        color_var = "b", title = "Cost of the seed floor on the forward+signal family",
+                        y_label = "S11 - S8"),
+    secondary_plot = list(type = "line", x_var = "x_seed", y_var = "seed_sig_myo_mean",
+                          color_var = "b", title = "Cost of the seed floor on the myopic+signal family",
+                          y_label = "S10 - S5")
+  ),
+
+  # Tier B concentration gate (SWEEP_HANDOFF Package B3): one static round (T=1),
+  # best static funder (S5), fine grid over the CES exponent. P-B2: Gini of the
+  # optimal allocation monotone as ces_gamma falls toward Leontief, at every
+  # (k_shape, b). Leontief endpoint runs separately (n_steps=800, degeneracy caveat).
+  sigma_tierB = list(
+    name = "sigma_tierB", tier = 1,
+    description = "Concentration of the optimal static allocation (S5, T=1) across CES exponent x talent tail x budget; greedy n_steps=400.",
+    grid_fn = function() cbind(
+      expand.grid(ces_gamma = c(0, -0.25, -0.5, -1, -2, -3, -6, -12),
+                  k_shape   = c(1.3, 2, 3.5),
+                  b         = c(0.1, 0.5, 1.0)),
+      T_rounds = 1),
+    varied_params = c("ces_gamma", "k_shape", "b"),
+    primary_plot = list(type = "line", x_var = "ces_gamma", y_var = "gini_g1_S5_mean",
+                        color_var = "k_shape", title = "Concentration of optimal funding vs CES exponent",
+                        y_label = "Gini of round-1 grants (S5)"),
+    secondary_plot = list(type = "line", x_var = "ces_gamma", y_var = "coverage_S5_mean",
+                          color_var = "k_shape", title = "Coverage vs CES exponent",
+                          y_label = "share of researchers funded (S5)")
+  ),
+
+  # Back-loading attribution (SWEEP_HANDOFF Package C2): decouple free growth
+  # (eps_free: K compounds from baseline resources regardless of grants) from paid
+  # growth (eps_paid: the grant-caused increment). P-C1: pure free back-loads.
+  # P-C2: pure paid FRONT-loads. Diagonal = coupled model (identity).
+  bload_decouple = list(
+    name = "bload_decouple", tier = 1,
+    description = "Free vs paid growth decoupled (eps_free x eps_paid), T=5 smooth harmonic: which channel drives back-loading?",
+    grid_fn = function() cbind(
+      expand.grid(eps_free = c(0, 0.1, 0.3, 0.85),
+                  eps_paid = c(0, 0.1, 0.3, 0.85)),
+      T_rounds = 5, epsilon = 0.3),   # epsilon value irrelevant once both rates given;
+                                      # fixed so the globals always engage off-diagonal
+    varied_params = c("eps_free", "eps_paid"),
+    primary_plot = list(type = "heatmap", x_var = "eps_paid", y_var = "eps_free",
+                        fill_var = "b_idx_S8_mean", text_var = "b_idx_S8_mean",
+                        title = "Schedule b_idx (S8): free vs paid growth",
+                        fill_label = "b_idx"),
+    secondary_plot = list(type = "line", x_var = "eps_paid", y_var = "fwd_vs_myo_PG_mean",
+                          color_var = "eps_free", title = "Planning value across the decoupled grid",
+                          y_label = "S8 - S5")
+  ),
+
+  # D4: persistent every-round floor in the no-signal myopic family. x_seed = 1 must
+  # reproduce S2 exactly (P-A2 identity check on the implementation).
+  D4_seed_persistent = list(
+    name = "D4_seed_persistent", tier = 1,
+    description = "Persistent every-round seed floor (seed_persistent=TRUE), S6 vs S4/S2, x_seed up to 1.0 (identity check), T=2 smooth.",
+    grid_fn = function() rbind(
+      cbind(expand.grid(x_seed = c(0.25, 0.5, 0.75, 0.9, 1.0)), k_shape = 2.0, tau_k = 1.0),
+      cbind(expand.grid(x_seed = c(0.25, 0.5, 0.75, 0.9, 1.0)), k_shape = 1.3, tau_k = 0.3)),
+    varied_params = c("x_seed", "k_shape"),
+    primary_plot = list(type = "line", x_var = "x_seed", y_var = "seed_myo_mean",
+                        color_var = "k_shape", title = "Cost of a persistent uniform floor (S6 - S4)",
+                        y_label = "S6 - S4"),
+    secondary_plot = NULL
   )
 )
 
@@ -323,19 +402,36 @@ SWEEP_CONFIGS_T <- list(
 # and gini, rho_s, plus the derived contrasts.
 extract_metrics_T <- function(res) {
   out <- list()
-  for (s in 1:9) {
+  for (s in 1:11) {
     r <- res$strategies[[s]]
     out[[paste0("out_S", s)]]   <- if (is.null(r)) NA_real_ else r$total_expected
     out[[paste0("alpha_S", s)]] <- if (is.null(r) || is.null(r$alpha)) NA_real_ else r$alpha
   }
-  for (s in c(7, 8, 9)) {
+  for (s in c(7, 8, 9, 11)) {
     r <- res$strategies[[s]]
     out[[paste0("b_idx_S", s)]] <- if (is.null(r)) NA_real_ else r$b_idx
   }
-  for (s in c(5, 7, 8, 9)) {
+  for (s in c(5, 7, 8, 9, 10, 11)) {
     r <- res$strategies[[s]]
     out[[paste0("gini_g1_S", s)]] <- if (is.null(r)) NA_real_ else r$gini_g1
   }
+  # concentration metrics for the static Tier-B gate (round-1 grant vector, S5)
+  r5 <- res$strategies[[5]]
+  if (!is.null(r5)) {
+    g1 <- r5$g_rounds[[1]]
+    out$coverage_S5    <- mean(g1 > 1e-8)
+    out$top10_share_S5 <- if (sum(g1) > 0) {
+      k <- max(1L, floor(length(g1) / 10))
+      sum(sort(g1, decreasing = TRUE)[seq_len(k)]) / sum(g1)
+    } else NA_real_
+  } else {
+    out$coverage_S5 <- NA_real_; out$top10_share_S5 <- NA_real_
+  }
+  # D2: budget share of the S8 allocation displaced by the S11 floor (round 1)
+  r8 <- res$strategies[[8]]; r11 <- res$strategies[[11]]
+  out$disp_S11 <- if (!is.null(r8) && !is.null(r11)) {
+    sum(abs(r11$g_rounds[[1]] - r8$g_rounds[[1]])) / res$params$B_total
+  } else NA_real_
   out$rho_s <- res$rho_s
   # derived contrasts (exact names — downstream depends on them)
   o <- function(s) out[[paste0("out_S", s)]]
@@ -347,13 +443,15 @@ extract_metrics_T <- function(res) {
   out$seed_myo         <- o(6) - o(4)
   out$seed_fwd         <- o(9) - o(7)
   out$optimal_vs_naive <- o(8) - o(3)
+  out$seed_sig_myo     <- o(10) - o(5)   # cost of the floor on the myopic+signal family
+  out$seed_sig_fwd     <- o(11) - o(8)   # cost of the floor on the forward+signal family
   out
 }
 
 # Long-format schedule rows for one run: one row per (strategy, round).
 extract_schedule_long <- function(res, cell_id, trial) {
   rows <- list()
-  for (s in 1:9) {
+  for (s in 1:11) {
     r <- res$strategies[[s]]
     if (is.null(r)) next
     Tr <- length(r$g_rounds)

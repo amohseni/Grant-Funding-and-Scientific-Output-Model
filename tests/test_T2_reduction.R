@@ -7,7 +7,7 @@
 # and alpha, across several parameter points and seeds.
 # PASS if bit-identical (< 1e-8); WARN if only within MC error.
 # ============================================================
-setwd("/Users/amohseni/Library/Mobile Documents/com~apple~CloudDocs/Documents/GitHub/Grant-Funding-and-Scientific-Output-Model")
+setwd("/Users/amohseni/Documents/GitHub/Grant-Funding-and-Scientific-Output-Model")
 
 source("model.R")
 

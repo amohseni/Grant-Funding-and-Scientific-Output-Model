@@ -5,7 +5,7 @@
 # Uses modest seed counts (serial) so it can run alongside the
 # manifest without oversubscribing cores.
 # ============================================================
-setwd("/Users/amohseni/Library/Mobile Documents/com~apple~CloudDocs/Documents/GitHub/Grant-Funding-and-Scientific-Output-Model")
+setwd("/Users/amohseni/Documents/GitHub/Grant-Funding-and-Scientific-Output-Model")
 source("model.R")
 
 LOG <- c()

@@ -28,7 +28,9 @@ STRATEGY_NAMES <- c(
   "Myopic (pubs + seed)",
   "Forward (pubs)",
   "Forward (pubs + grant)",
-  "Forward (pubs + seed)"
+  "Forward (pubs + seed)",
+  "Myopic (pubs + grant + seed)",   # S10: S5 with the S6 seed floor
+  "Forward (pubs + grant + seed)"   # S11: S8 with the S9 seed floor
 )
 
 # ============================================================
@@ -62,14 +64,54 @@ draw_initial_population <- function(n, k_min, k_shape, r_min, r_shape, rho_kr) {
 
 # ----- Model primitives -----
 
+# CES production family (SWEEP_HANDOFF_2026-08-05, Package B). The CES exponent is
+# `ces_gamma`/`CES_GAMMA` EVERYWHERE; the code's `gamma` is factor productivity —
+# never reuse one name for the other. CES_GAMMA is a module-level default overridden
+# at run_simulation_T entry (assignment at function entry is fork-safe under mclapply;
+# threading it as an argument through all call sites is the cleaner refactor if anyone
+# has the appetite). The /2 in lambda_rate/update_knowledge keeps ces_gamma = -1
+# bit-identical to the historical harmonic model: ces_mean(K,R,-1)/2 = KR/(K+R).
+CES_GAMMA <- -1
+
+ces_mean <- function(K, R, gc) {
+  if (gc == -1) return(2 * K * R / (K + R))         # harmonic
+  if (is.infinite(gc) && gc < 0) return(pmin(K, R)) # Leontief boundary
+  if (abs(gc) < 1e-8) return(sqrt(K * R))           # Cobb-Douglas limit
+  ((K^gc + R^gc) / 2)^(1 / gc)
+}
+
 lambda_rate <- function(K, R, gamma) {
-  gamma * (K * R) / (K + R)
+  # Harmonic branch keeps the EXACT historical expression (same FP rounding order),
+  # so ces_gamma = -1 is bit-identical to the pre-CES model (validation gate 6b).
+  if (CES_GAMMA == -1) return(gamma * (K * R) / (K + R))
+  gamma * ces_mean(K, R, CES_GAMMA) / 2
 }
 
 update_knowledge <- function(K, R, epsilon) {
-  # Harmonic mean (Michaelis-Menten) growth: K grows in proportion to current
-  # output rate λ = K·R/(K+R). No ceiling. Always non-negative.
-  K + epsilon * K * R / (K + R)
+  # Knowledge grows in proportion to the current output rate. No ceiling.
+  if (CES_GAMMA == -1) return(K + epsilon * K * R / (K + R))
+  K + epsilon * ces_mean(K, R, CES_GAMMA) / 2
+}
+
+# --- Decoupled growth channels (SWEEP_HANDOFF_2026-08-05, Package C) ---
+# K_{t+1} = K_t + eps_free*lam_base + eps_paid*(lam_post - lam_base), where lam_base
+# is the output rate at BASELINE resources (growth that happens without the grant)
+# and lam_post at post-grant resources. EPS_FREE/EPS_PAID are NULL unless a run sets
+# eps_free/eps_paid different from epsilon, in which case run_simulation_T assigns
+# them at entry (fork-safe under mclapply). With NULL globals (or equal rates) this
+# reduces to the EXACT historical update_knowledge call — bit-identity preserved.
+# The T-round planner paths use this same decomposition (the funder knows the model);
+# the v5 two-round path keeps plain update_knowledge and supports only equal rates.
+EPS_FREE <- NULL
+EPS_PAID <- NULL
+
+update_knowledge_split <- function(K, R0, g, epsilon) {
+  ef <- if (is.null(EPS_FREE)) epsilon else EPS_FREE
+  ep <- if (is.null(EPS_PAID)) epsilon else EPS_PAID
+  if (ef == ep) return(update_knowledge(K, R0 + g, ef))
+  lam_base <- ces_mean(K, R0,     CES_GAMMA) / 2
+  lam_post <- ces_mean(K, R0 + g, CES_GAMMA) / 2
+  K + ef * lam_base + ep * (lam_post - lam_base)
 }
 
 # ----- Bottleneck measures -----
@@ -924,7 +966,7 @@ post_lambda_round_t <- function(post, g_hist_i, g_cur, gamma, epsilon) {
   K <- post$K0
   if (length(g_hist_i) > 0) {
     for (gh in g_hist_i) {
-      K <- update_knowledge(K, post$R0 + gh, epsilon)
+      K <- update_knowledge_split(K, post$R0, gh, epsilon)
     }
   }
   sum(post$w * lambda_rate(K, post$R0 + g_cur, gamma))
@@ -972,15 +1014,15 @@ greedy_round_t <- function(posts, budget, delta, gamma, epsilon,
 fwd_researcher_value <- function(post0, post_bar1, g_hist_i, g_path, gamma, epsilon) {
   H <- length(g_path)
   K0 <- post0$K0
-  for (gh in g_hist_i) K0 <- update_knowledge(K0, post0$R0 + gh, epsilon)
+  for (gh in g_hist_i) K0 <- update_knowledge_split(K0, post0$R0, gh, epsilon)
   val <- sum(post0$w * lambda_rate(K0, post0$R0 + g_path[1], gamma))
   if (H >= 2) {
     Kb <- post_bar1$K0
-    for (gh in g_hist_i) Kb <- update_knowledge(Kb, post_bar1$R0 + gh, epsilon)
-    Kb <- update_knowledge(Kb, post_bar1$R0 + g_path[1], epsilon)
+    for (gh in g_hist_i) Kb <- update_knowledge_split(Kb, post_bar1$R0, gh, epsilon)
+    Kb <- update_knowledge_split(Kb, post_bar1$R0, g_path[1], epsilon)
     for (s in 2:H) {
       val <- val + sum(post_bar1$w * lambda_rate(Kb, post_bar1$R0 + g_path[s], gamma))
-      if (s < H) Kb <- update_knowledge(Kb, post_bar1$R0 + g_path[s], epsilon)
+      if (s < H) Kb <- update_knowledge_split(Kb, post_bar1$R0, g_path[s], epsilon)
     }
   }
   val
@@ -1082,7 +1124,7 @@ waterfill_round_t <- function(posts, budget, gamma, epsilon, g_hist = list(),
   Amat <- matrix(0, n, M); Rmat <- matrix(0, n, M); Wmat <- matrix(0, n, M)
   for (i in seq_len(n)) {
     K <- posts[[i]]$K0
-    for (gh in g_hist) K <- update_knowledge(K, posts[[i]]$R0 + gh[i], epsilon)
+    for (gh in g_hist) K <- update_knowledge_split(K, posts[[i]]$R0, gh[i], epsilon)
     Amat[i, ] <- K; Rmat[i, ] <- posts[[i]]$R0; Wmat[i, ] <- posts[[i]]$w
   }
   base <- Amat + Rmat + g0
@@ -1219,8 +1261,13 @@ plan_forward_smooth <- function(post0_list, B_rem, gamma, epsilon, H,
 # Forward strategies ignore `tranche` and plan the full remaining budget.
 allocate_round <- function(
     S, t, T_rounds, posts, tranche, B_total, delta, gamma, epsilon,
-    x_seed, p_prev, B_rem, g_hist, allocator = "greedy"
+    x_seed, p_prev, B_rem, g_hist, allocator = "greedy",
+    seed_persistent = FALSE
 ) {
+  # seed_persistent: seed strategies (6, 9, 10, 11) apply the x_seed floor in
+  # EVERY round's tranche instead of round 1 only. At x_seed = 1 the persistent
+  # floor makes S6 reproduce S2 (uniform) exactly — an identity check.
+  seed_now <- if (seed_persistent) TRUE else (t == 1L)
   n <- length(p_prev)                              # posts is NULL for S1/S2/S3
   smooth <- identical(allocator, "smooth")
   # Myopic single-round solve: exact water-fill (smooth) or greedy delta-fill.
@@ -1244,8 +1291,8 @@ allocate_round <- function(
     return(allocate_naive(p_prev, tranche))
   } else if (S %in% c(4L, 5L)) {                   # Myopic (pubs [+ grant])
     return(myopic(tranche))
-  } else if (S == 6L) {                            # Myopic + round-1 seed floor
-    if (t == 1L) {
+  } else if (S %in% c(6L, 10L)) {                  # Myopic + seed floor (S10: + grant signal)
+    if (seed_now) {
       seed <- rep(x_seed * tranche / n, n)
       return(myopic((1 - x_seed) * tranche, init_g = seed))
     }
@@ -1253,18 +1300,18 @@ allocate_round <- function(
   } else if (S %in% c(7L, 8L)) {                   # Forward (pubs [+ grant])
     H <- T_rounds - t + 1L
     return(forward(H)[, 1])
-  } else if (S == 9L) {                            # Forward + round-1 seed floor
+  } else if (S %in% c(9L, 11L)) {                  # Forward + seed floor (S11: + grant signal)
     H <- T_rounds - t + 1L
-    seed <- if (t == 1L) rep(x_seed * tranche / n, n) else NULL
+    seed <- if (seed_now) rep(x_seed * tranche / n, n) else NULL
     return(forward(H, seed_round1 = seed)[, 1])
   }
   stop("unknown strategy ", S)
 }
 
 # whether a strategy uses each signal / needs a posterior
-strategy_uses_grant   <- function(S) S %in% c(5L, 8L)
-strategy_uses_posterior <- function(S) S %in% c(4L, 5L, 6L, 7L, 8L, 9L)
-strategy_seed_frac    <- function(S, x_seed) if (S %in% c(6L, 9L)) x_seed else 0
+strategy_uses_grant   <- function(S) S %in% c(5L, 8L, 10L, 11L)
+strategy_uses_posterior <- function(S) S %in% c(4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L)
+strategy_seed_frac    <- function(S, x_seed) if (S %in% c(6L, 9L, 10L, 11L)) x_seed else 0
 
 # ============================================================
 # Simulate one strategy over T rounds
@@ -1276,7 +1323,8 @@ simulate_trial_T <- function(
     S, T_rounds, K_true, R0, p_init, sigma_r, sigma_k,
     B_total, delta, gamma, epsilon, x_seed,
     M, k_min, k_shape, r_min, r_shape, tau_r, tau_k,
-    use_resource_signal, detail = FALSE, allocator = "greedy"
+    use_resource_signal, detail = FALSE, allocator = "greedy",
+    seed_persistent = FALSE
 ) {
   n       <- length(K_true)
   tranche <- B_total / T_rounds
@@ -1309,7 +1357,7 @@ simulate_trial_T <- function(
 
     g_t <- allocate_round(S, t, T_rounds, posts, tranche, B_total, delta,
                           gamma, epsilon, x_seed, p_prev, B_rem, g_hist,
-                          allocator = allocator)
+                          allocator = allocator, seed_persistent = seed_persistent)
 
     R_t   <- R0 + g_t
     lam_t <- lambda_rate(K_cur, R_t, gamma)          # TRUE expected output
@@ -1322,7 +1370,7 @@ simulate_trial_T <- function(
     p_hist[[t]]    <- p_t
     g_hist[[t]]    <- g_t
     B_rem          <- B_rem - sum(g_t)
-    K_cur          <- update_knowledge(K_cur, R_t, epsilon)   # compound for t+1
+    K_cur          <- update_knowledge_split(K_cur, R0, g_t, epsilon)   # compound for t+1
   }
 
   # ---- schedule diagnostics ----
@@ -1373,8 +1421,22 @@ run_simulation_T <- function(
     n_steps = 50, tau_r = 1.0, tau_k = 1.0,
     use_resource_signal = TRUE, n_pre_rounds = 0,
     x_seed = 0.25, M = 200, strategies = 1:9, verbose = FALSE,
-    detail = FALSE, allocator = "greedy", budget_ref = "R"
+    detail = FALSE, allocator = "greedy", budget_ref = "R",
+    seed_persistent = FALSE, ces_gamma = -1,
+    eps_free = epsilon, eps_paid = epsilon
 ) {
+  # CES exponent: the smooth myopic water-fill hard-codes the harmonic marginal
+  # gamma*K^2/(K+R+g)^2 and is silently wrong for any other production form.
+  if (allocator == "smooth" && ces_gamma != -1) stop("smooth waterfill is harmonic-only")
+  CES_GAMMA <<- ces_gamma
+  # Decoupled growth channels: only engage the globals when the rates differ from
+  # epsilon, so default runs leave no session state behind (bit-identity + safe
+  # direct calls to planner helpers outside run_simulation_T).
+  if (eps_free != epsilon || eps_paid != epsilon) {
+    EPS_FREE <<- eps_free; EPS_PAID <<- eps_paid
+  } else {
+    EPS_FREE <<- NULL; EPS_PAID <<- NULL
+  }
   set.seed(seed)
 
   # Budget reference scale. Default "R" is the historical mean-E[R] normalization
@@ -1407,21 +1469,21 @@ run_simulation_T <- function(
       lam_pre <- lambda_rate(K_current, R_round, gamma)
       p_round <- rpois(n, pmax(lam_pre, LAMBDA_FLOOR))
       p_cumul <- p_cumul + p_round
-      K_current <- update_knowledge(K_current, R_round, epsilon)
+      K_current <- update_knowledge_split(K_current, R0_current, g_pre, epsilon)
     }
   }
 
   sigs    <- draw_signals(K_current, R0_current, tau_r, tau_k)
   sigma_r <- sigs$sigma_r; sigma_k <- sigs$sigma_k
 
-  results <- vector("list", 9)
+  results <- vector("list", 11)
   for (S in strategies) {
     set.seed(seed * 1000)                        # common random numbers / strategy
     results[[S]] <- simulate_trial_T(
       S, T_rounds, K_current, R0_current, p_cumul, sigma_r, sigma_k,
       B_total, delta, gamma, epsilon, x_seed,
       M, k_min, k_shape, r_min, r_shape, tau_r, tau_k, use_resource_signal,
-      detail = detail, allocator = allocator
+      detail = detail, allocator = allocator, seed_persistent = seed_persistent
     )
   }
 
@@ -1432,7 +1494,9 @@ run_simulation_T <- function(
                   k_min = k_min, r_min = r_min, gamma = gamma,
                   rho_kr = rho_kr, x_seed = x_seed, M = M, n_steps = n_steps,
                   n_pre_rounds = n_pre_rounds, use_resource_signal = use_resource_signal,
-                  allocator = allocator),
+                  allocator = allocator, budget_ref = budget_ref,
+                  ces_gamma = ces_gamma, seed_persistent = seed_persistent,
+                  eps_free = eps_free, eps_paid = eps_paid),
     rho_s = rho_s,
     strategies = results
   )
