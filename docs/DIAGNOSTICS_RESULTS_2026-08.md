@@ -225,10 +225,11 @@ b-invariant (b_idx 0.60–0.62 at T=5). Data: `sweep_results/E2_headline_scale{,
 (share x of the purse spread over rounds 1..k, remainder after; myopic water-fill within
 rounds under true dynamics, NO CE planner) at the depth corner (b=3, r_min=0.001,
 τ_K=100, α_K=1.3, T=6), 200 seeds:
-- ε≈0: the even schedule is best (498.2); the best early-mass schedule (half the purse
-  in rounds 1–2) loses by 10.5 (z=1.5). No early-mass schedule beats even-or-late.
-- ε=0.3: top schedule x0.3_k2 ties even within noise (+0.46, z≪2); best early-mass
-  loses by 28.2 (**z=4.9**).
+- ε≈0: the even schedule is best (498.2); the best early-mass schedule (defining
+  early-mass exactly: rounds-1..k share above the even k/T) loses by **7.8**. No
+  early-mass schedule beats even-or-late.
+- ε=0.3: top schedule x0.3_k2 ties even within noise (+0.46, z≪2); the best early-mass
+  schedule loses by **20.8** (z≈4 on the coarser two-block filter).
 The optimal schedule shape at depth is not an artifact of the CE planner. Data:
 `sweep_results/bootstrap_verify/honest_schedules_*.csv`.
 

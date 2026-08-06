@@ -112,9 +112,11 @@ b ≳ T/2)."**
 to 3 in the no-signal corner lifts the discrimination value S8−S2 from 0.9 to **39** (b=6: 56) —
 funded output now reveals talent. The optimal schedule becomes **seed-and-harvest**: round-1 share
 falls to **0.107** (b=3; even = 0.167) with the mass deployed from round 2 on, once informed —
-`b_idx` *rises* to 0.51–0.53. Nowhere in any sweep does `b_idx_S8` fall below 0.5 by more than
-noise. **The hypothesized front-loading regime does not exist in this model: learning front-loads
-the *observation*, and back-loads the *money*.**
+`b_idx` *rises* to 0.51–0.53. Across all 32 exploration cells the minimum `b_idx_S8` is **0.497**
+(200-seed re-runs): the ε≈0 cells sit statistically below 0.5 at that precision, but by ≤0.003 —
+economically nil, confined to where planning value ≈ 0, and never deepening with funding depth.
+**The hypothesized front-loading regime does not exist in this model in any strict-and-valuable
+form: learning front-loads the *observation*, and back-loads the *money*.**
 
 **Finding 3 — even paid information is captured "for free" by re-deciding.** In the depth cells the
 forward planner's deliberate schedule *loses* to the myopic even-tranche funder (S8−S5 = −16 at b=3,
