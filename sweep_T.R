@@ -379,6 +379,21 @@ SWEEP_CONFIGS_T <- list(
                           y_label = "S8 - S5")
   ),
 
+  # D-3 (addendum): resource-signal ablation — the report flags this as not yet run.
+  # use_resource_signal on/off across K-R correlation and talent tail.
+  D_resource_ablation = list(
+    name = "D_resource_ablation", tier = 1,
+    description = "Resource-signal presence/absence x rho x talent tail, T=2 smooth: the sigma_R signal's own contribution.",
+    grid_fn = function() expand.grid(use_resource_signal = c(TRUE, FALSE),
+                                     rho_kr = c(-0.5, 0, 0.8),
+                                     k_shape = c(1.3, 2)),
+    varied_params = c("use_resource_signal", "rho_kr", "k_shape"),
+    primary_plot = list(type = "line", x_var = "rho_kr", y_var = "out_S8_mean",
+                        color_var = "use_resource_signal", title = "S8 output with/without the resource signal",
+                        y_label = "out(S8)"),
+    secondary_plot = NULL
+  ),
+
   # D4: persistent every-round floor in the no-signal myopic family. x_seed = 1 must
   # reproduce S2 exactly (P-A2 identity check on the implementation).
   D4_seed_persistent = list(

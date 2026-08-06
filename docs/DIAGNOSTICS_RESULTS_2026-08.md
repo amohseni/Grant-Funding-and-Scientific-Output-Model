@@ -136,6 +136,113 @@ front-loads; a whiff of free growth, ratio ≥ ~1/8..1/3, restores back-loading)
 
 ---
 
+---
+
+# Addendum results — Packages D and E (SWEEP_HANDOFF_ADDENDUM_2026-08-05)
+
+*Package F removed by Aydin's decision (see addendum §F; consumable-grant assumption
+stated in the setup, not conceded). Same conventions; code hash for D/E runs in each
+RUN_INFO.txt.*
+
+## Package D — information integrity
+
+**P-D1 — CONFIRMED, emphatically.** Model-implied AUC (Monte Carlo, 10⁶ draws/cell):
+the τ_K solving AUC = 0.54 is **> 20 at α_K ∈ {1.3, 2}** (both q) — beyond the tested
+grid — and 7.4–10.3 at the light tail (α_K=3.5). Every implied value sits far above the
+signal-value half-decay elbow (τ_K ≈ 2.5). Heavy tails make even noisy signals better
+than chance, so an AUC as low as 0.54 implies EXTREME noise: the "NIH sits well above
+the elbow; sharpening review still pays" sentence survives quantification with room to
+spare. Data + figure: `sweep_results/D_auc_calibration/`.
+
+**P-D2 — MIXED (asymmetry confirmed; the negative regime is tail-dependent).**
+Decoupling believed from true signal noise (`tau_k_belief` vs `tau_k_true`):
+- Asymmetry direction holds everywhere: overtrust of a noisy signal costs more than
+  undertrust of a sharp one forfeits.
+- At the moderate tail (α_K=2), overtrusting a noisy signal (truth 3, belief ≤ 1)
+  drives the signal's value **negative** (−0.53 to −0.14; individually |z|≲1.6, but
+  consistently negative across all three overtrust cells) — worse than pubs-only.
+  Undertrust of a sharp signal stays positive (+1.06 vs +7.63 calibrated).
+- At the heavy tail (α_K=1.3), overtrust never goes negative: a noisy signal misweighted
+  as sharp still earns 13.99 (vs 17.20 calibrated) — in heavy-tailed fields even
+  misweighted review separates the whales, extending Part IV.2's coarse-signal logic to
+  misspecified weighting. The caveat for the paper: "overtrust can flip review's value
+  negative, but only where talent is not concentrated; under heavy tails misweighting
+  only attenuates." Data: `sweep_results/D_misspecified_trust/`.
+
+**P-D3 — CONFIRMED (the redundancy claim as stated).** Resource-signal ablation
+(`use_resource_signal` on/off): the signal's own contribution to S8 is **0.3–1.1% of
+S1 everywhere**, including ρ = −0.5 (predicted to be its best case, which did not
+materialize for S8; for pubs-only S4 the contribution is larger and sign-flips at
+ρ=0.8, left to the paper session). Closes the report's Appendix-A open item. Data:
+`sweep_results/D_resource_ablation/`.
+
+**P-D4 — CONFIRMED.** Convergence to the gap rule: corr(g_realized, max(cK−R, 0))
+rises monotonically as the signal sharpens — 0.34→**0.97** (α_K=1.3), 0.22→**0.94**
+(α_K=2) over τ_K 20→0.05 — recovering footnote 3's r = 0.95–1.00 at sharp signals;
+the output gap to the full-information oracle shrinks correspondingly (17.2%→1.7% and
+10.4%→1.6% of S1); the pubs-only baseline plateaus at corr 0.13–0.18 with the full gap.
+Oracle mode (`oracle = TRUE`, point-mass posteriors at truth) added for this; defaults
+bit-identical. Data: `sweep_results/D_gap_convergence/`.
+
+## Package E — headline insurance
+
+**P-E1a — CONFIRMED.** Observable heterogeneous productivity A_i (lognormal, E[A]=1,
+entering likelihood and planners as data): realized grants track the productivity-scaled
+gap rule g*_i = max(K_i(√(γ_i/ν)−1) − R_i, 0) at **r = 0.87–0.98** (≥ 0.95 wherever the
+signal is sharp, τ_K=0.3; the 0.87–0.89 cells are base tail × base noise, consistent
+with P-D4's precision dependence). All headline directions survive: signal value positive
+and mildly declining in heterogeneity (19.6→18.1 at heavy+sharp), seed cost stays
+negative, PG ≈ 0 at T=2. Data: `sweep_results/E1_heterogeneity/`.
+
+**P-E1b — the product reduction FAILS materially (registered prediction: shifts beyond
+noise, confirmed; approximate-validity threshold: exceeded).** Splitting log-talent
+variance between lognormal K (share s) and latent lognormal A at fixed E[log T] and
+Var(log T):
+- **Signal value collapses as s falls**: heavy tail, τ_K=0.3: 11.8 → 7.0 → 3.7 as
+  s goes 1 → 0.7 → 0.4 (−69%); moderate/τ_K=1: 2.52 → 0.42 (−83%). Far beyond the
+  10–15% tolerance. (Design choice, stated: the review signal observes K only, so as
+  the K-share of talent variance shrinks, review sees a shrinking share of what
+  matters — that is part of what the reduction would have had to survive.)
+- **Who gets funded reshuffles**: rank correlation of S8 grant vectors vs s=1 falls to
+  0.72–0.89 at s=0.4. Optimal output and Gini also shift beyond noise (Gini 0.73→0.64
+  heavy; 0.49→0.34 moderate).
+- Verdict for the paper: **one-dimensional talent is a substantive commitment, not a
+  convenience** — A and K are separately identified only by dose-response, and the
+  appendix should document the separation (signal value is the quantity most at risk).
+  Data: `E1b_reduction.csv`, `E1b_rankcorr.csv` in `sweep_results/E1_heterogeneity/`.
+
+**P-E2 — CONFIRMED.** (a) The forward-advantage surface (T × ε) at n=200 reproduces the
+n=50 shape almost exactly: corr = **0.996** on PG as % of S1 and **0.999** on b_idx
+across all 25 cells; magnitudes run ~10–15% smaller in relative terms (e.g. T=5, ε=0.85:
+0.59% vs 0.71% of S1), monotonicities unchanged. (b) At ε=0.85, PG's sign and
+T-monotonicity hold at every budget b ∈ {0.1, 0.5, 1}, the advantage scales roughly with
+the purse (0.06% → 1.52% of S1 at T=5), and the back-loading schedule is essentially
+b-invariant (b_idx 0.60–0.62 at T=5). Data: `sweep_results/E2_headline_scale{,_n200}/`.
+
+## Bootstrap verification items
+
+**Item 1 — seed-and-harvest certified planner-free.** Honest fixed two-block schedules
+(share x of the purse spread over rounds 1..k, remainder after; myopic water-fill within
+rounds under true dynamics, NO CE planner) at the depth corner (b=3, r_min=0.001,
+τ_K=100, α_K=1.3, T=6), 200 seeds:
+- ε≈0: the even schedule is best (498.2); the best early-mass schedule (half the purse
+  in rounds 1–2) loses by 10.5 (z=1.5). No early-mass schedule beats even-or-late.
+- ε=0.3: top schedule x0.3_k2 ties even within noise (+0.46, z≪2); best early-mass
+  loses by 28.2 (**z=4.9**).
+The optimal schedule shape at depth is not an artifact of the CE planner. Data:
+`sweep_results/bootstrap_verify/honest_schedules_*.csv`.
+
+**Item 2 — the negative PG at depth is honest mispricing, not an optimizer bug.**
+CE(S8's plan) ≥ CE(even-tranche myopic plan) under S8's own objective in **20/20 seeds**
+(mean +3.33, SE 0.11) at the depth corner: the planner maximizes its objective; the
+objective misprices information there. Data: `bootstrap_verify/ce_self_consistency.csv`.
+
+**Item 3 — 200-seed provenance for main-text exploration figures.** All three
+exploration sweeps re-run at 200 seeds (`sweep_results/exploration_200/`): every cell
+matches the 64-seed data to |Δ b_idx| ≤ 0.004 and |Δ round-1 share| ≤ 0.005. Depth-corner
+headline numbers at 200 seeds: round-1 share 0.110 at b=3 (even = 0.167), S8−S2
+discrimination value 0.5 → 41.2 → 56.8 at b = 0.5 → 3 → 6.
+
 ## Flags for the paper session (carried from the handoff + new)
 
 1. Model write-up Eq (10) (per-round, non-transferable budgets) contradicts the code and

@@ -105,6 +105,11 @@ update_knowledge <- function(K, R, epsilon) {
 EPS_FREE <- NULL
 EPS_PAID <- NULL
 
+# Per-atom productivity of a posterior (E-1, addendum): posts may carry $gam,
+# a length-M vector of atom productivities (gamma x A). NULL -> homogeneous gamma.
+# Heterogeneous runs ALWAYS set $gam, so the fallback only ever sees scalar gamma.
+post_gam <- function(post, gamma) if (is.null(post$gam)) gamma else post$gam
+
 update_knowledge_split <- function(K, R0, g, epsilon) {
   ef <- if (is.null(EPS_FREE)) epsilon else EPS_FREE
   ep <- if (is.null(EPS_PAID)) epsilon else EPS_PAID
@@ -294,16 +299,17 @@ ce_reweight_posterior <- function(post0, g1_i, gamma, ess_floor = NULL) {
   w_s <- post0$w
 
   # Imagined observation: prior-predictive mean of round-1 publications
-  lam_at_g <- lambda_rate(K_s, R_s + g1_i, gamma)
+  gam_eff <- post_gam(post0, gamma)
+  lam_at_g <- lambda_rate(K_s, R_s + g1_i, gam_eff)
   p_bar <- sum(w_s * lam_at_g)
 
   # Reweight by Poisson(p_bar | λ) — weights only, atoms fixed
-  log_lik <- loglik_pubs_continuous(p_bar, K_s, R_s + g1_i, gamma)
+  log_lik <- loglik_pubs_continuous(p_bar, K_s, R_s + g1_i, gam_eff)
   log_w <- log(pmax(w_s, 1e-300)) + log_lik
   log_w <- log_w - max(log_w)
   w_new <- exp(log_w); w_new <- w_new / sum(w_new)
 
-  list(K0 = K_s, R0 = R_s, w = w_new, p_bar = p_bar)
+  list(K0 = K_s, R0 = R_s, w = w_new, p_bar = p_bar, gam = post0$gam)
 }
 
 # Type-A marginal under CE: effect of adding δ to g1[i].
@@ -933,24 +939,40 @@ build_posteriors_hist <- function(
     p_init, sigma_r, sigma_k,
     M, k_min, k_shape, r_min, r_shape, gamma,
     tau_r, tau_k, use_resource_signal, use_grant_signal,
-    p_hist = NULL, g_hist = NULL
+    p_hist = NULL, g_hist = NULL,
+    gamma_i = NULL, latentA = NULL, k_lognormal = NULL
 ) {
+  # E-1 (addendum). gamma_i: length-n per-researcher productivity, KNOWN to the
+  # funder (E-1a); enters the likelihood and the atom productivities. latentA:
+  # list(mu_A, sd_A) — A is LATENT; atoms become (K_s, A_s) pairs with A_s from
+  # the prior (sd_A = 0 draws nothing, keeping RNG aligned with a no-A run).
+  # k_lognormal: list(meanlog, sdlog) replaces the Pareto K prior (E-1b).
+  # All NULL -> byte-identical historical path.
   n <- length(p_init)
   posts <- vector("list", n)
   for (i in seq_len(n)) {
-    K_s <- rpareto(M, k_min, k_shape)
+    K_s <- if (is.null(k_lognormal)) rpareto(M, k_min, k_shape)
+           else rlnorm(M, k_lognormal$meanlog, k_lognormal$sdlog)
     R_s <- rpareto(M, r_min, r_shape)
-    ll  <- loglik_pubs(p_init[i], K_s, R_s, gamma)
+    g_base <- if (is.null(gamma_i)) gamma else gamma_i[i]
+    gam_atoms <- NULL
+    if (!is.null(latentA)) {
+      A_s <- if (latentA$sd_A > 0) rlnorm(M, latentA$mu_A, latentA$sd_A)
+             else rep(exp(latentA$mu_A), M)
+      gam_atoms <- g_base * A_s
+    } else if (!is.null(gamma_i)) gam_atoms <- rep(g_base, M)
+    gam_eff <- if (is.null(gam_atoms)) gamma else gam_atoms
+    ll  <- loglik_pubs(p_init[i], K_s, R_s, gam_eff)
     if (!is.null(p_hist) && length(p_hist) > 0) {
       for (s in seq_along(p_hist)) {
-        ll <- ll + loglik_pubs(p_hist[[s]][i], K_s, R_s + g_hist[[s]][i], gamma)
+        ll <- ll + loglik_pubs(p_hist[[s]][i], K_s, R_s + g_hist[[s]][i], gam_eff)
       }
     }
     if (use_resource_signal) ll <- ll + loglik_resource_signal(sigma_r[i], R_s, tau_r)
     if (use_grant_signal)    ll <- ll + loglik_grant_signal(sigma_k[i], K_s, tau_k)
     ll <- ll - max(ll)
     w  <- exp(ll); w <- w / sum(w)
-    posts[[i]] <- list(K0 = K_s, R0 = R_s, w = w)
+    posts[[i]] <- list(K0 = K_s, R0 = R_s, w = w, gam = gam_atoms)
   }
   posts
 }
@@ -969,7 +991,7 @@ post_lambda_round_t <- function(post, g_hist_i, g_cur, gamma, epsilon) {
       K <- update_knowledge_split(K, post$R0, gh, epsilon)
     }
   }
-  sum(post$w * lambda_rate(K, post$R0 + g_cur, gamma))
+  sum(post$w * lambda_rate(K, post$R0 + g_cur, post_gam(post, gamma)))
 }
 
 post_marginal_round_t <- function(post, g_hist_i, g_cur, dg, gamma, epsilon) {
@@ -1015,13 +1037,13 @@ fwd_researcher_value <- function(post0, post_bar1, g_hist_i, g_path, gamma, epsi
   H <- length(g_path)
   K0 <- post0$K0
   for (gh in g_hist_i) K0 <- update_knowledge_split(K0, post0$R0, gh, epsilon)
-  val <- sum(post0$w * lambda_rate(K0, post0$R0 + g_path[1], gamma))
+  val <- sum(post0$w * lambda_rate(K0, post0$R0 + g_path[1], post_gam(post0, gamma)))
   if (H >= 2) {
     Kb <- post_bar1$K0
     for (gh in g_hist_i) Kb <- update_knowledge_split(Kb, post_bar1$R0, gh, epsilon)
     Kb <- update_knowledge_split(Kb, post_bar1$R0, g_path[1], epsilon)
     for (s in 2:H) {
-      val <- val + sum(post_bar1$w * lambda_rate(Kb, post_bar1$R0 + g_path[s], gamma))
+      val <- val + sum(post_bar1$w * lambda_rate(Kb, post_bar1$R0 + g_path[s], post_gam(post_bar1, gamma)))
       if (s < H) Kb <- update_knowledge_split(Kb, post_bar1$R0, g_path[s], epsilon)
     }
   }
@@ -1122,13 +1144,15 @@ waterfill_round_t <- function(posts, budget, gamma, epsilon, g_hist = list(),
   g0 <- if (is.null(init_g)) rep(0, n) else init_g
   if (budget <= tol) return(g0)
   Amat <- matrix(0, n, M); Rmat <- matrix(0, n, M); Wmat <- matrix(0, n, M)
+  Gmat <- matrix(gamma, n, M)
   for (i in seq_len(n)) {
     K <- posts[[i]]$K0
     for (gh in g_hist) K <- update_knowledge_split(K, posts[[i]]$R0, gh[i], epsilon)
     Amat[i, ] <- K; Rmat[i, ] <- posts[[i]]$R0; Wmat[i, ] <- posts[[i]]$w
+    if (!is.null(posts[[i]]$gam)) Gmat[i, ] <- posts[[i]]$gam
   }
   base <- Amat + Rmat + g0
-  num  <- gamma * Wmat * Amat^2
+  num  <- Gmat * Wmat * Amat^2
   m0   <- rowSums(num / base^2)
   gcur <- rep(0, n)
   eval_nu <- function(nu) {
@@ -1324,7 +1348,8 @@ simulate_trial_T <- function(
     B_total, delta, gamma, epsilon, x_seed,
     M, k_min, k_shape, r_min, r_shape, tau_r, tau_k,
     use_resource_signal, detail = FALSE, allocator = "greedy",
-    seed_persistent = FALSE
+    seed_persistent = FALSE, oracle = FALSE,
+    gamma_i = NULL, latentA = NULL, k_lognormal = NULL
 ) {
   n       <- length(K_true)
   tranche <- B_total / T_rounds
@@ -1347,10 +1372,17 @@ simulate_trial_T <- function(
   for (t in seq_len(T_rounds)) {
     posts <- NULL
     if (strategy_uses_posterior(S)) {
-      posts <- build_posteriors_hist(
-        p_init, sigma_r, sigma_k, M, k_min, k_shape, r_min, r_shape, gamma,
+      posts <- if (oracle) {
+        # D-4 oracle mode: full-information funder — point-mass posteriors at truth
+        lapply(seq_len(n), function(i) list(
+          K0 = K_true[i], R0 = R0[i], w = 1,
+          gam = if (length(gamma) > 1) gamma[i] else NULL))
+      } else build_posteriors_hist(
+        p_init, sigma_r, sigma_k, M, k_min, k_shape, r_min, r_shape,
+        if (length(gamma) > 1) gamma[1] else gamma,
         tau_r, tau_k, use_resource_signal, use_grant,
-        p_hist = p_hist, g_hist = g_hist
+        p_hist = p_hist, g_hist = g_hist,
+        gamma_i = gamma_i, latentA = latentA, k_lognormal = k_lognormal
       )
     }
     p_prev <- if (t == 1L) p_init else p_hist[[t - 1L]]
@@ -1423,8 +1455,13 @@ run_simulation_T <- function(
     x_seed = 0.25, M = 200, strategies = 1:9, verbose = FALSE,
     detail = FALSE, allocator = "greedy", budget_ref = "R",
     seed_persistent = FALSE, ces_gamma = -1,
-    eps_free = epsilon, eps_paid = epsilon
+    eps_free = epsilon, eps_paid = epsilon,
+    tau_k_true = tau_k, tau_k_belief = tau_k, oracle = FALSE,
+    A_obs_sdlog = 0, latentA_cfg = NULL
 ) {
+  # D-2 (addendum): misspecified trust. The WORLD draws the grant signal at
+  # tau_k_true; the FUNDER's likelihood weights it at tau_k_belief. Defaults
+  # (both = tau_k) reproduce the historical model bit-identically.
   # CES exponent: the smooth myopic water-fill hard-codes the harmonic marginal
   # gamma*K^2/(K+R+g)^2 and is silently wrong for any other production form.
   if (allocator == "smooth" && ces_gamma != -1) stop("smooth waterfill is harmonic-only")
@@ -1455,9 +1492,31 @@ run_simulation_T <- function(
 
   pop <- draw_initial_population(n, k_min, k_shape, r_min, r_shape, rho_kr)
   K0_init <- pop$K0; R0_init <- pop$R0
+
+  # E-1 (addendum): heterogeneous productivity. E-1a (A_obs_sdlog > 0): A_i
+  # lognormal with E[A]=1, OBSERVABLE to the funder (enters likelihood/planners
+  # as per-researcher data). E-1b (latentA_cfg): variance of log-talent split
+  # between lognormal K (share split_s) and LATENT lognormal A; the funder
+  # holds (K_s, A_s) posterior atoms. Both dormant at defaults.
+  A_i <- NULL; gamma_run <- gamma
+  gamma_i_pass <- NULL; latentA_pass <- NULL; klog_pass <- NULL
+  if (A_obs_sdlog > 0) {
+    A_i <- rlnorm(n, -A_obs_sdlog^2 / 2, A_obs_sdlog)
+    gamma_run <- gamma * A_i
+    gamma_i_pass <- gamma_run
+  } else if (!is.null(latentA_cfg)) {
+    s_ <- latentA_cfg$split_s; V <- latentA_cfg$V
+    sd_K <- sqrt(s_ * V); sd_A <- sqrt((1 - s_) * V)
+    z1 <- rnorm(n); z2 <- rnorm(n)          # z2 always drawn: CRN across split_s
+    K0_init <- exp(latentA_cfg$meanlogT + sd_K * z1)
+    A_i <- exp(sd_A * z2)                   # mu_A = 0; sd_A = 0 -> exactly 1
+    gamma_run <- gamma * A_i
+    latentA_pass <- list(mu_A = 0, sd_A = sd_A)
+    klog_pass <- list(meanlog = latentA_cfg$meanlogT, sdlog = sd_K)
+  }
   rho_s   <- suppressWarnings(cor(K0_init, R0_init, method = "spearman"))
 
-  lam_init <- lambda_rate(K0_init, R0_init, gamma)
+  lam_init <- lambda_rate(K0_init, R0_init, gamma_run)
   p_init   <- rpois(n, pmax(lam_init, LAMBDA_FLOOR))
 
   # Pre-rounds (naive), updating K and cumulative pubs — matches v5.
@@ -1466,14 +1525,14 @@ run_simulation_T <- function(
     for (r in seq_len(n_pre_rounds)) {
       g_pre   <- allocate_naive(p_cumul, B)
       R_round <- R0_current + g_pre
-      lam_pre <- lambda_rate(K_current, R_round, gamma)
+      lam_pre <- lambda_rate(K_current, R_round, gamma_run)
       p_round <- rpois(n, pmax(lam_pre, LAMBDA_FLOOR))
       p_cumul <- p_cumul + p_round
       K_current <- update_knowledge_split(K_current, R0_current, g_pre, epsilon)
     }
   }
 
-  sigs    <- draw_signals(K_current, R0_current, tau_r, tau_k)
+  sigs    <- draw_signals(K_current, R0_current, tau_r, tau_k_true)
   sigma_r <- sigs$sigma_r; sigma_k <- sigs$sigma_k
 
   results <- vector("list", 11)
@@ -1481,13 +1540,16 @@ run_simulation_T <- function(
     set.seed(seed * 1000)                        # common random numbers / strategy
     results[[S]] <- simulate_trial_T(
       S, T_rounds, K_current, R0_current, p_cumul, sigma_r, sigma_k,
-      B_total, delta, gamma, epsilon, x_seed,
-      M, k_min, k_shape, r_min, r_shape, tau_r, tau_k, use_resource_signal,
-      detail = detail, allocator = allocator, seed_persistent = seed_persistent
+      B_total, delta, gamma_run, epsilon, x_seed,
+      M, k_min, k_shape, r_min, r_shape, tau_r, tau_k_belief, use_resource_signal,
+      detail = detail, allocator = allocator, seed_persistent = seed_persistent,
+      oracle = oracle, gamma_i = gamma_i_pass, latentA = latentA_pass,
+      k_lognormal = klog_pass
     )
   }
 
   res <- list(
+    A_i = A_i,
     params = list(seed = seed, T_rounds = T_rounds, n = n, b = b, B = B,
                   B_total = B_total, epsilon = epsilon, tau_k = tau_k,
                   tau_r = tau_r, k_shape = k_shape, r_shape = r_shape,

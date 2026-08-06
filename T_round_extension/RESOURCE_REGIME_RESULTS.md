@@ -149,3 +149,12 @@ source("sweep_results/_probe/plot_resource_regime.R")
 
 The results above use 64 seeds and focal strategies {5,7,8} (the contrasts `b_idx_S8`, `S8−S5`, `S8−S7`);
 the sign/shape of every claim is stable across the probes at 12–16 seeds and 120–150 posterior samples.
+
+**Provenance upgrades (2026-08-05/06):** `resource_regime` re-run at 200 seeds
+(`sweep_results/resource_regime/`, |Δ b_idx| ≤ 0.0011 vs the 64-seed run) and all three
+exploration sweeps re-run at 200 seeds (`sweep_results/exploration_200/`, |Δ| ≤ 0.005) — use these
+for main-text figures. Two independent verifications (docs/DIAGNOSTICS_RESULTS_2026-08.md, bootstrap
+items): (1) an honest fixed-schedule sweep with no CE planner certifies that no early-mass schedule
+beats even-or-late at the depth corner (best early-mass loses by z=4.9 at ε=0.3) — seed-and-harvest
+is planner-free; (2) the negative S8−S5 at depth is honest CE mispricing, not an optimizer bug
+(S8 maximizes its own objective in 20/20 seeds). Part 2's caveat stands as written.

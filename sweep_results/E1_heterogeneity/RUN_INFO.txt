@@ -1,0 +1,3 @@
+hash: 21b0d9a073c11620e350edb3744cbfb52944c0e1
+date: 2026-08-05 16:11:11
+E1a: 100 seeds directions + 30 seeds rule tracking; E1b: 100 seeds, CRN across s
