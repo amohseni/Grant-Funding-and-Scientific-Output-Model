@@ -1,0 +1,521 @@
+%--------------------------------------
+% Document type, language, math support, layout and margins
+\documentclass[article, 11pt, reqno]{amsart}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{mathtools, amsmath, amsthm, amsfonts, amssymb} % Math packages
+\usepackage{bm}
+
+\usepackage[hidelinks]{hyperref} % for hyper references
+\usepackage{cleveref}
+\crefname{section}{§\hspace{-0.1cm}}{§§}
+\Crefname{section}{§}{§§}
+
+%--------------------------------------
+% For controlling page margins
+\usepackage[top=3cm, bottom=3cm, left=4cm, right=4cm]{geometry}
+% For bibliography and citation style
+\usepackage{csquotes}
+\usepackage{natbib}
+\setcitestyle{aysep={}}
+\usepackage[toc,page]{appendix} % For linking to the appendix
+%--------------------------------------
+% text spacing, alignment, and formatting
+\usepackage{setspace}
+\usepackage[multiple,hang,flushmargin]{footmisc} % Remove indent from footnotes, allow multiple footnotes
+\usepackage[foot]{amsaddr}
+\setlength{\skip\footins}{.3cm} % Control spacing between footnotes and body text
+\onehalfspacing
+\frenchspacing
+\raggedbottom
+%--------------------------------------
+% aesthetic tweaks for quoting, figures, and tables
+\usepackage{upquote} % For `' quote formatting
+\usepackage{graphicx} % For importing images
+\usepackage{booktabs} % Improves table options & aesthetics
+\usepackage{caption} % For captions
+\usepackage{subcaption} % For sub-captions
+\usepackage{makecell} %  Create multi-lined tabular cells
+%--------------------------------------
+% documents-specific packages
+\usepackage{tikz} % For phase diagrams
+\usetikzlibrary{arrows.meta} % Arrows library
+\usepackage{pgfplots} % For native figures
+\pgfplotsset{compat=1.17}
+%--------------------------------------
+\usepackage[footnote]{acronym} % For removing footnote indents
+\usepackage{scrextend} % For removing footnote indents
+\deffootnote[1em]{0em}{0em} % For removing footnote indents
+{\textsuperscript{\thefootnotemark}\,\,}
+\usepackage{multicol}
+\usepackage{listings}
+%--------------------------------------
+\makeatother
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\DeclareMathOperator*{\argmax}{arg \ max}
+%--------------------------------------
+\renewcommand{\floatpagefraction}{.9}
+\renewcommand{\topfraction}{.9}
+\renewcommand{\bottomfraction}{.95}
+\renewcommand{\textfraction}{.05}
+%--------------------------------------
+\newenvironment{myfont}{\fontfamily{qcr}\selectfont}{\par}
+%--------------------------------------
+% Some custom theorems
+\newtheorem{theorem}{Theorem}
+\newtheorem{prop}{Proposition}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{case}[theorem]{Case}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{conclusion}[theorem]{Conclusion}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem*{definition}{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{solution}[theorem]{Solution}
+\newtheorem{summary}[theorem]{Summary}
+%--------------------------------------
+\newtheorem{innercustomthm}{Proposition}
+\newenvironment{customthm}[1]
+{\renewcommand\theinnercustomthm{#1}\innercustomthm}
+{\endinnercustomthm}
+\newtheorem{innercustomcor}{Corollary}
+\newenvironment{customcor}[1]
+{\renewcommand\theinnercustomcor{#1}\innercustomcor}
+{\endinnercustomcor}
+\newtheoremstyle{named}{}{}{\itshape}{}{\bfseries}{.}{.5em}{\thmnote{#3}#1}
+\theoremstyle{named}
+\newtheorem*{namedtheorem}{}
+%--------------------------------------
+\newcommand\independent{\protect\mathpalette{\protect\independenT}{\perp}}
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}} % Define statistical independence symbol
+%--------------------------------------
+\usepackage[indent=0pt]{parskip} % for paragraph spacing
+%--------------------------------------
+\usepackage{comment} % for commenting long sections
+%--------------------------------------
+\raggedbottom % for ragged bottom to paragraphs
+%----------------------------------------------------------------
+\onehalfspacing  % for 1.5x line height
+\frenchspacing
+
+%----------------------------------------------------------------
+\title[Funding the capability-resource gap]{Funding the capability-resource gap:\\ a model of optimal science funding}
+
+\author{Aydin Mohseni}
+\address{Department of Philosophy, Carnegie Mellon University}
+\email{amohseni@andrew.cmu.edu}
+\thanks{This work was supported by the John Templeton Foundation [grant number TODO].}
+
+\author{Simon DeDeo}
+\address{Department of Social and Decision Sciences, Carnegie Mellon University}
+
+\author{Kevin J.\,S. Zollman}
+\address{Department of Philosophy, Carnegie Mellon University}
+
+\begin{document}
+
+\begin{abstract}
+The grant funder's challenge is to maximize the impact of a fixed budget under uncertainty
+about the researchers who might receive it. We develop a Bayesian model of this challenge:
+researchers differ in their epistemic capabilities and in resources; research output
+requires both, and funding compounds capability across rounds. We show that the optimal
+allocation funds the capability-resource gap: grants increase with capability and decrease
+with existing resources. Track records underdetermine the gap; peer review supplies
+an additional, noisy signal of capability. We find that this signal's value increases with
+capability inequality and with its informativeness, and that under heavy-tailed capability
+distributions even a coarse signal suffices. We further find that uniform seed grants and
+lotteries, which forgo targeting, are cheap exactly where review is worth little, and that
+whom to fund matters far more than when to fund.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}\label{sec:intro}
+
+Science funding is large and consequential. How best to allocate it remains poorly
+understood. The United States performed \$937 billion of R\&D in 2023 and an estimated
+\$993 billion in 2024, roughly a fifth of it funded by the federal government
+\citep{NCSES2026, NSB2026}. In spite of this, basic dimensions of allocation are contested. Whether
+funding should be concentrated on a few researchers or spread across many is a long-running
+dispute \citep{Aagaard2020}. Whether peer review is effective is disputed: among funded NIH
+grants, percentile scores predicted subsequent productivity barely better than chance
+\citep{Fang2016}, while other designs find modest but real predictive power
+\citep{Gallo2014, LiAgha2015, ParkLeeKim2015}. % [check all three]
+And whether review should be replaced, in part, by lotteries has moved from proposal to
+practice \citep{Roumbanis2019, Heyard2022}. % [check: SNSF; NZ HRC; Volkswagen]
+These disputes concern a single underlying problem: what a funder with a fixed budget and
+imperfect knowledge of researchers should do. This paper develops a model of that problem
+and works out its logic: whom to fund, whether to spend early or wait and learn, what
+information about researchers is worth buying, and what egalitarian alternatives cost.
+
+Consider the challenge of the grant funder, whether a federal agency disbursing billions or
+a private foundation disbursing millions: you have a fixed budget and must choose how to
+allocate it across researchers and research projects to create the most positive impact.
+There are two intuitive schemes. Fund the track record: give to those who have produced the
+most, since past production is the best evidence of future production. Fund the
+under-resourced: give to those who have the least, since a dollar goes further where dollars
+are scarce. Each scheme can be intuitively compelling. Both, we will show, are suboptimal,
+and for the same reason: each accounts for only one of the two quantities the impact of a
+grant depends on.
+
+We model this decision situation as follows. A funder with a fixed budget allocates
+grants, over multiple rounds, to researchers who differ in two ways: epistemic capability,
+what a researcher knows and can do, and resources, what a researcher has to work with.
+Research output requires both and is limited by the scarcer of the two; the funder can
+observe output, but not capability or resources themselves. A grant adds to a researcher's resources in
+the round it is given and, because doing research builds expertise, compounds their
+capability in later rounds. Each round, the funder observes the output that results,
+updates its beliefs about the researchers, and allocates again.
+
+Our results are as follows. In the ideal condition where the funder has complete
+information regarding researchers' capabilities and resources, the optimal allocation funds
+the capability-resource gap: each funded researcher receives a grant increasing in their
+capability and decreasing in their existing resources, and the budget determines how many
+researchers receive funding at all. Each intuitive scheme fails because it
+accounts for only one of the two quantities. In reality the funder lacks direct access to
+the gap, and track records alone underdetermine it: we show that a funder relying on the
+track record performs far worse than one that estimates the gap.
+
+Peer review supplies an additional signal of capability. Its value for a Bayesian funder
+is the expected value of its reduction of the funder's uncertainty regarding the gap, and
+that value is greatest where capability is unequally distributed and review informative; in
+fields with heavy-tailed distributions of capability, even a coarse signal captures most of
+this value. The same reasoning elucidates the cost of the egalitarian alternatives: uniform
+seed grants and lotteries cost the value of targeting they displace, little where review is
+worth little, most exactly where review is worth most. The budget is a variable throughout,
+so our results speak across funder scales: a small foundation, whose grants are modest
+beside researchers' total resources, is the funder for whom targeting matters most per
+dollar. Whether optimal funding should concentrate on a few researchers or spread across many
+depends on the size of the funder's budget relative to researchers' total resources. We show
+how strategic timing of when one provides funds matters far less than strategic targeting
+of whom one provides funds: how much of the budget to spend early rather than late shifts
+with the funder's budget relative to researchers' total resources, but the difference is
+small relative to the difference between funding the right and the wrong researchers.
+
+Two substantive assumptions bound these results. Grants are consumed, a grant's durable
+residue (skills, publications, standing) being carried as capability; and capability and
+resources are complements throughout, neither fully substituting for the other. We defend
+each assumption where it is used.
+
+We proceed as follows. \S\ref{sec:literature} situates our model in the literatures on
+funding allocation, peer review, and lotteries. \S\ref{sec:model} presents our model. \S4 derives the
+optimal allocation. \S5 shows why track records and small grants cannot reveal the gap.
+\S6 measures the value of peer review and relates it to the empirical evidence on review.
+\S7 examines the timing of funding, including the strongest argument for spending early.
+\S8 prices seed grants and lotteries. \S9 varies the production technology and revisits the
+concentration question. \S10 discusses implications and limitations, and \S11 concludes.
+% NOTE: \S3-\S11 hard-coded until those sections exist; convert to \S\ref{...} as each lands.
+
+\section{Related literature}\label{sec:literature}
+
+Our contribution sits at the intersection of four literatures: the empirical debate over
+concentrating or dispersing funds, the evidence on the efficacy of peer review, the case
+for funding lotteries, and formal models of science funding.
+
+Whether funders should concentrate resources on a few researchers or spread them across
+many is a long-running dispute, and concentration is the current practice: the top 1\% of
+NIH principal investigators receive close to 10\% of research project grant funding, a
+share that has risen since 1985 \citep{KatzMatter2020, Lauer2021}. Empirical studies of
+funded portfolios generally find diminishing marginal returns to funding per researcher,
+and reviews of this literature conclude that the evidence favors more dispersal than
+current practice \citep{Mongeon2016, Aagaard2020}. Concentration is also self-reinforcing:
+early grant winners accumulate advantages beyond the grant itself \citep{BolVaanRijt2018},
+a dynamic that formal models show can reward questionable research practices over a career
+\citep{Heesen2024}.
+This dispute typically concerns the returns to funding: whether output per researcher increases
+or decreases as grants concentrate. In our model, the answer also depends on the size of the
+funder's budget relative to researchers' total resources: with a budget large enough to
+relieve most bottlenecks, the optimal allocation itself reaches nearly every researcher, so
+little is lost by spreading funds widely; with a tight budget, effectiveness requires
+concentrating funds on the researchers with the largest capability-resource gaps (\S9).
+The value of any targeting, in turn, depends on what the funder can know about researchers
+(\S6).
+
+The efficacy of peer review is contested. Among funded NIH grants, percentile scores
+predict subsequent productivity barely better than chance \citep{Fang2016}, and reviewers
+assessing the same application agree only weakly \citep{Pier2018}. Analyses with different
+designs find real but modest predictive power: better scores predict more publications,
+citations, and patents, including under controls for investigator history and institution
+\citep{LiAgha2015}, and a funding natural experiment finds higher-scored proposals
+outproduce lower-scored ones \citep{ParkLeeKim2015}. Both sides of this dispute measure
+review's accuracy: how well scores predict outcomes among funded applicants. Our model
+instead measures review's value: the expected value of its reduction of the funder's
+uncertainty regarding the capability-resource gap. That value depends on the field; the same noisy signal can be
+worth a great deal in one field and nothing in another (\S6), and no single number settles
+the question.
+
+Doubts about review have made lotteries a live proposal. Advocates argue that randomizing
+among fundable applications saves review costs, reduces bias, and honestly reflects
+review's limited ability to discriminate among fundable proposals
+\citep{FangCasadevall2016, Avin2019, Roumbanis2019}; several funders have implemented
+partial lotteries: the Health Research Council of New Zealand has allocated its Explorer
+Grants by lottery since 2013 \citep{Liu2020}, the Swiss National Science Foundation
+randomizes among ties \citep{Heyard2022}, and a German funding line runs a lottery before
+review \citep{Luebber2025}.
+The existing case prices what a lottery saves: \citet{GrossBergstrom2019} model grant
+competition as a contest in which scientists invest costly effort in proposals, show that
+at low paylines this effort can rival the scientific value of the research funded, and show
+that a partial lottery among proposals above a threshold decouples the waste from the
+payline. What remains unpriced is what a lottery forgoes. Our model supplies that half of
+the ledger: the value of targeting, which runs from negligible, where budgets are ample,
+signals uninformative, or capability evenly spread, to substantial, where capability is
+heavy-tailed and budgets tight (\S8). Together the two halves price the choice field by
+field.
+
+Formal models of science funding have concentrated on the incentive costs of competition
+and on the value of exploration. Beyond the contest model above, \citet{GrossBergstrom2025}
+find, in a game-theoretic model of contests for scarce rewards, that intensifying
+competition pushes scientists toward higher-risk, higher-return projects.
+\citet{AvinBJPS2019}
+simulates funding strategies on an epistemic landscape and finds that allocation with an
+explicitly random component significantly outperforms a peer-review-like strategy on large
+landscapes, because review concentrates effort on regions already known to be productive.
+\citet{Sorzano2026} treat allocation as a decision problem under heavy-tailed uncertainty
+about project value, pairing an empirical bibliometric signal with a biased-lottery
+mechanism. In each of these models, what funding buys is a single quantity, a project's
+chance of success or a researcher's productivity, and none treats the timing of spending as
+the funder's choice.
+In our model, a researcher's output increases in both capability and resources but is
+limited by the scarcer of the two, and the funder observes neither directly.
+
+Our formulation and analysis of the capability-resource gap allows us to address questions
+raised by these literatures: how widely funds should be spread (\S9), what peer review is
+worth (\S6), and when lotteries are defensible (\S8).
+% NOTE: \S4-\S9 hard-coded until those sections exist; convert to \S\ref{...} as each lands.
+
+\section{Our model}\label{sec:model}
+
+A funder faces a population of $n$ researchers over $T$ funding rounds. Researcher $i$ has
+epistemic capability $K_i$ and resources $R_i$. Initial capabilities and resources are
+drawn from Pareto distributions with tail parameters $\alpha_K$ and $\alpha_R$; smaller
+tail parameters produce more unequal fields, and a correlation parameter $\rho$ allows
+capable researchers to tend to be well resourced. The funder knows these distributions; it
+never observes any researcher's capability or resources directly.
+
+In each round, researcher $i$ produces research output\footnote{We are agnostic about the
+interpretation of output units: they may be read as publications, as findings, or as units
+of scientific value.} at random, in discrete units, with expected output\footnote{Output in
+each round is drawn from a Poisson distribution with rate $\lambda_i$, independently across
+researchers and rounds given the state.}
+\[
+\lambda_i = A\,\Lambda(K_i, R_i),
+\]
+where $A$ is a productivity constant and $\Lambda$ is a production function that increases
+in both arguments but is limited by the scarcer of the two. Our main analysis takes
+$\Lambda$ to be the harmonic mean:
+\[
+\lambda_i = \frac{2A K_i R_i}{K_i + R_i}.
+\]
+The harmonic mean makes capability and resources complements without making either an
+absolute requirement: a capable researcher with thin resources still produces, by working
+more slowly or borrowing equipment, but no surplus of one input fully substitutes for a
+shortage of the other. The harmonic mean sits between two boundary cases that fail in
+opposite directions: Cobb-Douglas, under which a capable researcher can compensate almost
+fully for vanishing resources, and Leontief, under which no compensation is possible at
+all. \S9 repeats our analysis across the full family between these boundaries.
+
+Capabilities increase through research. Between rounds,
+\[
+K_i \leftarrow K_i + \epsilon\,\Lambda(K_i, R_i),
+\]
+where $\epsilon$ is the compounding rate: doing research builds expertise, and the same
+bottleneck that limits output limits growth. Growth requires both inputs, and capability
+never declines. Resources, by contrast, do not accumulate: resources in a round are
+baseline plus grant, $R_i = R_{i0} + g_i$. The baseline $R_{i0}$ recurs every round,
+representing the time and support a researcher has independent of the funder, while grants
+are consumed in the round they are given. This is a substantive assumption, not
+bookkeeping: whatever endures from a grant, the skills, publications, and standing it
+produces, is carried by the capability update, so funding's lasting effect flows through
+what researchers become rather than what they keep. Science is in this respect an
+accumulation process: success begets the means of further success.
+
+The funder's total budget is fixed before any outcomes are observed. We parameterize it by
+a budget scale $b$: at $b = 0.5$, the purse equals the community's expected baseline
+resources for one round, and the purse scales linearly in $b$. (The exact normalization is
+in Appendix [X].) The budget does not grow with the horizon: a longer horizon varies the
+timing of spending, never its amount. Strategies that do not plan ahead spend an equal
+share of the purse each round. Forward-looking strategies may spend on any schedule: each
+round, they re-plan the entire remaining budget over the remaining horizon and execute the
+current round's allocation.
+
+The funder learns as it goes. It observes each researcher's track record, the output they
+have produced to date, as it accumulates, and two further signals are available. A resource
+signal, observed once at the start, gives a noisy reading of each researcher's baseline
+resources (noise $\tau_R$), as one might obtain from institutional information. A review
+signal, drawn afresh in each round that a strategy uses it, gives a noisy reading of
+capability (noise $\tau_K$), as one might obtain from proposal evaluation and expert
+judgment. The review signal's informativeness is governed by $\tau_K$: the smaller the
+noise, the more informative the review. Bayesian strategies update beliefs about every
+researcher after each round and allocate on posterior expected marginal returns.
+
+We compare seven funding strategies, which differ along two dimensions: information, with
+or without the review signal, and planning, myopic or forward-looking. A myopic strategy
+optimizes expected output in the current round; a forward-looking strategy optimizes
+expected output over the whole remaining horizon. Three non-Bayesian baselines complete
+the set: no funding, against which every result is normalized; uniform funding, which
+splits each round's tranche equally; and track-record funding, which allocates in
+proportion to the previous round's output. Uniform floors and lotteries, which modify
+these strategies rather than add to them, are introduced in \S8.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lll@{}}
+\toprule
+Strategy & Information & Planning \\
+\midrule
+No funding & none & none \\
+Uniform & none & none \\
+Track record & track record & none \\
+Myopic, without review & track record + resource signal & current round \\
+Forward, without review & track record + resource signal & remaining horizon \\
+Myopic, with review & track record + resource signal + review & current round \\
+Forward, with review & track record + resource signal + review & remaining horizon \\
+\bottomrule
+\end{tabular*}
+\caption{The funding strategies compared.}
+\label{tab:strategies}
+\end{table}
+
+Our conclusions rest either on analytic results supported by proofs or on simulation
+results that are established across the following parameter ranges.\footnote{Unless a figure
+states otherwise, unstated parameters take the values $T = 2$, $n = 50$, $\epsilon = 0.1$,
+$b = 0.5$, $\alpha_K = \alpha_R = 2$, $\tau_K = \tau_R = 1$, and $\rho = 0$.
+% TODO: move this note to the first figure's caption once figures land.
+} The tail parameters $\alpha_K$ and $\alpha_R$ range from 1.3 to 3.5. Distributions of
+research productivity are heavy-tailed: in Lotka's classic data, the number of authors
+producing $x$ papers falls off as $x^{-2}$, and later studies estimate exponents mostly
+between 2 and 3 \citep{Lotka1926, Nicholls1989}, % [check Nicholls range]
+corresponding to Pareto tail parameters near 1 to 2; our range covers this territory and
+extends to markedly more equal fields. The budget scale $b$ ranges from 0.1 to 1, from a
+funder whose purse is small beside the community's own resources to one able to relieve
+most researchers' bottlenecks; \S5 and \S7 also examine deeper purses. The compounding
+rate $\epsilon$ ranges from near zero, where funding buys only current output, to 0.85,
+where this round's funding substantially raises later capability. The review noise
+$\tau_K$ ranges from 0.05, nearly perfect review, to 20, nearly uninformative review, a
+range wide enough to contain the noise implied by empirical estimates of review's
+predictive accuracy (\S6). The correlation $\rho$ ranges from $-0.5$ to 0.8, and the
+horizon $T$ from one round to ten.
+
+Randomness enters our model through the initial population draws, the signals, and
+realized output. Realized output shapes the funder's beliefs and, through them, its
+allocations. Capability growth, by contrast, follows expected output: the update above
+uses $\Lambda$ itself, so a researcher's accumulation depends on their capability and
+resources, not on luck in any given round. This is a modeling choice: it treats a round as
+containing enough separate acts of research for luck to average out of accumulation, while
+leaving the funder's inference fully exposed to noise. For the same reason, we score each
+strategy by the sum of expected outputs along its run, which equals realized output
+averaged over repetitions of the same allocations; this removes simulation noise from
+comparisons without favoring any strategy. Each configuration runs on 200 independently
+drawn populations, with common random numbers across strategies, so every comparison
+between strategies is paired. Throughout, we report each strategy's improvement over no
+funding, in percent. The full specification, parameter table, and code are in Appendix
+[X].
+
+With the model in place, the funder's problem is exact: choose grants, given beliefs, to
+maximize expected total output over the horizon. \S4 solves the case in which the funder
+has complete information regarding researchers' capabilities and resources.
+
+
+\section{The optimal allocation: fund the capability-resource gap}\label{sec:optimal}
+
+First, consider the simple case where the funder has complete information regarding
+researchers' capabilities and resources. Further, we initially restrict our attention to a
+single round of funding, temporarily putting aside the contribution of resources to the
+accumulation of researchers' capabilities across rounds. The funder's problem is to divide
+the round's tranche among researchers so as to maximize expected output:
+\[
+\max_{g_1, \ldots, g_n \geq 0} \; \sum_{i} A\,\Lambda(K_i,\, R_{i0} + g_i)
+\quad \text{subject to} \quad \sum_{i} g_i \leq \text{the round's tranche}.
+\]
+
+Now, consider the marginal value of a dollar for such a funder. Under the harmonic
+production function,
+\[
+\frac{\partial \lambda_i}{\partial g_i} = \frac{2A\,K_i^2}{(K_i + R_{i0} + g_i)^2}.
+\]
+The marginal value of funding researcher $i$ increases with their capability and decreases
+with the resources they already hold, including grants. An allocation is optimal exactly
+when no dollar can be moved to a researcher who can produce more value with it, that is,
+when marginal values are equal across all funded researchers and no unfunded researcher's
+marginal value exceeds theirs.
+
+\begin{prop}[the gap rule]\label{prop:gap-rule}
+For every researcher, the optimal grant fills the gap, if any, between the resources they
+hold and a target proportional to their capability:
+\[
+g_i^* = \max(c\,K_i - R_{i0},\, 0),
+\]
+where the constant $c > 0$ is set by spending the budget.\footnote{$c = \sqrt{2A/\nu} - 1$,
+with $\nu$ the common marginal value at the optimum. The proof is in Appendix [X].}
+\end{prop}
+
+We can understand the rule as follows. Each researcher's target is $c$ times their
+capability, and their gap is the difference between their target and the resources they
+hold. The rule grants every researcher with a positive gap exactly their gap, and grants
+nothing to the rest; the constant $c$ is defined as the value at which these grants sum to
+the budget. Because $c$ is defined by the budget, the budget always covers the gaps: a
+question of which gaps to fund first does not arise. When the budget is small, $c$ is
+small: targets are low, few researchers have positive gaps, and their grants are small.
+When the budget is large, $c$ is large: targets are high, and funding extends across
+nearly the whole population. In both cases the funded researchers, those with positive
+gaps ($R_{i0} < c\,K_i$), are those with the least resources relative to their capability,
+and these are the researchers for whom a dollar has the greatest marginal
+value.\footnote{The optimality condition behind the rule, funding to a common marginal
+value, is the water-filling solution familiar from information theory
+\citep{CoverThomas2006}. If all researchers shared one capability, the rule would reduce
+to filling each researcher's gap below one common target, the poverty-gap transfer of
+development economics \citep{FGT1984}; our rule scales the target with capability.} The
+condition $R_{i0} < c\,K_i$ draws a frontier through the population, the funding frontier,
+separating the funded from the unfunded (Figure~\ref{fig:frontier}).
+
+\input{fig1-frontier}
+
+The gap rule explains why each of the intuitive funding schemes discussed earlier fails.
+Funding the track record fails because output reflects resources as well as capability: a
+productive researcher whose resources approach or exceed their target has a small or
+negative gap, and the marginal dollar buys little there. The failure is not merely a
+shortfall from the optimum: because track-record funding channels money toward researchers
+whose bottleneck is not resources, it can produce less output than spreading the budget
+evenly, that is, than not targeting at all.\footnote{Appendix [X] gives a two-researcher
+example.} Funding the under-resourced fails for the mirror-image reason: scarcity is no
+evidence of capability, and dollars allocated to researchers of low capability buy little
+however scarce their resources. It, too, can produce less than not targeting at
+all.\footnote{Again, Appendix [X] gives an example.} Each scheme accounts for one of
+capability and resources, whereas the marginal value of a dollar is determined by how a
+researcher's resources compare with their capability, and so responds to both.
+
+How much targeting matters depends on the budget. A researcher's expected output increases
+with every dollar of resources, but with diminishing marginal returns, and it never
+exceeds $2AK_i$: expected output is bounded above by a quantity set by capability, which
+it approaches but does not attain. When the budget is large, optimal and uniform funding
+therefore differ little in the output they produce: under either, every researcher's
+output is near its upper bound, and the difference between the two vanishes as the budget
+increases (Appendix [X]). When the budget is small, dollars are scarce, researchers differ
+in the marginal value of a dollar, and output depends on where each dollar goes. Targeting
+matters where money is tight and little where it is ample
+(Figure~\ref{fig:targeting-value}). This comparative static recurs: it sets the price of
+overriding the optimal allocation with floors and lotteries (\S8), and it determines when
+optimal funding concentrates rather than spreads (\S9).
+
+\input{fig2-targeting-value}
+
+To use the gap rule, however, a funder requires an estimate of the gap between
+researchers' capabilities and their resources. We turn now to how such estimation can
+work: from the track record alone (\S5), and with peer review added (\S6).
+
+\bibliographystyle{chicago}
+\bibliography{references}
+
+\end{document}
