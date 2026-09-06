@@ -13,8 +13,8 @@ Drafted plain-first; every formal gloss checked by the substitution test.
 ## 5. What the track record can and cannot supply
 
 The funder observes track records: each researcher's realized output, round by round. A
-track record is evidence about the gap, and the question for this section is how far that
-evidence goes.
+track record is evidence about the capability-resource gap, and the question for this
+section is how far that evidence goes.
 
 Consider first what output can identify in principle. Expected output is one number,
 produced by capability and resources jointly: every pair of capability and resources with

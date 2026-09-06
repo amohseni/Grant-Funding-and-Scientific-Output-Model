@@ -575,6 +575,12 @@ overtrust caveat (negative at alpha 2, reduced at 1.3; z-honesty in footnote TOD
 bridge to \S7 (whom -> when). Seven notes incl. sharp/coarse flag and the
 gathered-conditions option. Awaiting his verdict on \S6 and the Figure 4 design.
 
+STANDING RULE FROM AYDIN (2026-09-06, skill-gaps observation to promote on recurrence or
+his word): re-introduce the paper's central objects of reference at section boundaries,
+within reason; readers skim or enter partway. Applied: \S5 opening "evidence about the
+capability-resource gap" (was "the gap"); \S6 definition sentence "uncertainty regarding
+the capability-resource gap." Named rules (the gap rule) keep their names.
+
 1. K terminology: talent (recommended) or knowledge. Word-level, Aydin's.
 2. Approve the bootstrap verification items (schedule sweep, CE check, 200-seed re-runs) if not
    already queued in the running suite.

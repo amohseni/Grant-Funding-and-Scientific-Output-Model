@@ -27,7 +27,7 @@ Drafted plain-first; substitution test run on every sentence about a formal quan
 Peer review enters our model as \S3 specified: a noisy signal of capability, with
 informativeness governed by the noise parameter $\tau_K$. The value of review, for a
 Bayesian funder, is the expected value of its reduction of the funder's uncertainty
-regarding the gap. Our model measures this value in output: the additional expected
+regarding the capability-resource gap. Our model measures this value in output: the additional expected
 output of a funder allocating with the review signal over the same funder allocating
 without it.
 
