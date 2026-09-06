@@ -27,8 +27,8 @@ Drafted plain-first; substitution test run on every sentence about a formal quan
 Peer review enters our model as a second source of evidence about researchers: a noisy
 signal of each researcher's capability, with informativeness governed by the noise
 parameter $\tau_K$. The value of review, for a Bayesian funder, is the expected value of
-its reduction of the funder's uncertainty regarding the capability-resource gap. Our
-model measures this value in output: the additional expected output of a funder
+its reduction of the funder's uncertainty regarding the capability-resource gap. We can
+quantify this value in terms of output: the additional expected output of a funder
 allocating with the review signal over the same funder allocating without it.
 
 The direction of review's effect is what one would expect: a more informative signal
@@ -41,9 +41,14 @@ grants and the optimal grants increases from 0.22 at the noisiest signal in our 
 0.97. The output shortfall to the complete-information benchmark falls from 17.2 to 1.7
 percent of no-funding output.
 % TODO: re-derive via verify_all_claims.R before lock.
-} Two facts beneath this direction are less expected. A funder relying on records alone
-never catches up: more rounds of records leave its allocation as far from the optimal
-allocation as before. And what a review signal is worth varies widely with the field.
+} Two further effects are less obvious: (1) a funder relying on records alone does not
+catch up, and (2) what a review signal is worth varies widely with the field. The first
+effect has a structural cause. Capabilities compound across rounds while resources do
+not accumulate, so each researcher's output approaches the level their resources
+sustain, and output at that level carries less and less information about capability;
+in our simulations, further rounds of records leave the funder's allocation no closer
+to the optimal allocation.\footnote{The correlation between its grants and the optimal
+grants stays between 0.13 and 0.18 across rounds at the default parameters.}
 
 [FIGURE 4 placeholder: allocation correlation with the optimal grants as informativeness
 increases, records-only funder alongside; data in sweep_results/D_gap_convergence/;
@@ -98,8 +103,9 @@ $\alpha_K = 1.3$ it remains positive at a reduced level.
 % TODO: verify before lock; state the noise caveat honestly if the numbers are kept.
 } Overtrust costs more than undertrust forfeits.
 
-Review tells the funder whom to fund. Next we turn to when: how funding should be
-spread across rounds, and how much that choice matters.
+Review can inform whom to fund. The next section turns to when to fund. In particular,
+we examine how funding should be spread across rounds, and how much that choice
+matters.
 
 ---
 

@@ -232,3 +232,16 @@ rewrite. Sub-rule: "increases"/"decreases" for monotone change, never "rises"/"f
 "grows" (his instruction, applied through abstract and \S2 as well). This is the
 generalization his ceiling correction demanded: it is interpretive fidelity applied to
 every informal gloss, not only to result statements.
+
+## 23. Relational verbs at their true strength (2026-09-06, promoted at his instruction)
+
+"Review tells the funder whom to fund" corrected to "Review can inform whom to fund":
+review informs but does not determine the decision. The pattern, which he named across
+several instances (also "the marginal value of a dollar is determined by their
+difference"): a factor is credited with determining something when the true relation is
+evidential, partial, or one input among several. The failure mode is wanting to say
+something that sounds very strong; accuracy matters categorically more. Rule:
+deterministic verbs (tells, determines, settles, dictates, fixes, ensures) only for
+relations that are deterministic in the formalism; otherwise informs, bears on, shifts,
+raises, contributes to. Now anti-pattern 25 with a checklist item; kin to lesson 10
+(capacity over identity) and the substitution test (lesson 22).

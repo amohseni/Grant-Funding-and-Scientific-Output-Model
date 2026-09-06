@@ -608,6 +608,26 @@ review added"), \S5's telegraph and close ("Next we ask..." / "Next we measure..
 (\S9), (\S7), and \S2's closing trio) kept per the rule. No backward-by-number
 references existed in \S2-\S5. Intro roadmap untouched per his exclusion. 15pp clean.
 
+\S6 v3 + CLAIMS LEDGER (2026-09-06): his line edits applied ("We can quantify this
+value in terms of output"; "Two further effects are less obvious" with enumeration,
+replacing the spatial "beneath"; "Review can inform whom to fund"; his bridge "The next
+section turns to when to fund. In particular, we examine..."). HIS SANITY CHECK on
+never-catches-up ANSWERED AND CLAIM CORRECTED: his intuition (resources grow, output ->
+2AK, K identified) fails against the spec because resources do NOT accumulate while
+capability compounds; output converges to the resource-limited 2AR and carries
+vanishing information about K (Fisher per round 7.9e-2 -> 6.1e-7 over 200 rounds;
+cumulative info finite at 0.44 over 20k rounds); "never" replaced with the scoped
+"does not catch up" plus the structural cause in the body. NEW ANTI-PATTERN 25 in the
+skill (SEVENTH revision, packaged; Aydin must save): inflated relational verbs
+(tells/determines/settles) reserved for deterministic relations; informs/bears
+on/shifts otherwise; his diagnosis (wanting to sound strong; accuracy categorically
+first) recorded as lesson 23. NEW section-6-claims.md: all 14 claims with modal force,
+ground, status; mechanism tests run THIS SESSION (verify_s6_mechanisms.py): C5b
+verified; C6 verified (top-10%-by-K share of optimal gain 0.92/0.86/0.72 at alpha
+1.3/2.0/3.5); C7 verified (top-decile recovery at tau=3: 0.68 heavy vs 0.21 light;
+middle-pair ordering 0.50-0.54, near chance, the corollary's direct mechanism); C3/C4/
+C5a/C8/C12/C13/C14 magnitudes owed to the R re-derivation before lock.
+
 1. K terminology: talent (recommended) or knowledge. Word-level, Aydin's.
 2. Approve the bootstrap verification items (schedule sweep, CE check, 200-seed re-runs) if not
    already queued in the running suite.
