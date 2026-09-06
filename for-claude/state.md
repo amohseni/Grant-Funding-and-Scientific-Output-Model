@@ -557,6 +557,24 @@ depth; vindicates P3 analytically without simulation. FIGURES.md row added (PROP
 Working home now the model repo's for-claude/ (relocated 2026-09-05); this session
 edited via bridge staging after a container reset.
 
+\S5 TYPESET + \S6 DRAFTED (2026-09-06): Aydin approved \S5 and the thin-grants figure
+("looks great"). \S5 inserted into main.tex as section 5 (\label{sec:records};
+Figure 3 = fig3-thin-grants \input after the thin-grants paragraph; the P2 numbers
+footnote carries two TODO comments: verify_all_claims re-derivation and the
+strategy-mapping check; "increasing precision" -> "increasing informativeness" for the
+locked term). Compiles 15pp clean, \S5 pages inspected. FIGURES.md: fig3 status ->
+placed. NEW section-6-draft-v1.md (function analysis + plain-first draft): definition
+paragraph with the licensed value formulation + output measure; convergence result with
+footnoted D-4 numbers (0.22->0.95 defaults, 0.34->0.97 heavy, 17.2->1.7 span) and
+FIGURE 4 placeholder (design sketch in note 4, x = informativeness, y = allocation
+correlation vs output-shortfall alternative, records-only flat baseline; needs .rds ->
+.dat export from a Mac session); determinants paragraph (dispersion, budget inherited
+from \S4, informativeness flattening with elbow footnote tau ~ 2.5, sweep 0.05-20);
+efficacy-dispute payoff (AUC 0.54 -> tau > 20 footnote; no single number settles it);
+overtrust caveat (negative at alpha 2, reduced at 1.3; z-honesty in footnote TODO);
+bridge to \S7 (whom -> when). Seven notes incl. sharp/coarse flag and the
+gathered-conditions option. Awaiting his verdict on \S6 and the Figure 4 design.
+
 1. K terminology: talent (recommended) or knowledge. Word-level, Aydin's.
 2. Approve the bootstrap verification items (schedule sweep, CE check, 200-seed re-runs) if not
    already queued in the running suite.

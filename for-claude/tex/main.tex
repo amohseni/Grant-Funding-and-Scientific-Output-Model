@@ -515,6 +515,58 @@ To use the gap rule, however, a funder requires an estimate of the gap between
 researchers' capabilities and their resources. We turn now to how such estimation can
 work: from the track record alone (\S5), and with peer review added (\S6).
 
+\section{What the track record can and cannot supply}\label{sec:records}
+
+The funder observes track records: each researcher's realized output, round by round. A
+track record is evidence about the gap, and the question for this section is how far that
+evidence goes.
+
+Consider first what output can identify in principle. Expected output is one number,
+produced by capability and resources jointly: every pair of capability and resources with
+$2AKR/(K+R) = \lambda$ produces the same expected output $\lambda$. A researcher of high
+capability and modest resources and a researcher of modest capability and abundant
+resources can therefore produce identical records. Output does carry some information
+about capability, a lower bound: since expected output never exceeds $2AK$, a researcher
+who produces $\lambda$ has capability above $\lambda/2A$. Beyond that bound, the record
+cannot separate the two researchers above, and these are exactly the researchers the gap
+rule treats most differently: the first may have the largest gap in the population, the
+second may have none. Cross-sectional output, however carefully recorded, underdetermines
+what the funder most needs to know.
+
+Our model measures what this underdetermination costs. A Bayesian funder relying on
+records alone allocates far from the gap rule and remains far: its allocations stay only
+weakly correlated with the optimal grants, round after round, and its output falls well
+short of the complete-information benchmark.\footnote{At the default parameters, the
+correlation between its grants and the optimal grants stays between 0.13 and 0.18 across
+rounds, and its output falls short of the complete-information benchmark by 17.2 percent
+of no-funding output.
+% TODO before submission: re-derive via verify_all_claims.R (Mac session), and verify the
+% strategy mapping (handoff's pubs-only baseline vs the without-review strategy of
+% Table 1, which also carries the resource signal; D-3 shows the resource signal is
+% redundant, but the correlation numbers must match the strategy named here).
+} This shortfall is the span from records alone to complete
+information. \S6 asks how much of that span a review signal recovers, and there we
+display this records-only baseline beside review signals of increasing informativeness.
+
+The record is least informative exactly where the gap is largest. When a researcher's
+resources are small relative to their capability, expected output is approximately
+$2AR$: proportional to resources, nearly independent of capability
+(Figure~\ref{fig:thin-grants}). On a thin grant, a researcher of capability 1 and a
+researcher of capability 100 produce nearly indistinguishable output. Small grants
+therefore buy almost no information about who is capable; separating capability from
+resources by observing output requires funding depth, grants comparable to capability
+itself. In our simulations of a resource-poor community with no review signal, a funder
+allocating at standard depth gains almost nothing over uniform funding, while the same
+funder with deep grants recovers most of the value of discrimination (\S7 measures this
+and its consequences for timing). For nascent and resource-poor fields the implication
+is direct: thin grants cannot reveal who is capable.
+
+\input{fig3-thin-grants}
+
+What the record cannot supply, then, is a signal of capability separate from resources.
+That is what peer review can provide under the right conditions. \S6 measures what such
+a signal is worth, and states the conditions.
+
 \bibliographystyle{chicago}
 \bibliography{references}
 
