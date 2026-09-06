@@ -11,6 +11,7 @@ paper, with styles matched across all figures.
 |---|---|---|---|---|
 | frontier | fig1-frontier.tex (+ fig1-funded.dat, fig1-unfunded.dat) | full (0.82\textwidth axis) | analytic, seed-659 population | placed, Fig 1, \S4 |
 | targeting-value | fig2-targeting-value.tex (+ fig2-curve.dat, make-fig2-data.py) | full (0.82\textwidth axis) | analytic, seed-659 population | placed, Fig 2, \S4 |
+| thin-grants | fig3-thin-grants.tex (+ fig3-curves.dat) | full (0.82\textwidth axis) | analytic, schematic axes (Fig 1 convention) | PROPOSED for \S5, awaiting Aydin |
 
 Family invariants: one population (n = 75, K, R0 ~ Pareto(alpha = 2, min 1), rho = 0,
 A = 1, numpy default_rng(659); seed chosen by search for Aydin's requested features:

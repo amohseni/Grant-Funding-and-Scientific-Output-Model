@@ -29,17 +29,20 @@ second may have none. Cross-sectional output, however carefully recorded, underd
 what the funder most needs to know.
 
 Our model measures what this underdetermination costs. A Bayesian funder relying on
-records alone allocates far from the gap rule and remains far: across rounds, the
-correlation between its grants and the optimal grants stays between 0.13 and 0.18 at the
-default parameters, and its output falls short of the complete-information benchmark by
-17.2 percent of no-funding output. This shortfall is the span from records alone to
-complete information. \S6 asks how much of that span a review signal recovers.
+records alone allocates far from the gap rule and remains far: its allocations stay only
+weakly correlated with the optimal grants, round after round, and its output falls well
+short of the complete-information benchmark.\footnote{At the default parameters, the
+correlation between its grants and the optimal grants stays between 0.13 and 0.18 across
+rounds, and its output falls short of the complete-information benchmark by 17.2 percent
+of no-funding output.} This shortfall is the span from records alone to complete
+information. \S6 asks how much of that span a review signal recovers, and there we
+display this records-only baseline beside review signals of increasing precision.
 
 The record is least informative exactly where the gap is largest. When a researcher's
 resources are small relative to their capability, expected output is approximately
-$2AR$: proportional to resources, nearly independent of capability. On a thin grant, a
-researcher of capability 1 and a researcher of capability 100 produce nearly
-indistinguishable output. Small grants therefore buy almost no information about who is
+$2AR$: proportional to resources, nearly independent of capability
+(Figure~\ref{fig:thin-grants}). On a thin grant, a researcher of capability 1 and a
+researcher of capability 100 produce nearly indistinguishable output. Small grants therefore buy almost no information about who is
 capable; separating capability from resources by observing output requires funding depth,
 grants comparable to capability itself. In our simulations of a resource-poor community
 with no review signal, a funder allocating at standard depth gains almost nothing over
@@ -48,7 +51,8 @@ discrimination (\S7 measures this and its consequences for timing). For nascent 
 resource-poor fields the implication is direct: thin grants cannot reveal who is capable.
 
 What the record cannot supply, then, is a signal of capability separate from resources.
-That is what peer review can provide. \S6 measures what such a signal is worth.
+That is what peer review can provide under the right conditions. \S6 measures what such
+a signal is worth, and states the conditions.
 
 ---
 
@@ -86,6 +90,16 @@ That is what peer review can provide. \S6 measures what such a signal is worth.
    it bounds; it cannot separate). Analytic, from Lemma 1(iii)'s bound.
 7. Substitution test run on every sentence; "stays between 0.13 and 0.18" replaces
    "plateaus" (no figurative plateau).
-8. Terminology check: "track record" for realized output (locked); "records alone" as
+8. 2026-09-06 revision per Aydin: P2 body now qualitative ("only weakly correlated,"
+   "falls well short"), numbers in a footnote; telegraph sentence added (the records-only
+   baseline appears in \S6's convergence figure, where the contrast with review is the
+   point, so \S5 does not duplicate it); bridge qualified "under the right conditions"
+   with "\S6 ... states the conditions" (the conditions: signal precision relative to
+   capability dispersion, per D-1/D-2; \S6 makes them precise). NEW proposed figure for
+   P3: fig3-thin-grants (analytic output-vs-resources curves for K = 3, 10, 30; all have
+   slope 2A at the origin, so they coincide where resources are thin and separate at
+   depth; schematic axes matching Fig 1). Preview delivered; drop it if you judge P3
+   clear enough without it.
+9. Terminology check: "track record" for realized output (locked); "records alone" as
    the compressed form after first use; "review signal" per \S3; "complete-information
    benchmark" aligns with \S4's "complete information."

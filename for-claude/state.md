@@ -546,6 +546,17 @@ to \S6 (review as the missing capability signal, lesson-10 formulation). Eight n
 incl. the strategy-mapping verification flag (pubs-only vs records+resource-signal).
 Awaiting his verdict.
 
+\S5 REVISION + THIN-GRANTS FIGURE (2026-09-06, per Aydin): P2 qualitative in body
+(weakly correlated / falls well short), numbers footnoted; telegraph sentence added (the
+records-only baseline lives in \S6's convergence figure; \S5 does not duplicate it,
+per Claude's recommendation Aydin accepted by directing the qualitative form); bridge
+now "under the right conditions. \S6 measures what such a signal is worth, and states
+the conditions." NEW PROPOSED fig3-thin-grants (analytic, schematic axes): output vs
+resources for K = 3, 10, 30, all slope 2A at origin, coinciding when thin, separating at
+depth; vindicates P3 analytically without simulation. FIGURES.md row added (PROPOSED).
+Working home now the model repo's for-claude/ (relocated 2026-09-05); this session
+edited via bridge staging after a container reset.
+
 1. K terminology: talent (recommended) or knowledge. Word-level, Aydin's.
 2. Approve the bootstrap verification items (schedule sweep, CE check, 200-seed re-runs) if not
    already queued in the running suite.
