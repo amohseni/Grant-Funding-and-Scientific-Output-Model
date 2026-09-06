@@ -581,6 +581,22 @@ within reason; readers skim or enter partway. Applied: \S5 opening "evidence abo
 capability-resource gap" (was "the gap"); \S6 definition sentence "uncertainty regarding
 the capability-resource gap." Named rules (the gap rule) keep their names.
 
+\S6 v2 (2026-09-06, Aydin's restructure): convergence DEMOTED (his verdict: near-trivial
+direction, worth mentioning only to explain the logic; "the central result is
+convergence" was also unclear). MAIN RESULT recentered on the field delineation, led by
+the heavy-tailed case with his two mechanisms (most addable output sits with the few
+most capable; they are easiest to identify, standing far apart, so even a noisy signal
+separates them) and his corollary at sentence strength (fine distinctions among
+borderline applications add comparatively little; effort spent there may be
+misallocated; honesty flag: uniform-tau model licenses this via the flattening +
+whale mechanism, rank-local discernment not separately simulated). SECOND STANDING RULE
+from Aydin: minimize cross-references by number; restate borrowed facts so sections are
+self-contained (readers do not have section numbers memorized); applied throughout \S6
+v2 (back-refs removed, "The next section" for the adjacent forward pointer); typeset
+sections' forward pointers stand pending his word. "Long-tailed" mapped to locked
+"heavy-tailed." Both candidate rules (object re-introduction; self-containedness)
+logged for skill promotion on his word.
+
 1. K terminology: talent (recommended) or knowledge. Word-level, Aydin's.
 2. Approve the bootstrap verification items (schedule sweep, CE check, 200-seed re-runs) if not
    already queued in the running suite.
