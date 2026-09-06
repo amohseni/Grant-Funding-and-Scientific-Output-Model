@@ -35,7 +35,7 @@ short of the complete-information benchmark.\footnote{At the default parameters,
 correlation between its grants and the optimal grants stays between 0.13 and 0.18 across
 rounds, and its output falls short of the complete-information benchmark by 17.2 percent
 of no-funding output.} This shortfall is the span from records alone to complete
-information. \S6 asks how much of that span a review signal recovers, and there we
+information. Next we ask how much of that span a review signal recovers, and there we
 display this records-only baseline beside review signals of increasing precision.
 
 The record is least informative exactly where the gap is largest. When a researcher's
@@ -51,8 +51,8 @@ discrimination (\S7 measures this and its consequences for timing). For nascent 
 resource-poor fields the implication is direct: thin grants cannot reveal who is capable.
 
 What the record cannot supply, then, is a signal of capability separate from resources.
-That is what peer review can provide under the right conditions. \S6 measures what such
-a signal is worth, and states the conditions.
+That is what peer review can provide under the right conditions. Next we measure what
+such a signal is worth, and state the conditions.
 
 ---
 

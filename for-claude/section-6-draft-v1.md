@@ -98,8 +98,8 @@ $\alpha_K = 1.3$ it remains positive at a reduced level.
 % TODO: verify before lock; state the noise caveat honestly if the numbers are kept.
 } Overtrust costs more than undertrust forfeits.
 
-Review tells the funder whom to fund. The next section turns to when: how funding
-should be spread across rounds, and how much that choice matters.
+Review tells the funder whom to fund. Next we turn to when: how funding should be
+spread across rounds, and how much that choice matters.
 
 ---
 

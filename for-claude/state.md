@@ -597,6 +597,17 @@ sections' forward pointers stand pending his word. "Long-tailed" mapped to locke
 "heavy-tailed." Both candidate rules (object re-introduction; self-containedness)
 logged for skill promotion on his word.
 
+CROSS-REFERENCE RULE REFINED (2026-09-06, Aydin): forward references are often
+acceptable (they promise "it will come in \S y"); backward references by number are not
+(they demand memory of a number); for the immediately next section, prefer "Next we..."
+over "the next section" or "\S n" (concise, unambiguous, no redundancy). Applied
+outside the intro: \S3's close ("Next we solve the case..."), \S4's close ("Next we
+turn to how such estimation can work: first from the track record alone, then with peer
+review added"), \S5's telegraph and close ("Next we ask..." / "Next we measure..."),
+\S6 v2 bridge ("Next we turn to when..."). Non-adjacent forward pointers ((\S8),
+(\S9), (\S7), and \S2's closing trio) kept per the rule. No backward-by-number
+references existed in \S2-\S5. Intro roadmap untouched per his exclusion. 15pp clean.
+
 1. K terminology: talent (recommended) or knowledge. Word-level, Aydin's.
 2. Approve the bootstrap verification items (schedule sweep, CE check, 200-seed re-runs) if not
    already queued in the running suite.
