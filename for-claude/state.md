@@ -650,3 +650,42 @@ C5a/C8/C12/C13/C14 magnitudes owed to the R re-derivation before lock.
   value of its reduction of the funder's uncertainty regarding the gap. The oracle gap (D-4's 17.2% to 1.7%) may be
   described as the span from records-only to complete information, never as "what review is
   worth."
+
+## 2026-09-08 (verification pass + Figure 4 + section 6 v4)
+
+Aydin's directives executed: tau clause removed from S6's first sentence; "only
+moderate" -> "even a signal of moderate informativeness captures most of its value"
+(the only/even ambiguity swept). Then the full claims verification: container R
+reproduced canonical D_gap_convergence cells BIT-IDENTICALLY (1e-14), licensing
+in-session re-derivation. New runs (scripts + outputs in this folder):
+run_D4_fine.R -> gap_convergence_fine.csv (17 tau x 3 alpha x 50 seeds, adds
+alpha_K=3.5); verify_s6_rounds.R (+_OUTPUT.txt): T=8/T=20 trajectories, paired
+sharp-end test.
+
+Verification outcomes now in section-6-draft-v1.md (v4) and section-6-claims.md:
+- Corrected: corr at sharpest 0.94/0.96 (not 0.95/0.97); 17.2->1.7% is HEAVY-tailed,
+  defaults are 10.4->1.6%; "nearly all" -> "most" (86/93% recovery).
+- FALSIFIED and rewritten: "further rounds of records leave the funder no closer"
+  (corr rises slowly, 0.08->0.41 over 20 rounds vs review-informed 0.81 in round 1;
+  old 0.13-0.18 range was across alpha at round 1, not across rounds).
+- New measured wrinkle (footnoted, his verdict pending): value dips ~2% at the very
+  sharpest signal under heavy tails (paired z=4.5); flat at defaults.
+- Elbow rescoped: tau~2.5 was defaults' half-value point. New footnote: value at 3x
+  default noise 82/44/10% (alpha 1.3/2/3.5); half-value noise ~ tau 10/2.5/0.75.
+- C10 closed with alpha=3.5 magnitudes (shortfall 3.5% of no-funding output; review's
+  max value 2.5% vs 23% heavy).
+- Efficacy paragraph rescoped: accuracy-to-noise mapping is field-dependent (AUC 0.54
+  = tau~20 at defaults only); closing sentence now the licensed pair (same
+  informativeness -> several times the value; same accuracy -> different
+  informativeness).
+- Overtrust verified (C13/C14) with the 2-SE caveat kept; asymmetry grounded
+  (tenfold overtrust loses more than full calibrated value; tenfold undertrust
+  retains over half).
+
+FIGURE 4 BUILT: tex/fig4-review-value.tex + fig4-value.dat (share of records-only
+shortfall recovered vs noise, log x, three alphas, family style; no AUC marker, see
+draft note 8). FIGURES.md updated with simulation-figure conventions. Preview
+compiled clean. S6 typeset into main.tex awaits Aydin's verdict on v4.
+
+Open on Aydin: sharp-end reversal footnote (keep/drop/investigate); half-value line
+promotion to body; C5c mechanism-isolation run; S6 verdict then typeset.
