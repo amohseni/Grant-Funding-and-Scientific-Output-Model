@@ -14,7 +14,7 @@ A population of $n$ researchers. Researcher $i$ has capability $K_i$ and baselin
 \]
 for researcher $i$'s expected output as a function of their grant alone.
 
-Throughout: $A > 0$; $K_i > 0$ and $R_{i0} \geq 0$ for every $i$; and the round's budget $B > 0$. (Under the model's continuous distributions for $K$ and $R$, the conditions on $K_i$ and $R_{i0}$ hold with probability one.) Nothing else about the model is used, so the result holds for every realized population and every round's budget; across rounds, the constant $c$ and the funded set are recomputed from the new population state.
+Throughout, $A > 0$, $K_i > 0$ and $R_{i0} \geq 0$ for every $i$, and the round's budget is $B > 0$. Nothing else about the model is used, so the result holds for every realized population and every round's budget; across rounds, the constant $c$ and the funded set are recomputed from the new population state.
 
 The funder observes $(K_i, R_{i0})_{i=1}^n$ and divides the budget so as to maximize expected output:
 \[
@@ -103,7 +103,7 @@ Let $f^*(B)$ denote the optimal value of $(\mathrm{P})$ and $f^u(B) = \sum_i \va
 The first inequality holds because uniform funding is feasible. For the second: by \cref{lem:return}(iii), $\varphi_i(g) < 2AK_i$ for every $g$, so $f^*(B) \leq 2A\sum_i K_i$; and $f^u(B) = \sum_i \varphi_i(B/n) \to 2A\sum_i K_i$ as $B \to \infty$. Hence $0 \leq f^*(B) - f^u(B) \leq 2A\sum_i K_i - f^u(B) \to 0$.
 \end{proof}
 
-As the budget increases, any allocation that spreads funds widely brings every researcher's output near its upper bound $2AK_i$, so allocations come to differ little in total output. Since uniform funding's own gain over no funding does not vanish (it approaches $2A\sum_i K_i - \sum_i \varphi_i(0) > 0$), the same conclusion holds for the value of targeting measured relative to that gain.
+Since uniform funding's own gain over no funding does not vanish (it approaches $2A\sum_i K_i - \sum_i \varphi_i(0) > 0$), the same conclusion holds for the value of targeting measured relative to that gain, the quantity plotted in Figure~\ref{fig:targeting-value}.
 
 \begin{example}[funding the track record can produce less than uniform funding]\label{ex:track-record}
 Two researchers, $A = 1$, budget $B = 2$. Researcher 1: $K_1 = 8$, $R_{10} = 8$ (productive and well resourced; expected output $\varphi_1(0) = 8$). Researcher 2: $K_2 = 4$, $R_{20} = 1$ (capable but resource-starved; $\varphi_2(0) = 8/5$). Allocating in proportion to expected output gives $g = (5/3,\, 1/3)$ and total output $570/53 \approx 10.75$. Uniform funding, $g = (1, 1)$, gives $568/51 \approx 11.14$. The gap rule ($c = 3/4$) gives $g^* = (0, 2)$ and $80/7 \approx 11.43$.
