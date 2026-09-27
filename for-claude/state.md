@@ -863,3 +863,18 @@ Overleaf bundle delivered (main.tex + references.bib at root, figures/ for the r
 sources unwrapped to one line per paragraph, text verified identical). Full style and
 clarity audit written: style-audit-2026-09-27.md (6 READ, 3 VERDICT, 14 global terms,
 ~95 local items with proposed rewrites); no changes made, awaiting Aydin's approvals.
+Audit APPLIED (2026-09-27) with Aydin's exceptions (kept: "how to read the evidence on
+review's efficacy" once; "underdetermine" throughout; "Consider the challenge of the
+grant funder"; "sits at the intersection of four literatures"; "a dynamic that formal
+models show"; "effectiveness requires concentrating"; "epistemic landscape"; his own
+wording for the two-assumptions sentence; "What applies to a real field is the pair of
+features that organizes the results." without the second clause; "each perform better
+in some fields than in others"). All other items applied to main.tex, Appendix A,
+Appendix C, and captions (tranche->budget, purse->budget, seeds->simulated populations,
+depth->grant size, production form->production function, harder->stronger
+complementarity, efficacy->how well review predicts research outcomes, uncertainty
+definition->output definition, etc.). Preview 37pp clean; Overleaf bundle regenerated.
+Sources are now stored unwrapped (one line per paragraph). Skill TENTH revision:
+anti-patterns 33-35 (straightforwardness audit with his named exceptions; simulation
+reporting language; one operational definition) + three checklist items + SKILL.md
+rule 13. Delivered; he must save.

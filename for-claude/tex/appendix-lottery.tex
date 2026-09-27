@@ -4,40 +4,16 @@
 % of Appendix A.
 \section{Lotteries and equal division}\label{app:lottery}
 
-Fix a round, a budget $B > 0$, and a pool $P \subseteq \{1, \ldots, n\}$ of $m$
-researchers. The \emph{equal division} over $P$ grants each researcher in $P$ the
-amount $B/m$. A \emph{lottery} over $P$ with $k \leq m$ winners selects $k$
-researchers from $P$ uniformly at random and grants each winner $B/k$. Expected
-output is evaluated as in Appendix~\ref{app:gap-rule}: given an allocation $g$, it is
-$\sum_i \varphi_i(g_i)$, and for a random allocation, the expectation is taken over
-the draw as well.
+Fix a round, a budget $B > 0$, and a pool $P \subseteq \{1, \ldots, n\}$ of $m$ researchers. The \emph{equal division} over $P$ grants each researcher in $P$ the amount $B/m$. A \emph{lottery} over $P$ with $k \leq m$ winners selects $k$ researchers from $P$ uniformly at random and grants each winner $B/k$. Expected output is evaluated as in Appendix~\ref{app:gap-rule}: given an allocation $g$, it is $\sum_i \varphi_i(g_i)$, and for a random allocation, the expectation is taken over the draw as well.
 
 \begin{prop}[lotteries are outperformed by equal division]\label{prop:lottery}
-For every pool $P$, budget $B$, and winner count $k \leq m$, the lottery's expected
-output does not exceed the equal division's, with equality only if $k = m$. In
-particular, a lottery over the whole population, at any winner count, produces at
-most uniform funding's expected output.
+For every pool $P$, budget $B$, and winner count $k \leq m$, the lottery's expected output does not exceed the equal division's, with equality only if $k = m$. In particular, a lottery over the whole population, at any winner count, produces at most uniform funding's expected output.
 \end{prop}
 
 \begin{proof}
-Researchers outside $P$ receive nothing under either scheme. For $i \in P$, the
-lottery's grant to $i$ is a random variable $\tilde g_i$ equal to $B/k$ with
-probability $k/m$ and $0$ otherwise, so $\mathbb{E}[\tilde g_i] = B/m$. By linearity,
-the lottery's expected output is $\sum_{i \notin P} \varphi_i(0) + \sum_{i \in P}
-\mathbb{E}[\varphi_i(\tilde g_i)]$. Since $\varphi_i$ is strictly concave
-(Lemma~\ref{lem:return}(ii)), Jensen's inequality gives
-$\mathbb{E}[\varphi_i(\tilde g_i)] \leq \varphi_i(\mathbb{E}[\tilde g_i]) =
-\varphi_i(B/m)$ for every $i \in P$, with equality only if $\tilde g_i$ is
-degenerate, that is, $k = m$. Summing over $i$ yields the claim; taking
-$P = \{1, \ldots, n\}$ yields the comparison with uniform funding.
+Researchers outside $P$ receive nothing under either scheme. For $i \in P$, the lottery's grant to $i$ is a random variable $\tilde g_i$ equal to $B/k$ with probability $k/m$ and $0$ otherwise, so $\mathbb{E}[\tilde g_i] = B/m$. By linearity, the lottery's expected output is $\sum_{i \notin P} \varphi_i(0) + \sum_{i \in P} \mathbb{E}[\varphi_i(\tilde g_i)]$. Since $\varphi_i$ is strictly concave (Lemma~\ref{lem:return}(ii)), Jensen's inequality gives $\mathbb{E}[\varphi_i(\tilde g_i)] \leq \varphi_i(\mathbb{E}[\tilde g_i]) = \varphi_i(B/m)$ for every $i \in P$, with equality only if $\tilde g_i$ is degenerate, that is, $k = m$. Summing over $i$ yields the claim; taking $P = \{1, \ldots, n\}$ yields the comparison with uniform funding.
 \end{proof}
 
 \begin{remark}[what the proposition does and does not cover]
-The proposition compares expected output within a fixed pool. It measures the effect
-of the randomization alone: whatever pool review selects, replacing the lottery within
-that pool by the equal division of the same money weakly increases expected output.
-The proposition says nothing about the choice of pool, about the review ranking
-within the pool that the equal division also ignores, or about anything a lottery
-saves outside the model (review costs, proposal effort, bias). \Cref{sec:egalitarian}
-measures the first two and cites the literature on the third.
+The proposition compares expected output within a fixed pool. It measures the effect of the randomization alone: whatever pool review selects, replacing the lottery within that pool by the equal division of the same money weakly increases expected output. The proposition says nothing about the choice of pool, about the review ranking within the pool that the equal division also ignores, or about anything a lottery saves outside the model (review costs, proposal effort, bias). \Cref{sec:egalitarian} measures the first two and cites the literature on the third.
 \end{remark}

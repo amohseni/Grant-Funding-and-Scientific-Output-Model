@@ -25,15 +25,10 @@
 ]
 \addplot[black, line width=0.7pt, mark=*, mark size=1.2pt] table[x=round, y=b05] {fig7-schedule.dat};
 \addplot[black, line width=0.7pt, mark=o, mark size=1.4pt] table[x=round, y=b3] {fig7-schedule.dat};
-\node[font=\small, anchor=west] at (axis cs:6.15,0.167) {standard depth ($b = 0.5$)};
-\node[font=\small, anchor=west] at (axis cs:6.15,0.183) {deep grants ($b = 3$)};
+\node[font=\small, anchor=west] at (axis cs:6.15,0.167) {default grant size ($b = 0.5$)};
+\node[font=\small, anchor=west] at (axis cs:6.15,0.183) {large grants ($b = 3$)};
 \end{axis}
 \end{tikzpicture}
-\caption{Observation first, money after. The share of the budget the funder spends in
-each of six rounds, in a resource-poor field with heavy-tailed capability and no
-review signal. At standard depth (filled marks) the funder learns nothing from its
-own thin grants and the optimal schedule is even. With deep grants (open marks) the
-funder holds the first-round share below even and deploys the bulk once output has
-revealed who is capable.}
+\caption{The funder spends a small share first and the rest once it has observed output. The share of the budget the funder spends in each of six rounds, in a resource-poor field with heavy-tailed capability and no review signal. At the default grant size (filled marks) the funder learns nothing from its own thin grants and the optimal schedule is even. With large grants (open marks) the funder holds the first-round share below even and deploys the bulk once output has revealed who is capable.}
 \label{fig:depth-schedule}
 \end{figure}

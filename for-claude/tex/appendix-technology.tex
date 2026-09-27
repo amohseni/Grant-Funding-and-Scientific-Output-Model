@@ -7,59 +7,18 @@
 % than the body's runs, so magnitudes are compared within this appendix only.
 \section{Robustness to the production technology}\label{app:technology}
 
-Throughout the paper, a researcher's expected output has taken the form of
-\S\ref{sec:model}, $2AKR/(K + R)$, in which capability and resources are complements
-and output is limited by the scarcer of the two. This appendix asks which of our results depend on
-that choice. We embed our form in a family of production technologies indexed by an
-exponent $\gamma$: expected output is $A\,M_\gamma(K, R)$, where
-$M_\gamma(K, R) = \big((K^{\gamma} + R^{\gamma})/2\big)^{1/\gamma}$ is the power mean
-of capability and resources. At $\gamma = -1$ the power mean is the harmonic mean
-$2KR/(K + R)$, and the family reproduces our form. In the limit $\gamma \to 0$, the
-Cobb-Douglas case, the power mean is the geometric mean $\sqrt{KR}$, and a shortfall in
-either input can be offset by more of the other; as $\gamma$ decreases the inputs grow
-harder to substitute for one another; and in the limit $\gamma \to -\infty$, the
-Leontief case, the power mean is $\min(K, R)$, and output depends only on the scarcer
-input. We
-re-run the model's central comparisons across this family.\footnote{Two rounds, one
-hundred seeds per cell (fifty for Leontief). Leontief allocations are computed with a
-finer allocation step, and ties at the kink are broken by fill order; the Leontief
-points carry that caveat. These runs use an earlier version of the allocation routine
-than the runs reported in the body, so their magnitudes are compared with one another
-and not with the body's figures.}
+Throughout the paper, a researcher's expected output has taken the form of \S\ref{sec:model}, $2AKR/(K + R)$, in which capability and resources are complements and output is limited by the scarcer of the two. This appendix asks which of our results depend on that choice. We embed our form in a family of production technologies indexed by an exponent $\gamma$: expected output is $A\,M_\gamma(K, R)$, where $M_\gamma(K, R) = \big((K^{\gamma} + R^{\gamma})/2\big)^{1/\gamma}$ is the power mean of capability and resources. At $\gamma = -1$ the power mean is the harmonic mean $2KR/(K + R)$, and the family reproduces our form. In the limit $\gamma \to 0$, the Cobb-Douglas case, the power mean is the geometric mean $\sqrt{KR}$, and a shortfall in either input can be offset by more of the other; as $\gamma$ decreases the inputs grow harder to substitute for one another; and in the limit $\gamma \to -\infty$, the Leontief case, the power mean is $\min(K, R)$, and output depends only on the scarcer input. We re-run the model's central comparisons across this family.\footnote{Two rounds, one hundred simulated populations per point (fifty for Leontief). Leontief allocations are computed with a finer allocation step, and ties at the kink are broken by fill order; the Leontief points carry that caveat. These runs use an earlier version of the allocation routine than the runs reported in the body, so their magnitudes are compared with one another and not with the body's figures.}
 
-The value of the review signal survives the whole family
-(Figure~\ref{fig:signal-robustness}). At every technology tested, from Cobb-Douglas
-to Leontief, the signal's value increases as capability grows more heavy-tailed and as
-review grows more informative. The ordering of review's value by field
-(\S\ref{sec:review}) is therefore not an artifact of our production form. What changes
-with the technology is the scale. The more complementary the inputs, the more review
-is worth: under heavy-tailed capability with sharp review, the signal's value
-increases from about seven percent of no-funding output at Cobb-Douglas to about
-thirty percent at $\gamma = -3$ and a third at Leontief.\footnote{6.8, 29.3, and 33.7
-percent of no-funding output; the same ordering holds at every tested tail and noise
-level at which the value is distinguishable from zero.} Complementarity raises what
-targeting is worth, and with it the value of the information that targeting requires.
+The value of the review signal survives the whole family (Figure~\ref{fig:signal-robustness}). At every technology tested, from Cobb-Douglas to Leontief, the signal's value increases as capability grows more heavy-tailed and as review grows more informative. The ordering of review's value by field (\S\ref{sec:review}) is therefore not an artifact of our choice of production function. What changes with the technology is the scale. The more complementary the inputs, the more review is worth: under heavy-tailed capability with sharp review, the signal's value increases from about seven percent of no-funding output at Cobb-Douglas to about thirty percent at $\gamma = -3$ and a third at Leontief.\footnote{6.8, 29.3, and 33.7 percent of no-funding output; the same ordering holds at every tested tail and noise level at which the value is distinguishable from zero.} Complementarity raises what targeting is worth, and with it the value of the information that targeting requires.
 
 \input{fig12-signal-robustness}
 
-The timing results of \S\ref{sec:timing} do not survive the substitutable end of the
-family (Table~\ref{tab:timing-technology}). Under Cobb-Douglas production the value of
-scheduling is indistinguishable from zero at every compounding rate, and the optimal
-schedule stays within about a hundredth of even. At $\gamma = -3$, a technology more
-complementary than our form, both the value of scheduling and the lean toward late
-spending increase with the compounding rate and exceed their Cobb-Douglas values at
-every rate. The timing results hold where capability and resources are complements
-and vanish where they are substitutable.
+The timing results of \S\ref{sec:timing} do not survive the substitutable end of the family (Table~\ref{tab:timing-technology}). Under Cobb-Douglas production the value of scheduling is indistinguishable from zero at every compounding rate, and the optimal schedule stays within about a hundredth of even. At $\gamma = -3$, a technology more complementary than our form, both the value of scheduling and the lean toward late spending increase with the compounding rate and exceed their Cobb-Douglas values at every rate. The timing results hold where capability and resources are complements and vanish where they are substitutable.
 
 \begin{table}[t]
 \centering
 \small
-\caption{The value of scheduling and the optimal schedule by production technology.
-Five rounds. The value of scheduling is the forward-looking funder's gain over the
-myopic funder, both with review, as a percent of no-funding output; the schedule's
-center of mass is 0.5 when spending is even and larger when spending leans late. One
-hundred seeds per cell; standard errors of the gain are at most 0.002 (Cobb-Douglas)
-and 0.09 ($\gamma = -3$) percentage points.}
+\caption{The value of scheduling and the optimal schedule by production technology. Five rounds. The value of scheduling is the forward-looking funder's gain over the myopic funder, both with review, as a percent of no-funding output; the schedule's center of mass is 0.5 when spending is even and larger when spending leans late. One hundred simulated populations per point; standard errors of the gain are at most 0.002 (Cobb-Douglas) and 0.09 ($\gamma = -3$) percentage points.}
 \label{tab:timing-technology}
 \begin{tabular}{@{}lccccc@{}}
 \toprule
@@ -76,5 +35,4 @@ $\gamma = -3$               & 0.511 & 0.540 & 0.577 & 0.623 & 0.660 \\
 \end{tabular}
 \end{table}
 
-How widely the informed funder spreads its grants across this family is reported in
-\S\ref{sec:egalitarian} (Figure~\ref{fig:concentration}).
+How widely the informed funder spreads its grants across this family is reported in \S\ref{sec:egalitarian} (Figure~\ref{fig:concentration}).
