@@ -13,7 +13,8 @@ is green.
 |---|---|---|---|---|
 | C1 | Review is a noisy signal of capability (tau_K clause now removed from the opening sentence; tau_K introduced in \S3) | definitional (\S3 spec) | model definition | OK |
 | C2 | Value of review = expected value of its reduction of the funder's uncertainty regarding the capability-resource gap; quantified as expected output with review minus without | definitional | definition + scoring convention (\S3) | OK |
-| C3 | A more informative signal brings allocation closer to the optimal allocation, output closer to the complete-information benchmark | directional over the sweep, with a footnoted sharp-end reversal | fine grid: corr_S5 and value increase as tau decreases, except tau = 0.05 vs 0.3 under heavy tails: value ~2% lower, paired z = 4.5 (defaults z = 0.1) | VERIFIED (re-derived); reversal footnoted |
+| C3 | A more informative signal brings allocation closer to the optimal allocation, output closer to the complete-information benchmark | directional over the sweep, with a footnoted sharp-end reversal | fine grid: corr_S5 and value increase as tau decreases, except tau = 0.05 vs 0.3 under heavy tails: value ~2% lower, paired z = 4.5 (defaults z = 0.1) | VERIFIED (re-derived); reversal footnoted with mechanism |
+| C3b | The reversal's mechanism: interaction with the noisy resource estimate (tau_R = 1). Round decomposition: deficit present in round 1 itself (z = -3.7), refuting an exploration story; with tau_R = 0.01 the sign flips to the expected direction (+1.4, z = +5.8). Aydin's directive 2026-09-08: investigate; done (reversal_probe R runs, recorded in verify_s6_rounds_OUTPUT.txt addendum) | mechanism, isolated by intervention | probe runs, 50 paired seeds | VERIFIED (this session) |
 | C4 | With a sharp signal the funder recovers MOST of the records-only shortfall (was "nearly all"; recovery 86% defaults, 93% heavy); corr 0.22 -> 0.94 defaults, 0.34 -> 0.96 heavy; shortfall 10.4 -> 1.6% of no-funding output defaults, 17.2 -> 1.7% heavy | measured at stated parameters | fine grid + canonical D-4 (old footnote had 0.95/0.97 and misattributed 17.2/1.7 to defaults; both corrected) | VERIFIED (re-derived, corrected) |
 | C5a | Records-only allocation improves slowly across rounds and stays far behind: corr 0.08 -> 0.41 over 20 rounds defaults (0.07 -> 0.43 heavy) vs review-informed 0.81 (0.92) in round one | measured, T = 20, tau_K = 1, 50 seeds; "does not catch up" scoped to simulated horizons | verify_s6_rounds.R (the old claim "no closer across rounds, 0.13-0.18" was FALSE: that range was across capability distributions at round 1) | VERIFIED (re-derived, claim corrected) |
 | C5b | Structural cause: capabilities compound, resources do not accumulate, so output approaches the resource-limited level and carries less and less information about capability | analytic (limit + derivative) | lambda -> 2AR; dlambda/dK -> 0; per-round Fisher info 7.9e-2 -> 6.1e-7 over 200 rounds; cumulative info converges (~0.44 over 20k rounds) | VERIFIED (mechanism test) |
@@ -35,11 +36,19 @@ Notes.
   the previous ledger; this pass then falsified the interim "no closer across rounds"
   claim by direct measurement (see C5a). The lesson both times: measure the trajectory,
   do not infer it from the mechanism.
-- Sharp-end reversal (C3): real but small; kept as footnote pending Aydin's verdict
-  (keep / drop / investigate).
+- Sharp-end reversal (C3): his verdict was investigate; done, mechanism isolated
+  (C3b), footnote states it.
 - All re-derived numbers come from runs whose scripts and outputs are in the repo
   (for-claude/run_D4_fine.R, for-claude/gap_convergence_fine.csv,
   for-claude/verify_s6_rounds.R); canonical coarse-grid cells match
   sweep_results/D_gap_convergence/gap_convergence.csv to 1e-14.
 - Figure 4 carries C3, C4, C8, C10, and the main result; see draft note 8 for the
   ranked alternatives and why no AUC marker appears on it.
+
+Addendum (2026-09-08, figure-or-proof pass): C5a is now carried by the records-rounds
+figure (fig5-records-rounds; the footnote is removed, numbers in the caption); C13/C14
+by the overtrust figure (fig6-overtrust, 1-SE error bars; slim footnote keeps the
+tenfold asymmetry in relative terms). C12 remains footnoted by determination (external
+calibration, not a model result); see figure-or-proof-audit-2026-09-08.md. Overtrust
+magnitudes restated as percent of no-funding output (calibrated 4.1% / overtrust -0.6
+to -0.2% at defaults; 18.4% / 15.0-15.9% heavy).

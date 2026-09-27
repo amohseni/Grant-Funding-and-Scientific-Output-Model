@@ -1,5 +1,13 @@
 # Section 6 (Peer review), draft v4 (2026-09-08; v4 = full claims verification pass)
 
+STATUS: SUPERSEDED BY tex/main.tex \S6 (typeset 2026-09-08). Changes made in the tex
+after this md's body was frozen, under Aydin's figure-or-proof rule (2026-09-08):
+(a) records-across-rounds footnote replaced by Figure 5 (fig5-records-rounds), body
+pointer added, numbers moved to the caption; (b) overtrust footnote replaced by
+Figure 6 (fig6-overtrust, error bars = 1 SE), slim footnote keeps only the tenfold
+asymmetry in relative terms; (c) bridge in "Next we" form. Edit main.tex, not this
+body, from here on.
+
 Function analysis. \S6 is the paper's center of gravity: the section where the thesis is
 stated as a definition and then measured. Its inputs are all in place: \S4 defined the
 gap and the optimal allocation; \S5 showed that records alone leave most of the span to
@@ -42,7 +50,11 @@ grants and the optimal grants increases from 0.22 at the noisiest signal in our 
 percent. The increase in review's value is not strictly monotone at the sharpest
 signals: under heavy-tailed capability, its value at $\tau_K = 0.05$ is about two
 percent below its value at $\tau_K = 0.3$, a small but statistically solid reversal
-(paired across seeds, $z = 4.5$).} Two further effects are less obvious: (1) a funder
+(paired across seeds, $z = 4.5$). The cause is the funder's other estimate: resources
+are also observed with noise, and a slightly noisy capability signal tempers the
+allocation against errors in the resource estimate, while a near-perfect one commits
+the allocation to them. With the resource signal nearly noiseless, the sharper
+capability signal is again worth more (paired $z = 5.8$).} Two further effects are less obvious: (1) a funder
 relying on records alone does not catch up, and (2) what a review signal is worth
 varies widely with the field. The first effect has a structural cause. Capabilities
 compound across rounds while resources do not accumulate, so each researcher's output
@@ -126,9 +138,10 @@ than its full calibrated value, while a funder that undertrusts tenfold retains 
 half ($4.2$ of $7.6$). Two hundred seeds per cell.} Overtrust costs more than
 undertrust forfeits.
 
-Review can inform whom to fund. The next section turns to when to fund. In particular,
-we examine how funding should be spread across rounds, and how much that choice
-matters.
+Review can inform whom to fund. Next we turn to when to fund: how funding should be
+spread across rounds, and how much that choice matters.
+(Bridge recast to your stated "Next we" preference at typeset; flag if you want your
+original "The next section turns to..." wording back.)
 
 ---
 

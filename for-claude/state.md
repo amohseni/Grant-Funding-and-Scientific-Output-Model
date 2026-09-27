@@ -689,3 +689,188 @@ compiled clean. S6 typeset into main.tex awaits Aydin's verdict on v4.
 
 Open on Aydin: sharp-end reversal footnote (keep/drop/investigate); half-value line
 promotion to body; C5c mechanism-isolation run; S6 verdict then typeset.
+
+## 2026-09-08 (second pass: reversal mechanism, S6 typeset, S7 prepared)
+
+Aydin's verdicts executed: reversal INVESTIGATED (kept footnoted, now with mechanism);
+half-value line KEPT in footnote; S6 TYPESET.
+- Reversal mechanism isolated (reversal_probe 1-3, appended to verify_s6_rounds.R):
+  round decomposition refutes exploration (deficit in round 1 itself, z=-3.7);
+  intervention on resource noise flips the sign (tau_r=0.01: +1.43, z=+5.8). Cause:
+  interaction with the noisy resource estimate. Footnote in S6 updated with the
+  mechanism; ledger row C3b added.
+- S6 typeset into main.tex (section 6, Figure 4 placed via \input, footnotes 9-15;
+  bridge recast to "Next we" per his stated preference, flagged in draft note).
+  17pp clean, pages 13-16 inspected. FIGURES.md: fig4 -> placed.
+- S5's TODO-flagged footnote CORRECTED in main.tex: old text had the falsified
+  0.13-0.18-across-rounds claim and misattributed 17.2% (it belongs to the S5-at-tau-20
+  cell, not records-only at defaults). New: corr 0.08 -> 0.41 over twenty rounds;
+  records-only shortfall 11.4% of no-funding output (24.6% heavy). Strategy-mapping
+  TODO resolved: Table 1's "Myopic, without review" = S4 = the D-4 corr_S4 series.
+- S7 PREPARED: all headline numbers re-derived in-container from staged canonical
+  sweep files (verify_s7.R + OUTPUT, all match the integration handoff);
+  section-7-draft-v1.md (function analysis + plain-first draft + 9 notes incl. title
+  candidates, naming decision on "seed-and-harvest", figure candidates ranked) and
+  section-7-claims.md (T1-T12, all verified or analytic). Timing-vs-signal ratio
+  stated eps-dependently (1/30 at eps=0.3, 1/4 at 0.85).
+Open on Aydin: S7 v1 verdict; S7 figure choice (my lean: round-share schedule at
+increasing depth); naming and title calls (draft notes 2, 3, 6, 8); repo push.
+
+## 2026-09-08 (third pass: figure-or-proof rule, relative terms, appendix, skill rev 8)
+
+Three new rules from Aydin, all promoted to the skill (EIGHTH revision, delivered; he
+must save it): (1) figure-or-proof backing, footnotes alone don't cut it
+(anti-pattern 26); (2) results as percent gains over the relevant comparison, never
+raw output counts (27); (3) no single-number summaries of sweep-ranging quantities;
+state ranges over tested settings (28). Style lessons 24-26; results-section block in
+section-patterns; three checklist items.
+
+Actions (audit artifact: figure-or-proof-audit-2026-09-08.md):
+- APPENDIX A built (tex/appendix-gap-rule.tex): gap-rule derivation converted from
+  gap-rule-proof-v1.md; Lemmas 1-3, Prop 1 restated (starred env), Corollaries 1-2,
+  Examples 1-2, Remarks 1-3; all four \S4 Appendix [X] pointers resolved by \ref;
+  fig2 caption now refs Corollary~\ref{cor:targeting-vanishes}. Preamble: lemma/
+  corollary/example/remark counters made independent (none were used elsewhere).
+  Remaining [X]s (2) = owed simulation-specification appendix, TODO-tagged.
+- FOUR NEW FIGURES, family style, all data re-derived or re-run in-session:
+  fig5-records-rounds (renders Fig 4; T=20 trajectory, S4 vs S5, replaces the C5a
+  footnote), fig6-overtrust (Fig 6; D-2 curves as % of no-funding output, 1-SE bars,
+  replaces the C13 footnote), fig7-depth-schedule (for \S7; b=3 schedule re-run,
+  24 seeds), fig8-timing-boundary (for \S7; resource_regime map),
+  fig9-schedule-vs-signal (for \S7; PG/signal ratio, parity line). FIGURES.md notes
+  slug-vs-rendered-number mapping (renames skipped: bridge cannot delete).
+- \S7 draft v2: his two sentences verbatim; all results in percent terms; the
+  one-thirtieth single number retired for the sweep-ranging statement (ratio < 1 in
+  all 32 cells; order of magnitude+ at default rate; max 0.66 at T=10, eps=0.85 -- my
+  earlier "at most a quarter" was wrong, caught in re-derivation); b gloss fixed
+  (depth cells are budget_ref=K). T3/T6/T8/T12 ledger rows restated.
+- \S6/\S5 tex: overtrust footnote in relative terms; records footnote removed
+  (figure); \S5 display promise recast. Paper builds 23pp clean, appendix inspected.
+- Deferred to Aydin: T7 attribution figure (would be \S7's fourth); C5b cumulative-
+  Fisher appendix proposition; renames of figure slugs (recommend against).
+
+## 2026-09-08 (fourth pass: S7 typeset, S8 prepared)
+
+S7 v2 APPROVED ("no more figures needed" = T7 figure declined) and TYPESET into
+main.tex (section 7, Figures 7-9 placed; fig9 label cluster resolved by caption
+identification; boundary footnote's center-of-mass wording corrected at typeset,
+flagged in the draft's supersession note). 26pp clean, pages 16-20 inspected.
+
+S8 PREPARED as a function-analysis-first deliverable (section-8-prep.md), NOT a
+draft: the lotteries half has design decisions that are Aydin's (and plausibly
+Kevin's/Simon's). Verified inputs: Package A re-derived (focal floor cost 6.1% of S1;
+kappa 0.10-0.86; convexity; P-A2 exact; D3's heavy-cells-are-sharp-review pairing
+caveat found and recorded); D3 relative targeting value extracted ((S5-S2)/(S2-S1):
+1.17->0.72 heavy+sharp, 0.74->0.25 base, decreasing in b, matching S2's promise;
+absolute %S1 rises over b<=1, objects must be picked explicitly). NEW single-round
+scheme-pricing computation (price_lotteries.py, exact expected output, 2000 pops/
+cell): full lottery worst everywhere (Jensen); screened schemes capture most of
+targeting's value at heavy tails, degrade gracefully in screen noise; within-pool
+randomization costs 0.05-0.19 of targeting's value; at even spread + b=0.5 UNIFORM
+captures 0.83 and beats every concentrated scheme (the screen is the mistake there).
+Jensen proposition drafted for Appendix A (his call). Five decisions listed in the
+prep file (computation-as-ground; screened-lottery design; Jensen placement;
+abstract-sentence flag; funded-share scope).
+
+## 2026-09-08 (fifth pass: S8 drafted)
+
+Aydin's four S8 decisions applied (single-round computation as ground; screened-
+lottery design with wide-split displayed; Jensen in appendix, plain explanation in
+body; funded share stated not optimized). Extended computation adds the wide split
+and MC SEs (0.002): decomposition at heavy tau=1: the screened lottery's 0.18
+shortfall vs the ranked split = 0.14 discarded ranking + 0.04 gamble. DRAFTED
+section-8-draft-v1.md (5 paragraphs per approved structure) + section-8-claims.md
+(E1-E12, all verified or proven) + fig10-floor-cost + fig11-lottery-prices (two
+panels, marks identified in caption) + tex/appendix-lottery.tex (Proposition 2 +
+proof + scope remark; renders as Appendix B at typeset). Key modal guard: the
+ABSOLUTE "lotteries cheap at even spread" is false in the computation (concentration
+is the mistake there; uniform 0.83); the drafted defensibility claim is the
+comparative one (chance vs ranking), and the abstract's "cheap exactly where review
+is worth little" is flagged for the lock-time abstract pass. Open on Aydin: S8 v1
+verdict; ranked/wide "division" vs "split" terminology; then typeset + appendix B
+input.
+
+## 2026-09-08 (sixth pass: terminology aligned, S8 typeset, S9 drafted)
+
+"Equal division" adopted (Aydin's call): body/figure/ledger aligned, instances
+distinguished by pool. S8 TYPESET into main.tex (Figures 10-11 placed, Appendix B
+input after A; Proposition 2 renders on the prop counter). 30pp clean, pages 20-23
+inspected. FIGURES.md fully updated (figs 7-11 placed).
+
+S9 DRAFTED (function analysis + draft v1 + ledger G1-G10 + figures 12-13), all
+Package B numbers re-derived in-session (verify_s9.R): signal-value structure
+survives CD/gamma=-3/Leontief and scales with complementarity (6.8/29.3/33.7 %S1 at
+heavy+sharp); CD kills scheduling (reused verify_s7 numbers); concentration is
+budget-conditional with the interior max at even spread (peak ~gamma=-6, z=3.5 at
+400-seed refinement). Figure 13 redesigned mid-build: absolute Gini hid the shapes,
+now displays change-from-Cobb-Douglas with absolute levels in the caption (flagged,
+draft note 2). Object discipline: "the informed funder's grants," never "the optimal
+allocation," for the tierB object. Held out: family seed-floor costs (strategy-pair
+column check owed) and correlation robustness (not re-derived); ledger G7-G8.
+Open on Aydin: S9 v1 verdict (notes 1, 2, 4); then typeset; then S10 (discussion)
+function analysis.
+
+## 2026-09-08 (seventh pass: S8 rewritten for plainness; skill rev 9)
+
+Aydin's critique of the typeset S8 (unmotivated opening; "payline" and the whole
+paying/pricing frame; undescriptive "this/that"; inverted lists; neologisms like
+"floored share"; run-on sentences). S8 REWRITTEN in main.tex: motivated opening
+(targeting vs the two alternatives, each with its rationale, then what the model can
+say); every sentence names its subject; plain terms ("fraction of the budget given
+out as seed grants," "selection by review," "partial lottery," "lottery over all
+researchers"); losses stated in output units relative to named comparisons; short
+sentences. The convexity claim made concrete and verified across all eight D3 curves
+(half the budget as seed grants loses more than twice what a quarter loses). Fig 10
+and Fig 11 labels/captions and the Appendix B remark aligned; the S7 bridge recast.
+31pp clean; no "screen"/"payline" remains in body or captions.
+
+Skill NINTH revision (anti-patterns 29-32: undescriptive anaphora; coined labels;
+metaphoric framing vocabulary incl. inverted lists; run-on sentences; four checklist
+items); style lessons 27-29. Delivered; he must save.
+
+FLAGGED for Aydin (approved earlier text, same objection): the pricing frame in S1's
+roadmap ("S8 prices seed grants and lotteries"), S2 (four instances: "prices what a
+lottery saves," "at low paylines," "the payline," "What remains unpriced," "price the
+choice field by field"), and S4 ("it sets the price of overriding the optimal
+allocation"). Plain replacements proposed in chat; not edited without his word.
+
+## 2026-09-08/09 (eighth pass: price-language sweep; S9 dissolved into S8 + Appendix C)
+
+Paper-wide sweep replacing price/pay/buy/cheap/ledger/payline/floor language with
+output-loss language (abstract, S1-S8, fig6/fig10/fig11 captions and comments; label
+fig:lottery-prices -> fig:lottery-schemes; literal "review costs"/"costly effort"
+kept). Commit 2253df2.
+
+Aydin's decision on S9: no section. Robustness content -> NEW tex/appendix-technology.tex
+(Appendix C: CES family defined as the power mean A*M_gamma(K,R); Fig 13 signal
+robustness; Table 2 scheduling value + schedule center of mass by technology at T=5,
+replacing the S7 footnote that cross-quoted greedy-allocator magnitudes beside the
+body's). Concentration result -> closing movement of S8, retitled "Spreading funds:
+seed grants, lotteries, and concentration" (Fig 12; non-monotone clause kept at his
+word; bottleneck-top-up mechanism hedged as "a pattern consistent with"). Pointers
+updated: S1 roadmap (S9 discussion, S10 conclusion), S2 x2, S3, S4, S6 (new pointer
+sentence), S7. fig13 label collision fixed (zero rule removed). Preview 34pp clean.
+Float note: Fig 12 currently lands at the top of Appendix A's first page because no
+S9/S10 body text follows S8 yet; will settle when the discussion lands.
+
+Device bridge disconnected mid-turn; write-back queued in memory
+(/areas/for-claude-writeback-2.md, AH cont. 12) and changed files delivered in chat.
+Next: S9 (discussion: implications + limitations) function analysis.
+
+## 2026-09-27 (ninth pass: S9 Discussion v2; repo reconstructed on the new laptop)
+
+Aydin's verdict on the S9 prep: title "Discussion"; prose only; current-support remark
+cut; three tests. Draft v1 written (six movements); Aydin supplied a plainer opening
+and asked for less stylization and a more logical order. Draft v2
+(section-9-discussion-draft-v2.md) follows his opening: what we compared and the key
+quantity (value of targeting the gap; two determinants), what information contributes
+(records, review, grant depth, timing), what forgoing targeting loses (seed grants,
+lotteries, Proposition 2, concentration), what a funder should do (two cases), peer
+review (effort, efficacy evidence, calibration), scope, three tests. Awaiting verdict.
+Pending: confirm Li & Agha 2015 uses funded grants only; the one-clause S6 edit.
+
+Repo state: the new laptop's clone had only origin/smooth-allocator at f9e75ca; the
+old laptop's commits 4b70687..2253df2 were never pushed. Reconstructed from the cloud
+working copy as commit 26840ee on smooth-allocator (new laptop). Push refused (the
+PAT covers only for-claude); Aydin pushes from his terminal. The old laptop's branch
+is superseded and should not be pushed.

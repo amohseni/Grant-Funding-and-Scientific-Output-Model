@@ -1,0 +1,45 @@
+% Figure (S8): the output lost to uniform seed grants.
+% y = output lost by flooring the review-informed forward funder (S11 vs S8) as
+%     percent of no-funding output; x = floored share of the budget (x_seed).
+% Curves: heavy-tailed field with sharp review (tau_K = 0.3) at b = 1, 0.5, 0.1;
+% default field with default review (tau_K = 1) at b = 0.5. T = 2, 200 seeds.
+% Data: fig10-floor-cost.dat, from sweep_results/D3_seed_signal (hash 21b0d9a),
+% re-derived in-session (verify_s8.R). Regime pairing caveat: the heavy-tailed cells
+% run with sharper review than the default cells; stated in the caption.
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.82\textwidth, height=5.4cm,
+  axis lines*=left,
+  xmin=0, xmax=0.75, ymin=0, ymax=8,
+  xtick={0, 0.25, 0.5, 0.75},
+  ytick={0, 2, 4, 6, 8},
+  xlabel={fraction of the budget given out as seed grants},
+  ylabel={output lost (\% of no-funding output)},
+  ylabel style={font=\small}, xlabel style={font=\small},
+  tick label style={font=\small},
+  axis line style={line width=0.4pt},
+  tick style={line width=0.4pt, black},
+  clip=false,
+]
+\addplot[black, line width=0.7pt, mark=*, mark size=1.2pt] table[x=xseed, y=hb1]  {fig10-floor-cost.dat};
+\addplot[black, line width=0.7pt, mark=*, mark size=1.2pt] table[x=xseed, y=hb05] {fig10-floor-cost.dat};
+\addplot[black, line width=0.7pt, mark=*, mark size=1.2pt] table[x=xseed, y=hb01] {fig10-floor-cost.dat};
+\addplot[black, line width=0.7pt, mark=*, mark size=1.2pt] table[x=xseed, y=db05] {fig10-floor-cost.dat};
+\node[font=\small, anchor=west] at (axis cs:0.77,7.11) {heavy-tailed, $b = 1$};
+\node[font=\small, anchor=west] at (axis cs:0.77,6.11) {heavy-tailed, $b = 0.5$};
+\node[font=\small, anchor=west] at (axis cs:0.77,2.62) {heavy-tailed, $b = 0.1$};
+\node[font=\small, anchor=west] at (axis cs:0.77,1.22) {default, $b = 0.5$};
+\end{axis}
+\end{tikzpicture}
+\caption{The output lost to uniform seed grants. A review-informed funder gives out a
+fraction of its budget as equal grants to all researchers and targets the rest. The
+figure shows the expected output lost, as a percent of no-funding output, over two
+rounds. The loss increases faster than the fraction given out as seed grants. The
+size of the loss is set by what targeting is worth in the field: the loss is largest
+in a heavy-tailed field with sharp review (upper curves, $\tau_K = 0.3$) and small
+where targeting is worth little (lowest curve: the default field and the default
+review signal). Two hundred seeds per point.}
+\label{fig:floor-cost}
+\end{figure}

@@ -245,3 +245,64 @@ deterministic verbs (tells, determines, settles, dictates, fixes, ensures) only 
 relations that are deterministic in the formalism; otherwise informs, bears on, shifts,
 raises, contributes to. Now anti-pattern 25 with a checklist item; kin to lesson 10
 (capacity over identity) and the substitution test (lesson 22).
+
+## 24. Figure or proof, not footnotes alone (2026-09-08, his instruction)
+
+"Claims should be backed up by either a proof provided in the appendix, or simulation
+results illustrated in a figure. Footnotes alone don't cut it." Applied across
+\S\S4-7: \S4's placeholders resolved by converting the gap-rule derivation to Appendix
+A; \S6 gained the records-rounds and overtrust figures; \S7's three headline results
+each got a figure. Rule: a substantive claim (analytic) points to its proof in the
+appendix; a substantive claim (simulation) points to a figure that displays it.
+Footnotes keep generating context, caveats, and secondary magnitudes. Audit artifact:
+figure-or-proof-audit-2026-09-08.md.
+
+## 25. Results in relative terms over the relevant comparison (2026-09-08, his instruction)
+
+"Results should not be put in terms of publication numbers, since output is not just
+in pubs and aptly considered percent gains over the relevant comparisons are more
+meaningful." Raw output counts ("41.2 expected publications") carry false concreteness
+and no meaning across parameter settings. Rule: report simulation results as percent
+gains or shares over the comparison that gives them meaning (no-funding output,
+uniform funding's output, the even schedule's output, review's calibrated value);
+choose the comparison that the claim is about.
+
+## 26. No single-number summaries of sweep-ranging quantities (2026-09-08, his instruction)
+
+"One-thirtieth" as the answer to what scheduling is worth: "a single number for a
+model whose analysis should range over a parameter sweep is both meaningless and
+suspicious." Rule: when a quantity varies over the swept parameters, state its range
+over the tested settings and name the extremes and where they occur ("smaller than the
+signal's value in every setting we test: by an order of magnitude or more at the
+default rate and below, approaching parity only at the joint extreme of the highest
+rate and longest horizon"). A single number is licensed only for a quantity the sweep
+shows to be stable, and then with that stability stated.
+
+## 27. Name the subject; no undescriptive anaphora (2026-09-08, his instruction)
+
+"There's a pattern of referring to the subjects of previous sentences as 'this' and
+'that' and other undescriptive references... make the subject of every sentence as
+clear as possible without making it unwieldy." Example fixed: "How much that is
+depends on the field" -> "How much output is lost by giving up targeting depends on
+the field." Rule: every sentence names its subject; the test is whether it makes
+sense read alone. Anti-pattern 29.
+
+## 28. No coined labels, no jargon, no neologisms (2026-09-08, his instruction)
+
+"What is the floored share?... Too much jargon and too many neologisms. We want the
+language to be basic and accessible to everyone." Also "payline": "I don't know what
+it means." Rule: write the plain thing; a short label only for a many-times-recurring
+object, after its plain description, and only if literal. Anti-pattern 30.
+
+## 29. No paying/pricing metaphors; plain lists; short sentences (2026-09-08, his instruction)
+
+"Again, this language of paying. Let's be more straightforward and clear." The
+pricing frame ("pay one price," "chance has a price," "the ledger") was flourish
+that blurred the object; replaced by stated losses in output units relative to a
+named comparison. Also: "the conditions that make review worth little, capability
+spread evenly, budgets ample, signals uninformative" is an inverted, apposition-
+stacked list; write "evenly spread capabilities, large budgets, uninformative peer
+review." And sentences that "run on for quite a while" are split. Anti-patterns 31
+and 32. Note for the paper: the pricing frame also appears in the typeset \S1
+roadmap, \S2 (four instances incl. "payline"), and \S4's "sets the price of";
+flagged for Aydin's call.

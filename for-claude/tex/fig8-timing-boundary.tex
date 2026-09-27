@@ -1,0 +1,43 @@
+% Figure (S7): the schedule's tilt is governed by the compounding rate.
+% y = budget-schedule center of mass (0.5 = even; above = late-leaning) of the
+% forward funder; x = compounding rate eps (log scale); three baseline resource
+% scales (r_min = 0.001 poor, 0.3, 3 rich). 200 seeds per cell.
+% Data: fig8-boundary.dat, from sweep_results/resource_regime (hash 21b0d9a).
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.82\textwidth, height=5.4cm,
+  axis lines*=left,
+  xmode=log,
+  xmin=0.0001, xmax=0.85, ymin=0.48, ymax=0.68,
+  xtick={0.0001, 0.01, 0.1, 0.85},
+  xticklabels={0.0001, 0.01, 0.1, 0.85},
+  ytick={0.5, 0.55, 0.6, 0.65},
+  yticklabels={even, 0.55, 0.60, 0.65},
+  xlabel={compounding rate $\epsilon$},
+  ylabel={schedule center of mass},
+  ylabel style={font=\small}, xlabel style={font=\small},
+  tick label style={font=\small},
+  axis line style={line width=0.4pt},
+  tick style={line width=0.4pt, black},
+  clip=false,
+]
+\addplot[gray, dashed, line width=0.4pt, domain=0.0001:0.85] {0.5};
+\addplot[black, line width=0.7pt] table[x=eps, y=rich] {fig8-boundary.dat};
+\addplot[black, line width=0.7pt] table[x=eps, y=mid]  {fig8-boundary.dat};
+\addplot[black, line width=0.7pt] table[x=eps, y=poor] {fig8-boundary.dat};
+\node[font=\small, anchor=west] at (axis cs:0.92,0.652) {resource-rich};
+\node[font=\small, anchor=west] at (axis cs:0.92,0.566) {intermediate};
+\node[font=\small, anchor=west] at (axis cs:0.92,0.521) {resource-poor};
+\end{axis}
+\end{tikzpicture}
+\caption{Compounding, not poverty, sets the schedule's tilt. The schedule's center of
+mass (0.5 is even; higher is later) as the compounding rate $\epsilon$ increases, for
+communities of baseline resource scale $r_{\min} = 3$, $0.3$, and $0.001$. Below
+$\epsilon \approx 0.03$ every schedule is within half a percent of even; as
+compounding increases, every community's schedule leans later. Resource poverty
+raises the early share and decreases the intensity of the effect, but does not
+reverse it. Two hundred seeds per cell.}
+\label{fig:timing-boundary}
+\end{figure}

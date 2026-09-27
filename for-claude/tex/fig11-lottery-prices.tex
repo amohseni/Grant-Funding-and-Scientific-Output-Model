@@ -1,0 +1,85 @@
+% Figure (S8): what spreading and randomizing capture, by field.
+% y = a scheme's gain over no funding as a share of the optimal (complete-information
+%     gap-rule) allocation's gain; x = screen noise tau (log). Single round, n = 50,
+%     funded share one fifth of the population, 2000 populations per point (max MC SE
+%     0.002); screen s = K + N(0, tau). Schemes: equal division among the top fifth
+%     by screen, equal division among the top two fifths (half-size grants), partial lottery
+%     (half of the top two fifths at random, full-size grants), uniform, lottery over all
+%     (a fifth of the population at random). Left panel: heavy-tailed capability
+%     (alpha_K = 1.3), tight budget (b = 0.1). Right panel: evenly spread capability
+%     (alpha_K = 3.5), b = 0.5. Data: fig11-heavy.dat, fig11-even.dat
+%     (price_lotteries.py, 2026-09-08).
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  name=left,
+  width=0.46\textwidth, height=5.6cm,
+  axis lines*=left,
+  xmode=log,
+  xmin=0.3, xmax=10, ymin=0, ymax=1,
+  xtick={0.3, 1, 3, 10},
+  xticklabels={0.3, 1, 3, 10},
+  ytick={0, 0.25, 0.5, 0.75, 1},
+  yticklabels={0, 0.25, 0.5, 0.75, 1},
+  xlabel={review noise $\tau$},
+  ylabel={share of the optimal allocation's gain},
+  ylabel style={font=\small}, xlabel style={font=\small},
+  tick label style={font=\small},
+  axis line style={line width=0.4pt},
+  tick style={line width=0.4pt, black},
+  title={\small heavy-tailed, tight budget},
+  title style={yshift=-2pt},
+  clip=false,
+]
+\addplot[gray, dashed, line width=0.5pt, domain=0.3:10] {0.445};
+\addplot[gray, dotted, line width=0.6pt, domain=0.3:10] {0.378};
+\addplot[black, line width=0.7pt, mark=*, mark size=1.1pt] table[x=tau, y=ss] {fig11-heavy.dat};
+\addplot[black, line width=0.7pt, mark=o, mark size=1.3pt] table[x=tau, y=ws] {fig11-heavy.dat};
+\addplot[black, line width=0.7pt, mark=triangle*, mark size=1.4pt] table[x=tau, y=sl] {fig11-heavy.dat};
+\node[font=\scriptsize, anchor=south west] at (axis cs:0.315,0.79) {top fifth by review};
+\node[font=\scriptsize, gray, anchor=north west] at (axis cs:0.315,0.372) {lottery over all};
+\end{axis}
+\begin{axis}[
+  at={(left.outer east)}, anchor=outer west, xshift=6pt,
+  width=0.46\textwidth, height=5.6cm,
+  axis lines*=left,
+  xmode=log,
+  xmin=0.3, xmax=10, ymin=0, ymax=1,
+  xtick={0.3, 1, 3, 10},
+  xticklabels={0.3, 1, 3, 10},
+  ytick={0, 0.25, 0.5, 0.75, 1},
+  yticklabels={,,,,},
+  xlabel={review noise $\tau$},
+  xlabel style={font=\small},
+  tick label style={font=\small},
+  axis line style={line width=0.4pt},
+  tick style={line width=0.4pt, black},
+  title={\small evenly spread, ample budget},
+  title style={yshift=-2pt},
+  clip=false,
+]
+\addplot[gray, dashed, line width=0.5pt, domain=0.3:10] {0.831};
+\addplot[gray, dotted, line width=0.6pt, domain=0.3:10] {0.414};
+\addplot[black, line width=0.7pt, mark=*, mark size=1.1pt] table[x=tau, y=ss] {fig11-even.dat};
+\addplot[black, line width=0.7pt, mark=o, mark size=1.3pt] table[x=tau, y=ws] {fig11-even.dat};
+\addplot[black, line width=0.7pt, mark=triangle*, mark size=1.4pt] table[x=tau, y=sl] {fig11-even.dat};
+\node[font=\scriptsize, gray, anchor=south west] at (axis cs:0.32,0.836) {uniform};
+\node[font=\scriptsize, anchor=south west] at (axis cs:1.15,0.705) {top two fifths by review};
+\end{axis}
+\end{tikzpicture}
+\caption{What five funding schemes gain, by field. Each scheme's gain over no funding
+as a share of the optimal allocation's gain, in a single round with a fifth of the
+population funded, as review noise increases. Filled circles: an equal division among
+the top fifth of researchers by review score. Open circles: an equal division among
+the top two fifths. Triangles: the partial lottery, which funds half of the top two
+fifths at random. Dashed rule: uniform funding. Dotted rule: a lottery over all
+researchers. In a heavy-tailed field with a tight budget (left), selection by review
+gains most, and its gain declines slowly as review grows noisier; the partial lottery
+gains less, mainly because it ignores the review ranking within the top two fifths;
+the lottery over all researchers gains least, less than uniform funding. In an evenly
+spread field with a large budget (right), the ordering reverses: uniform funding gains
+most, and every scheme that concentrates grants gains less. Two thousand populations
+per point.}
+\label{fig:lottery-schemes}
+\end{figure}

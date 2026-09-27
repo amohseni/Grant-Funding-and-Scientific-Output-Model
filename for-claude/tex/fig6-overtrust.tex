@@ -1,0 +1,45 @@
+% Figure 6 (S6): the value of review under misweighted trust.
+% y = review's value (S5 - S4) as percent of no-funding output; x = the funder's
+% believed noise (log scale); true noise tau_K = 3 (dotted rule). Two capability
+% distributions. Error bars: one standard error, 200 seeds per cell.
+% Data: fig6-overtrust.dat, from sweep_results/D_misspecified_trust (hash 21b0d9a).
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.82\textwidth, height=6.0cm,
+  axis lines*=left,
+  xmode=log,
+  xmin=0.1, xmax=10, ymin=-2, ymax=20,
+  xtick={0.1, 0.3, 1, 3, 10},
+  xticklabels={0.1, 0.3, 1, 3, 10},
+  ytick={0, 5, 10, 15, 20},
+  xlabel={believed noise $\tau_K$},
+  ylabel={value of review (\% of no-funding output)},
+  ylabel style={font=\small}, xlabel style={font=\small},
+  tick label style={font=\small},
+  axis line style={line width=0.4pt},
+  tick style={line width=0.4pt, black},
+  clip=false,
+]
+\addplot[gray, dashed, line width=0.4pt, domain=0.1:10] {0};
+\draw[gray, dotted, line width=0.5pt] (axis cs:3,-2) -- (axis cs:3,20);
+\node[font=\small, gray, anchor=west] at (axis cs:3.15,8) {true noise};
+\addplot[black, line width=0.7pt, error bars/.cd, y dir=both, y explicit]
+  table[x=belief, y=p13, y error=s13] {fig6-overtrust.dat};
+\addplot[black, line width=0.7pt, error bars/.cd, y dir=both, y explicit]
+  table[x=belief, y=p20, y error=s20] {fig6-overtrust.dat};
+\node[font=\small, anchor=west] at (axis cs:11,13.1) {$\alpha_K = 1.3$};
+\node[font=\small, anchor=west] at (axis cs:11,1.2)  {$\alpha_K = 2$};
+\end{axis}
+\end{tikzpicture}
+\caption{Overtrusting review loses more output than undertrusting it. The value of review as a
+percent of no-funding output, as the funder's believed signal noise varies while the
+true noise is $\tau_K = 3$ (dotted rule); bars show one standard error over two
+hundred seeds. Value peaks where belief matches truth. To the right of the peak,
+undertrust forgoes part of the value; to the left, overtrust treats a noisy signal
+as sharp, and at the default capability distribution ($\alpha_K = 2$) it takes the
+value below zero: worse than ignoring review. Under heavy-tailed capability
+($\alpha_K = 1.3$) overtrust reduces the value without reversing it.}
+\label{fig:overtrust}
+\end{figure}

@@ -1,0 +1,45 @@
+# Output of verify_s7.R, run 2026-09-08 in-session on canonical sweep files staged
+# from the Mac (all match docs/PAPER_INTEGRATION_HANDOFF_2026-08-06.md).
+== Result 1: front/back boundary in eps (resource_regime) ==
+  front-load cells (b_idx<0.5)                               10
+  max eps among front-load cells                             0.03
+  b_idx at eps=0.85, r_min 0.001..3: 0.521 0.525 0.566 0.621 0.652 
+  round-1 share same rows: 0.174 0.170 0.123 0.080 0.060 
+== Results 2-3: depth (exploration_200) ==
+  b: 0.5 1.5 3 6 | S8-S2: 0.5 14.6 41.2 56.8 | r1 share: 0.166 0.147 0.110 0.123 | b_idx: 0.501 0.513 0.530 0.511 
+  corner (b=0.5): S8-S2 by tau_k: tau=1: 17.6, tau=1: 17.2, tau=1: 16.3, tau=1: 14.3, tau=3: 14.1, tau=3: 13.8, tau=3: 13.1, tau=3: 11.5, tau=10: 7.6, tau=10: 7.4, tau=10: 7.0, tau=10: 6.1, tau=100: 0.5, tau=100: 0.4, tau=100: 0.4, tau=100: 0.4 
+  min b_idx_S8 across exploration cells                      0.4972
+  n exploration cells                                        32
+  poverty r1 share by r_min: r_min=0.001: 0.167, r_min=0.001: 0.166, r_min=0.03: 0.167, r_min=0.03: 0.165, r_min=0.3: 0.170, r_min=0.3: 0.162, r_min=1: 0.169, r_min=1: 0.138 
+== Result 4: attribution (bload_decouple) ==
+  pure-free b_idx (ef .1/.3/.85): 0.529 0.587 0.680 
+  pure-paid b_idx (ep .1/.3/.85): 0.4886 0.4806 0.4814 | max SE: 0.0023 
+  PG at pure-paid eps_paid=.85                               0.193
+  contour @eps_paid=0.30: eps_free in (0.05, 0.1), ratio 0.17-0.33
+  contour @eps_paid=0.85: eps_free in (0.1, 0.15), ratio 0.12-0.18
+== Result 5 + calibration: PG magnitudes, T exponent ==
+  exponent eps=0.30: T<=5: 2.33 ; T=5..10: 1.44
+  exponent eps=0.85: T<=5: 2.05 ; T=5..10: 0.78
+  T=5 PG vs signal value by eps: eps=0.05: PG=-0.00 sig=10.61 (ratio -0.000); eps=0.15: PG=0.07 sig=10.45 (ratio 0.007); eps=0.3: PG=0.32 sig=10.05 (ratio 0.032); eps=0.55: PG=0.98 sig=8.98 (ratio 0.109); eps=0.85: PG=1.99 sig=7.53 (ratio 0.263) 
+== Cobb-Douglas scope (sigma_tierA) ==
+  CD: max PG(T=5) over eps                                   0.01413
+  CD: max b_idx (T=5)                                        0.512
+  gc=-3: PG(T=5, eps=.85)                                    3.77
+  gc=-3: b_idx(T=5, eps=.85)                                 0.660
+== Bootstrap verifications ==
+  eps~0: even output                                         498.2
+  eps~0: best early-mass minus even                          -7.8
+  eps=0.3: best early-mass minus even                        -20.8
+  CE(S8)-CE(S5) mean                                         3.33
+  seeds with CE(S8)>=CE(S5)                                  20
+
+## Addendum 2026-09-08 (figure data + relative terms; scripts appended to verify_s7.R)
+# Depth schedule (exploration_depth cell, tau_k=100, eps=1e-4, r_min=0.001, k=1.3, T=6, budget_ref=K):
+#   b=0.5 (50 seeds): shares 0.166 0.166 0.166 0.167 0.167 0.167 (SE <= 0.001)
+#   b=3   (24 seeds): shares 0.1037 0.1599 0.1840 0.1843 0.1846 0.1834 (SE <= 0.0057);
+#     round-1 share 0.104 vs canonical 200-seed alpha_S8 = 0.110
+# Rounds trajectory (alpha=2, tau=1, T=20, 50 seeds): full 20-round S4/S5 means in tex/fig5-rounds.dat
+# Relative terms: T3 losses 1.6% / 3.5% of even output; T6 gains 0.29/4.59/9.33/10.01 %S2
+#   at b=0.5/1.5/3/6 (corner tau=1: 8.6-11.2 %S2); PG/signal ratio range over 32 cells:
+#   0.000-0.66 (max T=10, eps=0.85; eps=0.3 row: 0.006-0.075); PG 0-0.71 %S1, signal 0.8-7.5 %S1;
+#   CD PG(T=5) <= 0.0045 %S1; gc=-3: 1.54 %S1. Overtrust %S1: see section-6-claims addendum.

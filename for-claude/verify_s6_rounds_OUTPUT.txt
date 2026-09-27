@@ -17,3 +17,16 @@ k=2.0 S5 rounds 1,2,4,8,12,16,20: 0.811 0.825 0.847 0.842 0.866 0.868 0.898
 ## Paired sharp-end test (value = out_S5 - out_S4, tau 0.05 vs 0.3, 50 seeds)
 k=1.3: mean diff (tau .05 - .3) = -0.389, se = 0.087, z = -4.46
 k=2.0: mean diff (tau .05 - .3) = 0.004, se = 0.067, z = 0.06
+
+## Addendum 2026-09-08 (Aydin: investigate the sharp-end reversal). reversal_probe 1-3:
+# Probe 1 (concentration): round-1 grant gini tau=.05: 0.8408 vs tau=.3: 0.8468 (paired z = -4.16)
+# Probe 2 (round decomposition, output identity exact):
+#   round-1 value diff (.05-.3): -0.200 se 0.054 z -3.71
+#   round-2 value diff (.05-.3): -0.189 se 0.048 z -3.98
+#   -> deficit present in round 1 itself; exploration/dynamics hypothesis refuted.
+# Probe 3 (resource-noise intervention):
+#   tau_r=1.00: value diff (.05-.3) = -0.389 se 0.087 z = -4.46
+#   tau_r=0.01: value diff (.05-.3) = +1.432 se 0.248 z = +5.78
+#   -> mechanism: interaction with the noisy resource estimate; removing resource
+#      noise flips the sign to the expected direction. (k_shape = 1.3 throughout;
+#      at k_shape = 2 the reversal is absent, z = 0.06.)

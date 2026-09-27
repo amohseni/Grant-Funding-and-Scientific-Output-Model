@@ -1,0 +1,67 @@
+# Output of verify_s8.R (Package A re-derivation + D3 relative objects), 2026-09-08 in-session
+== Package A: seed floors ==
+cols: b,x_seed,k_shape,n_trials,tau_k_mean,tau_k_se,out_S1_mean,out_S1_se,alpha_S1_mean,alpha_S1_se,out_S2_mean,out_S2_se,alpha_S2_mean,alpha_S2_se,out_S3_mean,out_S3_se,alpha_S3_mean,alpha_S3_se,out_S4_mean,out_S4_se,alpha_S4_mean,alpha_S4_se,out_S5_mean,out_S5_se,alpha_S5_mean,alpha_S5_se,out_S6_mean,out_S6_se,alpha_S6_mean,alpha_S6_se,out_S7_mean,out_S7_se,alpha_S7_mean,alpha_S7_se,out_S8_mean,out_S8_se,alpha_S8_mean,alpha_S8_se,out_S9_mean,out_S9_se,alpha_S9_mean,alpha_S9_se,out_S10_mean,out_S10_se,alpha_S10_mean,alpha_S10_se,out_S11_mean,out_S11_se,alpha_S11_mean,alpha_S11_se,b_idx_S7_mean,b_idx_S7_se,b_idx_S8_mean,b_idx_S8_se,b_idx_S9_mean,b_idx_S9_se,b_idx_S11_mean,b_idx_S11_se,gini_g1_S5_mean,gini_g1_S5_se,gini_g1_S7_mean,gini_g1_S7_se,gini_g1_S8_mean,gini_g1_S8_se,gini_g1_S9_mean,gini_g1_S9_se,gini_g1_S10_mean,gini_g1_S10_se,gini_g1_S11_mean,gini_g1_S11_se,coverage_S5_mean,coverage_S5_se,top10_share_S5_mean,top10_share_S5_se,disp_S11_mean,disp_S11_se,rho_s_mean,rho_s_se,fwd_vs_myo_P_mean,fwd_vs_myo_P_se,fwd_vs_myo_PG_mean,fwd_vs_myo_PG_se,fwd_vs_myo_PS_mean,fwd_vs_myo_PS_se,signal_myo_mean,signal_myo_se,signal_fwd_mean,signal_fwd_se,seed_myo_mean,seed_myo_se,seed_fwd_mean,seed_fwd_se,optimal_vs_naive_mean,optimal_vs_naive_se,seed_sig_myo_mean,seed_sig_myo_se,seed_sig_fwd_mean,seed_sig_fwd_se 
+grid: k_shape 1.3 2 | b 0.1 0.3 0.5 1 | x_seed 0.1 0.25 0.5 0.75 
+  P-A1 focal cost (S11 vs S8, raw)                           5.714
+  P-A1 focal cost as % of S1                                 6.109
+  kappa range: 0.10 0.86 
+  k=1.3 b=0.1: x_seed 0.1,0.25,0.5,0.75 -> cost %S1 0.32,0.81,1.69,2.62 | S5-S2 %S1 8.16,8.16,8.16,8.16
+  k=1.3 b=0.3: x_seed 0.1,0.25,0.5,0.75 -> cost %S1 0.53,1.41,3.08,5.02 | S5-S2 %S1 18.42,18.42,18.42,18.42
+  k=1.3 b=0.5: x_seed 0.1,0.25,0.5,0.75 -> cost %S1 0.56,1.54,3.57,6.11 | S5-S2 %S1 25.36,25.36,25.36,25.36
+  k=1.3 b=1.0: x_seed 0.1,0.25,0.5,0.75 -> cost %S1 0.45,1.39,3.73,7.11 | S5-S2 %S1 36.68,36.68,36.68,36.68
+  k=2.0 b=0.1: x_seed 0.1,0.25,0.5,0.75 -> cost %S1 0.13,0.34,0.73,1.19 | S5-S2 %S1 4.72,4.72,4.72,4.72
+  k=2.0 b=0.3: x_seed 0.1,0.25,0.5,0.75 -> cost %S1 0.10,0.29,0.71,1.31 | S5-S2 %S1 7.72,7.72,7.72,7.72
+  k=2.0 b=0.5: x_seed 0.1,0.25,0.5,0.75 -> cost %S1 0.08,0.22,0.59,1.22 | S5-S2 %S1 9.09,9.09,9.09,9.09
+  k=2.0 b=1.0: x_seed 0.1,0.25,0.5,0.75 -> cost %S1 0.05,0.15,0.42,1.03 | S5-S2 %S1 10.87,10.87,10.87,10.87
+D4 cols: x_seed,k_shape,n_trials,tau_k_mean,tau_k_se,out_S1_mean,out_S1_se,alpha_S1_mean,alpha_S1_se,out_S2_mean,out_S2_se,alpha_S2_mean,alpha_S2_se,out_S3_mean,out_S3_se,alpha_S3_mean,alpha_S3_se,out_S4_mean,out_S4_se,alpha_S4_mean,alpha_S4_se,out_S5_mean,out_S5_se,alpha_S5_mean,alpha_S5_se,out_S6_mean,out_S6_se,alpha_S6_mean,alpha_S6_se,out_S7_mean,out_S7_se,alpha_S7_mean,alpha_S7_se,out_S8_mean,out_S8_se,alpha_S8_mean,alpha_S8_se,out_S9_mean,out_S9_se,alpha_S9_mean,alpha_S9_se,out_S10_mean,out_S10_se,alpha_S10_mean,alpha_S10_se,out_S11_mean,out_S11_se,alpha_S11_mean,alpha_S11_se,b_idx_S7_mean,b_idx_S7_se,b_idx_S8_mean,b_idx_S8_se,b_idx_S9_mean,b_idx_S9_se,b_idx_S11_mean,b_idx_S11_se,gini_g1_S5_mean,gini_g1_S5_se,gini_g1_S7_mean,gini_g1_S7_se,gini_g1_S8_mean,gini_g1_S8_se,gini_g1_S9_mean,gini_g1_S9_se,gini_g1_S10_mean,gini_g1_S10_se,gini_g1_S11_mean,gini_g1_S11_se,coverage_S5_mean,coverage_S5_se,top10_share_S5_mean,top10_share_S5_se,disp_S11_mean,disp_S11_se,rho_s_mean,rho_s_se,fwd_vs_myo_P_mean,fwd_vs_myo_P_se,fwd_vs_myo_PG_mean,fwd_vs_myo_PG_se,fwd_vs_myo_PS_mean,fwd_vs_myo_PS_se,signal_myo_mean,signal_myo_se,signal_fwd_mean,signal_fwd_se,seed_myo_mean,seed_myo_se,seed_fwd_mean,seed_fwd_se,optimal_vs_naive_mean,optimal_vs_naive_se,seed_sig_myo_mean,seed_sig_myo_se,seed_sig_fwd_mean,seed_sig_fwd_se 
+  P-A2 max |S6-S2| at x_seed=1 (must be 0)                   0
+  D4 k=1.3: x_seed 0.25,0.5,0.75,0.9,1 -> (S6-S2)/S1 % 2.81,2.39,1.71,0.95,0.00
+  D4 k=2.0: x_seed 0.25,0.5,0.75,0.9,1 -> (S6-S2)/S1 % 1.38,1.12,0.79,0.46,0.00
+k=1.3: b 0.1,0.3,0.5,1 | uniform gain (S2-S1)/S1 % 7.0,19.3,29.8,51.0 | targeting value rel to uniform gain (S5-S2)/(S2-S1) 1.17,0.96,0.85,0.72 | (S4-S2)/S1 % 1.05,2.18,3.09,5.28
+k=2.0: b 0.1,0.3,0.5,1 | uniform gain (S2-S1)/S1 % 6.3,17.2,26.1,43.2 | targeting value rel to uniform gain (S5-S2)/(S2-S1) 0.74,0.45,0.35,0.25 | (S4-S2)/S1 % 0.73,1.32,1.60,2.04
+tau_k in D3: 0.3 1 
+
+# Output of price_lotteries.py (single-round scheme pricing), 2026-09-08
+alpha    b  tau | scr-split  scr-lott  uniform full-lott
+  1.3  0.1  0.3 |     0.776     0.599    0.448     0.381
+  1.3  0.1    1 |     0.748     0.564    0.444     0.378
+  1.3  0.1    3 |     0.645     0.505    0.444     0.377
+  1.3  0.1   10 |     0.512     0.447    0.444     0.378
+  1.3  0.5  0.3 |     0.778     0.555    0.530     0.319
+  1.3  0.5    1 |     0.749     0.526    0.534     0.321
+  1.3  0.5    3 |     0.638     0.468    0.528     0.317
+  1.3  0.5   10 |     0.490     0.404    0.531     0.320
+  2.0  0.1  0.3 |     0.787     0.617    0.525     0.431
+  2.0  0.1    1 |     0.709     0.565    0.524     0.430
+  2.0  0.1    3 |     0.583     0.507    0.524     0.430
+  2.0  0.1   10 |     0.486     0.462    0.525     0.430
+  2.0  0.5  0.3 |     0.777     0.572    0.682     0.370
+  2.0  0.5    1 |     0.700     0.526    0.686     0.372
+  2.0  0.5    3 |     0.561     0.463    0.681     0.369
+  2.0  0.5   10 |     0.442     0.412    0.683     0.371
+  3.5  0.1  0.3 |     0.778     0.653    0.666     0.528
+  3.5  0.1    1 |     0.664     0.599    0.665     0.527
+  3.5  0.1    3 |     0.582     0.560    0.668     0.529
+  3.5  0.1   10 |     0.540     0.536    0.666     0.527
+  3.5  0.5  0.3 |     0.665     0.537    0.833     0.415
+  3.5  0.5    1 |     0.560     0.488    0.830     0.414
+  3.5  0.5    3 |     0.469     0.446    0.831     0.414
+  3.5  0.5   10 |     0.429     0.424    0.832     0.414
+
+## Addendum (extended computation with wide split; max MC SE 0.002 per cell)
+#    a    b  tau | scr-split wide-split scr-lott uniform full-lott
+#  1.3  0.1  0.3 |     0.776      0.644    0.599   0.448     0.381
+#  1.3  0.1  1.0 |     0.748      0.605    0.564   0.444     0.378
+#  1.3  0.1  3.0 |     0.645      0.545    0.505   0.444     0.377
+#  1.3  0.1 10.0 |     0.512      0.485    0.447   0.444     0.378
+#  2.0  0.1  0.3 |     0.785      0.677    0.614   0.523     0.428
+#  2.0  0.1  1.0 |     0.706      0.626    0.566   0.526     0.431
+#  2.0  0.1  3.0 |     0.581      0.562    0.506   0.522     0.428
+#  2.0  0.1 10.0 |     0.486      0.515    0.461   0.524     0.429
+#  3.5  0.5  0.3 |     0.666      0.764    0.536   0.831     0.413
+#  3.5  0.5  1.0 |     0.558      0.696    0.486   0.831     0.414
+#  3.5  0.5  3.0 |     0.474      0.644    0.447   0.831     0.414
+#  3.5  0.5 10.0 |     0.430      0.615    0.424   0.831     0.414
+# Decomposition at heavy, tau=1: lottery vs ranked split shortfall 0.184 = 0.143
+# (ranking discarded) + 0.041 (gamble). Lottery-vs-ranked gaps: heavy 0.177/0.184/
+# 0.140/0.065 (tau 0.3/1/3/10); even 0.130/0.072/0.027/0.006.
