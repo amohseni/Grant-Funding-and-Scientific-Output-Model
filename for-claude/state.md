@@ -859,3 +859,7 @@ Next: S9 (discussion: implications + limitations) function analysis.
 S9 Discussion v2 TYPESET into main.tex (\section{Discussion}, label sec:discussion;
 roadmap pointer converted to \S\ref{sec:discussion}); 37pp preview clean. Not made:
 the one-clause S6 consistency edit (awaiting Aydin's word). Next: S10 conclusion.
+Overleaf bundle delivered (main.tex + references.bib at root, figures/ for the rest;
+sources unwrapped to one line per paragraph, text verified identical). Full style and
+clarity audit written: style-audit-2026-09-27.md (6 READ, 3 VERDICT, 14 global terms,
+~95 local items with proposed rewrites); no changes made, awaiting Aydin's approvals.
