@@ -878,3 +878,4 @@ Sources are now stored unwrapped (one line per paragraph). Skill TENTH revision:
 anti-patterns 33-35 (straightforwardness audit with his named exceptions; simulation
 reporting language; one operational definition) + three checklist items + SKILL.md
 rule 13. Delivered; he must save.
+Compression plan written (compression-plan-2026-09-27.md): layout accounts for 7 of 37 pages; content plan cuts ~30% (captions to a third, footnotes by 60%, S9 and S3 and S8 trimmed, Appendix A compressed, new Appendix D absorbs generating context). Awaiting Aydin's decisions.
