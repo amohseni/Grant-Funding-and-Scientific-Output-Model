@@ -856,21 +856,6 @@ S9/S10 body text follows S8 yet; will settle when the discussion lands.
 Device bridge disconnected mid-turn; write-back queued in memory
 (/areas/for-claude-writeback-2.md, AH cont. 12) and changed files delivered in chat.
 Next: S9 (discussion: implications + limitations) function analysis.
-
-## 2026-09-27 (ninth pass: S9 Discussion v2; repo reconstructed on the new laptop)
-
-Aydin's verdict on the S9 prep: title "Discussion"; prose only; current-support remark
-cut; three tests. Draft v1 written (six movements); Aydin supplied a plainer opening
-and asked for less stylization and a more logical order. Draft v2
-(section-9-discussion-draft-v2.md) follows his opening: what we compared and the key
-quantity (value of targeting the gap; two determinants), what information contributes
-(records, review, grant depth, timing), what forgoing targeting loses (seed grants,
-lotteries, Proposition 2, concentration), what a funder should do (two cases), peer
-review (effort, efficacy evidence, calibration), scope, three tests. Awaiting verdict.
-Pending: confirm Li & Agha 2015 uses funded grants only; the one-clause S6 edit.
-
-Repo state: the new laptop's clone had only origin/smooth-allocator at f9e75ca; the
-old laptop's commits 4b70687..2253df2 were never pushed. Reconstructed from the cloud
-working copy as commit 26840ee on smooth-allocator (new laptop). Push refused (the
-PAT covers only for-claude); Aydin pushes from his terminal. The old laptop's branch
-is superseded and should not be pushed.
+S9 Discussion v2 TYPESET into main.tex (\section{Discussion}, label sec:discussion;
+roadmap pointer converted to \S\ref{sec:discussion}); 37pp preview clean. Not made:
+the one-clause S6 consistency edit (awaiting Aydin's word). Next: S10 conclusion.
