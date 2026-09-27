@@ -879,3 +879,22 @@ anti-patterns 33-35 (straightforwardness audit with his named exceptions; simula
 reporting language; one operational definition) + three checklist items + SKILL.md
 rule 13. Delivered; he must save.
 Compression plan written (compression-plan-2026-09-27.md): layout accounts for 7 of 37 pages; content plan cuts ~30% (captions to a third, footnotes by 60%, S9 and S3 and S8 trimmed, Appendix A compressed, new Appendix D absorbs generating context). Awaiting Aydin's decisions.
+
+## 2026-09-27 (tenth pass: compression, layout kept)
+
+Aydin's instructions: keep the layout (1.5 spacing, 4 cm margins) and figure sizes;
+results may stay stated in abstract, intro, and conclusion; prune in the conclusion;
+merge S5 into S6; keep a separate S10 conclusion; two-sources-of-growth to one line;
+sharp-end reversal cut entirely; Heesen sentence cut. Executed: S2/S3/S4/S5/S6/S7/S8
+trimmed per the plan; S5 merged into S6 as "What the funder can learn: track records
+and peer review" (sec:review, with sec:records as a starred subsection label);
+hard-coded section numbers converted to \ref; S9 restatement paragraphs cut to one;
+NEW S10 Conclusion (200 words, big picture); all 13 captions rewritten (1311 -> 667
+words) with settings moved to NEW Appendix D (appendix-simulation.tex: budget
+normalization 2bnE[R0], A = 1/2 in the paper's notation, defaults, scoring, per-figure
+settings table, code pointer); Appendix A compressed (2179 -> 1737: Lemma 2 proof
+shortened, Corollary 1 stated without proof, remarks deleted, example commentary cut);
+Appendix C opening trimmed. Body 9514 -> 8356 words, footnotes 1377 -> 767, captions
+1311 -> 667, appendices 3227 -> 3405 (incl. new D). Pages 37 -> 34 at the fixed
+layout (body 27 -> 24). Under 20 pages is not reachable at this layout without
+removing content that carries results; options reported to Aydin.
