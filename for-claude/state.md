@@ -917,3 +917,16 @@ Methods 474 = ~3,700 main text; Significance 120; abstract 145. Fig 1 = frontier
 (Aydin's call); Fig 2 (targeting in budget) -> SI as Fig S1; overtrust S2; grant-size
 schedule S3; concentration S4. "Two heuristics a funder might use" per Aydin. SI Appendix
 not yet assembled. Bridge dropped before write-back; delivered in chat.
+Same day, later: title of both versions changed to "A model of optimal science funding:
+targeting the capability-resource gap" (Aydin). Coined-term sweep across main.tex,
+appendices, captions, and the PNAS draft (term-replacements-2026-09-29.md: sharp ->
+reliable, coarse -> noisy, thin -> small, resource-poor -> few resources, lean ->
+shift toward later rounds, exceptional few -> few researchers of unusually high
+capability, fundable -> above a review threshold, money is tight -> budget small
+relative to researchers' resources, stand-in -> proxy; "Less than information" ->
+"less than the signal provided by grant peer review"; "pair of features" ->
+"qualitative features of the dynamics"; predictions paragraph now names the tests).
+Kept for his call: overtrust/undertrust, tight/ample budget, no-funding output,
+records-only. PNAS draft v2 moved onto the amsart template (his layout), figures
+inline at their sections, 14pp; Figs 7/10/11 and PNAS Fig 4 narrowed so their
+outside labels stay inside the margin. Both files compile with no overfull boxes.

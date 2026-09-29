@@ -2,7 +2,7 @@
 % Analytic curves lambda = 2AKR/(K+R), A = 1, K in {3, 10, 30}; tangent line 2AR.
 % Every curve has slope 2A at R = 0, so all coincide near the origin. Schematic axes
 % per the Fig 1 convention (exact values do not matter). Data: fig3-curves.dat.
-\begin{figure}[t]
+\begin{figure}[h]
 \centering
 \begin{tikzpicture}
 \begin{axis}[
@@ -26,6 +26,11 @@
 \node[font=\small, anchor=west] at (axis cs:6.7,4.0)  {$K = 3$};
 \end{axis}
 \end{tikzpicture}
-\caption{Small grants are uninformative about capability. Expected output against resources for researchers of capability $K = 3$, $10$, and $30$. Where resources are small relative to capability the curves coincide, so researchers of very different capability produce nearly identical output; the curves separate only where resources are comparable to capability.}
+\caption{Small grants are uninformative about capability. Expected output as a function of
+resources, for researchers of capability $K = 3$, $10$, and $30$ ($A = 1$). Every curve
+has slope $2A$ at the origin: where resources are small relative to capability, the
+curves coincide, and researchers of very different capabilities produce nearly identical
+output. The curves separate where resources are comparable to capability: observing
+output can identify capability only at depth.}
 \label{fig:thin-grants}
 \end{figure}
