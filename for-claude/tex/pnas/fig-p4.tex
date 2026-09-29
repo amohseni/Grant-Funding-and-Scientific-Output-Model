@@ -1,15 +1,15 @@
 \begin{figure}[tp]
 \centering
-\begin{minipage}{\textwidth}\noindent\textbf{A}\par\vspace{-1.2em}
+\begin{minipage}{\textwidth}\noindent\textbf{A}\par\vspace{-0.3em}
 \begin{tikzpicture}
 \begin{axis}[
   width=0.76\textwidth, height=5.4cm,
   axis lines*=left,
-  xmin=0, xmax=0.75, ymin=0, ymax=8,
+  xmin=0, xmax=0.75, ymin=0, ymax=20,
   xtick={0, 0.25, 0.5, 0.75},
-  ytick={0, 2, 4, 6, 8},
+  ytick={0, 5, 10, 15, 20},
   xlabel={fraction of the budget given out as seed grants},
-  ylabel={output lost (\% of no-funding output)},
+  ylabel={research output lost (\% of the gain from funding)},
   ylabel style={font=\small}, xlabel style={font=\small},
   tick label style={font=\small},
   axis line style={line width=0.4pt},
@@ -20,14 +20,14 @@
 \addplot[black, line width=0.7pt, mark=*, mark size=1.2pt] table[x=xseed, y=hb05] {fig10-floor-cost.dat};
 \addplot[black, line width=0.7pt, mark=*, mark size=1.2pt] table[x=xseed, y=hb01] {fig10-floor-cost.dat};
 \addplot[black, line width=0.7pt, mark=*, mark size=1.2pt] table[x=xseed, y=db05] {fig10-floor-cost.dat};
-\node[font=\small, anchor=west] at (axis cs:0.77,7.11) {heavy-tailed, $b = 1$};
-\node[font=\small, anchor=west] at (axis cs:0.77,6.11) {heavy-tailed, $b = 0.5$};
-\node[font=\small, anchor=west] at (axis cs:0.77,2.62) {heavy-tailed, $b = 0.1$};
-\node[font=\small, anchor=west] at (axis cs:0.77,1.22) {default, $b = 0.5$};
+\node[font=\small, anchor=west] at (axis cs:0.77,8.11) {heavy-tailed, $b = 2$};
+\node[font=\small, anchor=west] at (axis cs:0.77,11.07) {heavy-tailed, $b = 1$};
+\node[font=\small, anchor=west] at (axis cs:0.77,17.29) {heavy-tailed, $b = 0.2$};
+\node[font=\small, anchor=west] at (axis cs:0.77,3.47) {default, $b = 1$};
 \end{axis}
 \end{tikzpicture}
 \end{minipage}\par\vspace{0.9em}
-\begin{minipage}{\textwidth}\noindent\textbf{B}\par\vspace{-1.2em}
+\begin{minipage}{\textwidth}\noindent\textbf{B}\par\vspace{-0.3em}
 \begin{tikzpicture}
 \begin{axis}[
   name=left,
@@ -86,6 +86,6 @@
 \end{axis}
 \end{tikzpicture}
 \end{minipage}\par\vspace{0.9em}
-\caption{Spreading funds. (\textit{A}) The output lost to uniform seed grants, as a percent of no-funding output, when a review-informed funder gives out a fraction of its budget as equal grants to all researchers and targets the rest; the loss grows faster than the fraction, and its size is set by what targeting is worth in the field. (\textit{B}) What five funding schemes gain, by field: each scheme's gain over no funding as a share of the optimal allocation's gain, as review noise increases, in a heavy-tailed field with a tight budget (left) and an evenly spread field with a large budget (right). Filled circles: equal division among the top fifth by review score; open circles: among the top two fifths; triangles: the partial lottery; dashed: uniform funding; dotted: a lottery over all researchers. Settings: SI Text 7.}
+\caption{Spreading funds. (\textit{A}) The research output lost to uniform seed grants, as a percent of the research output that the funder's grants add over no funding, when a review-informed funder gives out a fraction of its budget as equal grants to all researchers and targets the rest; the loss grows faster than the fraction, and its size is set by what targeting is worth in the field. (\textit{B}) What five funding schemes gain, by field: each scheme's gain over no funding as a share of the optimal allocation's gain, as review noise increases, in a heavy-tailed field with a tight budget (left) and an evenly spread field with a large budget (right). Filled circles: equal division among the top fifth by review score; open circles: among the top two fifths; triangles: the partial lottery; dashed: uniform funding; dotted: a lottery over all researchers. Settings: \ref{app:simulation}.}
 \label{fig:p4}
 \end{figure}

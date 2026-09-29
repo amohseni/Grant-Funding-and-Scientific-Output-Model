@@ -930,3 +930,21 @@ Kept for his call: overtrust/undertrust, tight/ample budget, no-funding output,
 records-only. PNAS draft v2 moved onto the amsart template (his layout), figures
 inline at their sections, 14pp; Figs 7/10/11 and PNAS Fig 4 narrowed so their
 outside labels stay inside the margin. Both files compile with no overfull boxes.
+Same day, second pass (Aydin's six requests): "using a Bayesian approach"; "research
+output" at first mention per paragraph in framing sections and captions; NORMALIZATION
+CHANGED from percent of no-funding output to percent of the research output that
+funding adds (funder named at each use): seed grants 11/17/3.5% (was 6/1), schedule
+0-4.5% vs signal 7-27% over 30 settings (was 0-0.7 vs 0.8-7.5, 32), records-only
+shortfall 27/40% of complete-information gain, review max 9 vs 39%, App C 16/47/51%,
+Table 2 to 6.52; figs 6, 10, 12 re-plotted (data regenerated from staged sweeps;
+review cells rerun, review_cells.csv). Heuristics sentence in his words; track record
+is a signal (review "a further signal"); "In practically all cases"; Fig 1 redesigned
+with two frontiers (slopes 3/2, 2/3; black/gray/open) in both versions; PNAS panel
+letters raised; b renormalized so b = 1 is the field's one-round baseline resources
+(budget = b n E[R0]; all b doubled; code's b' = b/2 noted in App D); SI Appendix built
+into pnas-main.tex (si-*.tex, figS1-S5, claim-to-section table; refs \ref-based;
+Proposition 2 counter fix). Appendix C retitled "production function". Long version
+bibliography regenerated (six cited keys had been missing from the stale bbl; chicago
+bst not installed here, bbl built with plainnat, source keeps chicago). Both compile
+clean: main 35pp, pnas 34pp (14 main + SI). Details: term-replacements-2026-09-29.md.
+Claims ledgers E1-E12, T-rows, G-rows still carry the old normalization; superseded.
