@@ -948,3 +948,11 @@ bibliography regenerated (six cited keys had been missing from the stale bbl; ch
 bst not installed here, bbl built with plainnat, source keeps chicago). Both compile
 clean: main 35pp, pnas 34pp (14 main + SI). Details: term-replacements-2026-09-29.md.
 Claims ledgers E1-E12, T-rows, G-rows still carry the old normalization; superseded.
+Same day, third pass: PNAS subsection "When to fund" -> "Strategic timing of funding"
+(and Fig 3 caption lead); long version keeps "The timing of funding" (his instruction
+named the subsection head). Coined-term rule promoted: saved to his Claude preferences
+(applies on every surface) and proposed as standing rule 3 + hot rule 14 (comparative
+metrics) of the paper-writing skill (rev 11 card; he must save). Overleaf bundles
+rebuilt: overleaf-main-2026-09-29.zip (main.tex + references.bib at root, 17 tex + 18
+dat in figures/, chicago bst) and overleaf-pnas-2026-09-29.zip (pnas-main.tex + bib at
+root, 16 tex + 18 dat in figures/); both test-compiled clean with paths rewritten.
