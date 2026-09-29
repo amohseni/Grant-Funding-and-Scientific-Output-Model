@@ -964,3 +964,10 @@ A = 1 (the code's formula, no conversion note); Appendix A examples recomputed a
 (285/53, 284/51, 40/7; 56/15, 49/12, 21/5; c and g* unchanged; verified exactly). PNAS
 Results defines A at first use. Fig 3 axes are schematic, data unchanged. Both compile
 clean (main 36pp, pnas 34pp). Overleaf bundles rebuilt.
+Same day, fifth pass: NEW appendix figure (fig14-heuristics.tex; PNAS figS-heuristics,
+SI Text 3): the two intuitive schemes on the Fig 1 population, the smaller-frontier
+budget B1 = 8.52 split equally among nine researchers; left = nine highest expected
+output, right = nine fewest baseline resources; gains over no funding on this
+population (A = 1): gap rule 4.01, track record 1.98, under-resourced 2.09, uniform
+1.99 (computed in-session). Parenthetical references added in S4 (long) and Results
+(PNAS). Data: fig1h-all/track/under.dat. Both compile clean; Overleaf bundles rebuilt.

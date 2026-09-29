@@ -1,0 +1,53 @@
+% Figure (Appendix A): the two intuitive schemes on the population of Figure 1.
+% Same 75 researchers as Figure 1 (fig1h-all.dat). Budget B_1 = 8.52, the total of the
+% grants at the smaller budget in Figure 1 (c_1 = 2/3), divided equally among nine
+% researchers (x = 0.947 each). Left: the nine with the highest expected output
+% K R/(K + R) (fig1h-track.dat). Right: the nine with the fewest baseline resources
+% (fig1h-under.dat). Expected output over no funding on this population (A = 1):
+% gap rule +4.01, track record +1.98, under-resourced +2.09, uniform +1.99.
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  name=left,
+  width=0.46\textwidth, height=5.2cm,
+  axis lines*=left,
+  xmin=0, xmax=8.6, ymin=0, ymax=7.6,
+  xtick=\empty, ytick=\empty,
+  x axis line style={-{Stealth[length=4pt]}, line width=0.4pt},
+  y axis line style={-{Stealth[length=4pt]}, line width=0.4pt},
+  xlabel={resources $R$},
+  ylabel={capability $K$},
+  ylabel style={font=\small}, xlabel style={font=\small},
+  title={\small funding the track record},
+  title style={yshift=-4pt},
+  axis line style={line width=0.4pt},
+  clip=false,
+]
+\addplot[only marks, mark=o, mark size=1.3pt, gray, line width=0.4pt] table[x=R, y=K] {fig1h-all.dat};
+\addplot[quiver={u=\thisrow{u}, v=\thisrow{v}}, -{Stealth[length=3pt]}, gray, line width=0.5pt] table {fig1h-track.dat};
+\addplot[only marks, mark=*, mark size=1.5pt, black] table[x=R, y=K] {fig1h-track.dat};
+\end{axis}
+\begin{axis}[
+  at={(left.outer east)}, anchor=outer west, xshift=4pt,
+  width=0.46\textwidth, height=5.2cm,
+  axis lines*=left,
+  xmin=0, xmax=8.6, ymin=0, ymax=7.6,
+  xtick=\empty, ytick=\empty,
+  x axis line style={-{Stealth[length=4pt]}, line width=0.4pt},
+  y axis line style={-{Stealth[length=4pt]}, line width=0.4pt},
+  xlabel={resources $R$},
+  xlabel style={font=\small},
+  title={\small funding the under-resourced},
+  title style={yshift=-4pt},
+  axis line style={line width=0.4pt},
+  clip=false,
+]
+\addplot[only marks, mark=o, mark size=1.3pt, gray, line width=0.4pt] table[x=R, y=K] {fig1h-all.dat};
+\addplot[quiver={u=\thisrow{u}, v=\thisrow{v}}, -{Stealth[length=3pt]}, gray, line width=0.5pt] table {fig1h-under.dat};
+\addplot[only marks, mark=*, mark size=1.5pt, black] table[x=R, y=K] {fig1h-under.dat};
+\end{axis}
+\end{tikzpicture}
+\caption{The two intuitive schemes on the population of Figure~\ref{fig:frontier}, with the budget of that figure's smaller frontier divided equally among nine researchers. Left: funding the track record gives the grants (arrows) to the nine researchers with the highest expected output; most of them are well resourced and of middling capability, so an added dollar adds little. Right: funding the under-resourced gives the grants to the nine researchers with the fewest resources, chosen without regard to capability, so most of the money goes to researchers of low capability. On this population the gap rule adds 4.0 units of expected output over no funding; funding the track record adds 2.0, funding the under-resourced 2.1, and dividing the budget uniformly across all 75 researchers 2.0.}
+\label{fig:heuristics}
+\end{figure}
