@@ -1,0 +1,91 @@
+\begin{figure*}[t!]
+\centering
+\begin{minipage}{\linewidth}\noindent\textbf{A}\par\vspace{-0.3em}
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.5\linewidth, height=4.2cm,
+  axis lines*=left,
+  xmin=0, xmax=0.75, ymin=0, ymax=20,
+  xtick={0, 0.25, 0.5, 0.75},
+  ytick={0, 5, 10, 15, 20},
+  xlabel={fraction of the budget given out as seed grants},
+  ylabel={research output lost (\% of the gain from funding)},
+  ylabel style={font=\small}, xlabel style={font=\small},
+  tick label style={font=\small},
+  axis line style={line width=0.4pt},
+  tick style={line width=0.4pt, black},
+  clip=false,
+]
+\addplot[black, line width=0.7pt, mark=*, mark size=1.2pt] table[x=xseed, y=hb1]  {fig10-floor-cost.dat};
+\addplot[black, line width=0.7pt, mark=*, mark size=1.2pt] table[x=xseed, y=hb05] {fig10-floor-cost.dat};
+\addplot[black, line width=0.7pt, mark=*, mark size=1.2pt] table[x=xseed, y=hb01] {fig10-floor-cost.dat};
+\addplot[black, line width=0.7pt, mark=*, mark size=1.2pt] table[x=xseed, y=db05] {fig10-floor-cost.dat};
+\node[font=\small, anchor=west] at (axis cs:0.77,8.11) {heavy-tailed, $b = 2$};
+\node[font=\small, anchor=west] at (axis cs:0.77,11.07) {heavy-tailed, $b = 1$};
+\node[font=\small, anchor=west] at (axis cs:0.77,17.29) {heavy-tailed, $b = 0.2$};
+\node[font=\small, anchor=west] at (axis cs:0.77,3.47) {default, $b = 1$};
+\end{axis}
+\end{tikzpicture}
+\end{minipage}\par\vspace{0.9em}
+\begin{minipage}{\linewidth}\noindent\textbf{B}\par\vspace{-0.3em}
+\begin{tikzpicture}
+\begin{axis}[
+  name=left,
+  width=0.42\linewidth, height=4.4cm,
+  axis lines*=left,
+  xmode=log,
+  xmin=0.3, xmax=10, ymin=0, ymax=1,
+  xtick={0.3, 1, 3, 10},
+  xticklabels={0.3, 1, 3, 10},
+  ytick={0, 0.25, 0.5, 0.75, 1},
+  yticklabels={0, 0.25, 0.5, 0.75, 1},
+  xlabel={review noise $\tau$},
+  ylabel={share of the optimal allocation's gain},
+  ylabel style={font=\small}, xlabel style={font=\small},
+  tick label style={font=\small},
+  axis line style={line width=0.4pt},
+  tick style={line width=0.4pt, black},
+  title={\small heavy-tailed, tight budget},
+  title style={yshift=-2pt},
+  clip=false,
+]
+\addplot[gray, dashed, line width=0.5pt, domain=0.3:10] {0.445};
+\addplot[gray, dotted, line width=0.6pt, domain=0.3:10] {0.378};
+\addplot[black, line width=0.7pt, mark=*, mark size=1.1pt] table[x=tau, y=ss] {fig11-heavy.dat};
+\addplot[black, line width=0.7pt, mark=o, mark size=1.3pt] table[x=tau, y=ws] {fig11-heavy.dat};
+\addplot[black, line width=0.7pt, mark=triangle*, mark size=1.4pt] table[x=tau, y=sl] {fig11-heavy.dat};
+\node[font=\scriptsize, anchor=south west] at (axis cs:0.315,0.79) {top fifth by review};
+\node[font=\scriptsize, gray, anchor=north west] at (axis cs:0.315,0.372) {lottery over all};
+\end{axis}
+\begin{axis}[
+  at={(left.outer east)}, anchor=outer west, xshift=6pt,
+  width=0.42\linewidth, height=4.4cm,
+  axis lines*=left,
+  xmode=log,
+  xmin=0.3, xmax=10, ymin=0, ymax=1,
+  xtick={0.3, 1, 3, 10},
+  xticklabels={0.3, 1, 3, 10},
+  ytick={0, 0.25, 0.5, 0.75, 1},
+  yticklabels={,,,,},
+  xlabel={review noise $\tau$},
+  xlabel style={font=\small},
+  tick label style={font=\small},
+  axis line style={line width=0.4pt},
+  tick style={line width=0.4pt, black},
+  title={\small evenly spread, ample budget},
+  title style={yshift=-2pt},
+  clip=false,
+]
+\addplot[gray, dashed, line width=0.5pt, domain=0.3:10] {0.831};
+\addplot[gray, dotted, line width=0.6pt, domain=0.3:10] {0.414};
+\addplot[black, line width=0.7pt, mark=*, mark size=1.1pt] table[x=tau, y=ss] {fig11-even.dat};
+\addplot[black, line width=0.7pt, mark=o, mark size=1.3pt] table[x=tau, y=ws] {fig11-even.dat};
+\addplot[black, line width=0.7pt, mark=triangle*, mark size=1.4pt] table[x=tau, y=sl] {fig11-even.dat};
+\node[font=\scriptsize, gray, anchor=south west] at (axis cs:0.32,0.836) {uniform};
+\node[font=\scriptsize, anchor=south west] at (axis cs:1.15,0.705) {top two fifths by review};
+\end{axis}
+\end{tikzpicture}
+\end{minipage}\par\vspace{0.9em}
+\caption{Spreading funds. (\textit{A}) The research output lost to uniform seed grants, as a percent of the research output that the funder's grants add over no funding, when a review-informed funder gives out a fraction of its budget as equal grants to all researchers and targets the rest; the loss grows faster than the fraction, and its size is set by what targeting is worth in the field. (\textit{B}) What five funding schemes gain, by field: each scheme's gain over no funding as a share of the optimal allocation's gain, as review noise increases, in a heavy-tailed field with a tight budget (left) and an evenly spread field with a large budget (right). Filled circles: equal division among the top fifth by review score; open circles: among the top two fifths; triangles: the partial lottery; dashed: uniform funding; dotted: a lottery over all researchers. Settings: SI Materials and Methods.}
+\label{fig:p4}
+\end{figure*}
