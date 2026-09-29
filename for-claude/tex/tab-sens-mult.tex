@@ -1,0 +1,22 @@
+\begin{table}[t]
+\centering
+\small
+\caption{Multiplicative review noise. The review score is $K_i\exp(e_i)$ with $e_i$ Gaussian of standard deviation $s$, and the funder knows the form; fixed mean capability; 50 simulated populations per entry; $M = 1{,}000$ particles. The upper block gives the informativeness of the score at each $s$.}
+\label{tab:sens-mult}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+& \multicolumn{5}{c}{noise $s$} \\
+$\alpha_K$ & $0.1$ & $0.3$ & $0.6$ & $1$ & $1.5$ \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{Rank correlation between score and capability}} \\
+1.3 & 0.96 & 0.83 & 0.65 & 0.48 & 0.35 \\
+2 & 0.93 & 0.73 & 0.51 & 0.34 & 0.24 \\
+3.5 & 0.85 & 0.55 & 0.33 & 0.21 & 0.14 \\
+\addlinespace
+\multicolumn{6}{@{}l}{\emph{Value of review (share of the records-only shortfall recovered)}} \\
+1.3 & 0.96 & 0.88 & 0.67 & 0.43 & 0.27 \\
+2 & 0.89 & 0.71 & 0.42 & 0.21 & 0.09 \\
+3.5 & 0.68 & 0.39 & 0.15 & 0.05 & 0.02 \\
+\bottomrule
+\end{tabular}
+\end{table}

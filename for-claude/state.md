@@ -1004,3 +1004,32 @@ section moved after spreading in both versions. Referee's -4A was my error from 
 factor-2 removal; fixed. Both compile clean: main 42pp, pnas 36pp (14 main + SI).
 Not done (declined or infeasible): persistent reviewer error, project quality, calibration,
 robustness rerun on the water-filling allocator (harmonic-only in the code).
+
+## 2026-09-29 (night): revision 2, after the second review
+Plan: revision-plan-2-2026-09-29.md; ledger: revision-ledger-2-2026-09-29.md; scripts and
+CSVs in analysis/ (audit.R, regime_m.R, signals_m.R, dynopt2.R, sens_m.R, sens2_m.R,
+byround_m.R; gen_sens_tables.py, gen_dynopt.py, make_regime.py; M = 200 results kept in
+analysis/m200/). Discovery: the code observes the review signal once per run, not afresh
+each round as both documents said; corrected everywhere, and the fresh-review variant is
+now the robustness check. Particle audit: M = 200 understated review's value by 0.01 to
+0.03; Fig 2B/2C, Appendix D (sensitivity), the regime map, and every number quoted from
+them rerun at M = 1000 (converged within 0.005 of M = 5000); other figures stay at
+M = 200 with the bias stated (Appendix F / SI Methods, Table tab:particles). Package A:
+"output-maximizing allocation of a round's budget"; two-round exact dynamic optimum vs the
+round-by-round gap rule (Table tab:dynopt; loss <= ~1% of funding's gain, correlation
+>= 0.99), plus T = 5 division check. Package B: timing to Appendix E / SI Text 6 with
+three limits; "gain from planning ahead" replaces "timing gain"/"value of timing"/
+"optimal timing". Package C: tau_R sweep, multiplicative noise (narrows the heavy-tail
+advantage at equal informativeness, 0.66 vs 0.87, ordering intact), fresh review each
+round (T = 2 and T = 20); review paragraph adopts "a signal of capability separate from
+resources". Package D: copula definition of rho, heavy-tail medians, tail wording.
+Package E: new Fig 16 / PNAS Fig 4 regime map (two panels: value of targeting, value of
+review as share of funding's gain; program bands: foundation <= 0.01, excellence council
+~0.03, science agency ~0.15, biomedical agency ~1, from HERD FY2023, ERC, Eurostat);
+Discussion rewritten around observable proxies vs the latent gap inequality; Significance
+120 words; concentration's dependence on complementarity stated. Package F: lottery
+paragraph leads with the ranking-vs-chance decomposition; references Barnett 2024,
+Feliciani 2024, Carnehl 2024, NCSES 2025 HERD, ERC, Eurostat added; Bol 2018 contrasted
+with capability compounding; fourth prediction (heterogeneous grant effect by resources).
+Appendix order now: A gap rule, B lottery, C technology, D sensitivity, E timing,
+F simulation. Aydin approved the plan and the term change 2026-09-29 ("This is our last round").
