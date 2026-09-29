@@ -898,3 +898,15 @@ Appendix C opening trimmed. Body 9514 -> 8356 words, footnotes 1377 -> 767, capt
 1311 -> 667, appendices 3227 -> 3405 (incl. new D). Pages 37 -> 34 at the fixed
 layout (body 27 -> 24). Under 20 pages is not reachable at this layout without
 removing content that carries results; options reported to Aydin.
+
+## 2026-09-29 (intro refined; PNAS plan)
+
+Intro refined per Aydin's draft + my memo (intro-refinement-2026-09-29.md): stakes hook
+with the number in the first line; new second paragraph (why a model; four questions;
+theoretical contribution); funder-facing sentence in the results paragraph; his wording
+"how seed grants and lotteries perform relative to targeted funding" (intro + roadmap)
+and "concentrated among a few researchers" (global). Commit 4aff978. 35pp.
+PNAS plan written (pnas-plan-2026-09-29.md): inventory of 30 results with main/SI
+disposition; four composite figures; 4,000-word budget (intro 480, Results 2,300 in
+four subsections, Discussion 750, Methods 470); SI structure; decisions (a)-(d).
+Appendix A proofs verified by hand and examples recomputed exactly (commit 611a5d6).
