@@ -1,0 +1,38 @@
+\begin{figure}[p]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.82\textwidth, height=7.2cm,
+  axis lines*=left,
+  xmin=0, xmax=8.6, ymin=0, ymax=6.5,
+  xtick=\empty, ytick=\empty,
+  x axis line style={-{Stealth[length=4pt]}, line width=0.4pt},
+  y axis line style={-{Stealth[length=4pt]}, line width=0.4pt},
+  xlabel={resources $R$},
+  ylabel={capability $K$},
+  ylabel style={font=\small}, xlabel style={font=\small},
+  tick label style={font=\small},
+  axis line style={line width=0.4pt},
+  tick style={line width=0.4pt, black},
+  clip=false,
+]
+% funding frontier K = R/c
+\addplot[black, line width=0.5pt, domain=0:6.4, samples=2] ({x*0.8332}, {x});
+\node[font=\small, anchor=west, align=left] at (axis cs:5.6,6.25)
+  {funding frontier ($R = cK$)};
+% grants: horizontal arrows from (R0, K) to (cK, K)
+\addplot[quiver={u=\thisrow{u}, v=\thisrow{v}}, -{Stealth[length=3.5pt]},
+         gray, line width=0.5pt] table {fig1-funded.dat};
+% funded researchers (filled)
+\addplot[only marks, mark=*, mark size=1.6pt, black] table[x=R, y=K] {fig1-funded.dat};
+% unfunded researchers (open)
+\addplot[only marks, mark=o, mark size=1.6pt, gray, line width=0.5pt]
+  table[x=R, y=K] {fig1-unfunded.dat};
+% direct labels
+\node[font=\small, anchor=west] at (axis cs:0.4,5.2) {funded};
+\node[font=\small, anchor=west] at (axis cs:6.0,2.6) {unfunded};
+\end{axis}
+\end{tikzpicture}
+\caption{The optimal allocation funds the capability-resource gap. Each point is a researcher, placed by resources and capability; the line is the funding frontier $R = cK$ at budget scale $b = 0.1$. Researchers below the frontier (filled) are funded, and each arrow is a grant, which moves its researcher exactly to the frontier. Researchers on or beyond the frontier (open) receive nothing.}
+\label{fig:p1}
+\end{figure}

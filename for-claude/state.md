@@ -910,3 +910,10 @@ PNAS plan written (pnas-plan-2026-09-29.md): inventory of 30 results with main/S
 disposition; four composite figures; 4,000-word budget (intro 480, Results 2,300 in
 four subsections, Discussion 750, Methods 470); SI structure; decisions (a)-(d).
 Appendix A proofs verified by hand and examples recomputed exactly (commit 611a5d6).
+PNAS DRAFT v1 written (tex/pnas/pnas-main.tex + fig-p1..p4 composites from existing
+panels, stacked vertically with A/B/C labels; article class for review, port to
+pnas-new.cls at submission). Word counts: intro 583, Results 1,777, Discussion ~880,
+Methods 474 = ~3,700 main text; Significance 120; abstract 145. Fig 1 = frontier only
+(Aydin's call); Fig 2 (targeting in budget) -> SI as Fig S1; overtrust S2; grant-size
+schedule S3; concentration S4. "Two heuristics a funder might use" per Aydin. SI Appendix
+not yet assembled. Bridge dropped before write-back; delivered in chat.
