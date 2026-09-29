@@ -1,0 +1,38 @@
+% Figure 6 (S6): the value of review under misweighted trust.
+% y = review's value (S5 - S4) as percent of no-funding output; x = the funder's
+% believed noise (log scale); true noise tau_K = 3 (dotted rule). Two capability
+% distributions. Error bars: one standard error, 200 seeds per cell.
+% Data: fig6-overtrust.dat, from sweep_results/D_misspecified_trust (hash 21b0d9a).
+\begin{figure}[tp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.82\textwidth, height=6.0cm,
+  axis lines*=left,
+  xmode=log,
+  xmin=0.1, xmax=10, ymin=-5, ymax=45,
+  xtick={0.1, 0.3, 1, 3, 10},
+  xticklabels={0.1, 0.3, 1, 3, 10},
+  ytick={0, 10, 20, 30, 40},
+  xlabel={believed noise $\tau_K$},
+  ylabel={value of review (\% of the gain from funding)},
+  ylabel style={font=\small}, xlabel style={font=\small},
+  tick label style={font=\small},
+  axis line style={line width=0.4pt},
+  tick style={line width=0.4pt, black},
+  clip=false,
+]
+\addplot[gray, dashed, line width=0.4pt, domain=0.1:10] {0};
+\draw[gray, dotted, line width=0.5pt] (axis cs:3,-2) -- (axis cs:3,20);
+\node[font=\small, gray, anchor=west] at (axis cs:3.15,18) {true noise};
+\addplot[black, line width=0.7pt, error bars/.cd, y dir=both, y explicit]
+  table[x=belief, y=p13, y error=s13] {fig6-overtrust.dat};
+\addplot[black, line width=0.7pt, error bars/.cd, y dir=both, y explicit]
+  table[x=belief, y=p20, y error=s20] {fig6-overtrust.dat};
+\node[font=\small, anchor=west] at (axis cs:11,25.5) {$\alpha_K = 1.3$};
+\node[font=\small, anchor=west] at (axis cs:11,3.9)  {$\alpha_K = 2$};
+\end{axis}
+\end{tikzpicture}
+\caption{Overtrusting review loses more research output than undertrusting it. The value of review as a percent of the research output that a correctly calibrated review-informed funder adds over no funding, as the funder's believed signal noise varies while the true noise is $\tau_K = 3$ (dotted rule); bars are one standard error. At the default capability distribution, overtrust takes the value below zero. Settings: \ref{app:simulation}.}
+\label{fig:overtrust}
+\end{figure}

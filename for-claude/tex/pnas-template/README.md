@@ -3,5 +3,5 @@ Overleaf PNAS template class pnas-new.cls v1.44 (2018) and pnasresearcharticle.s
 (dereckmezquita/latex-template-pnas); watermark disabled. The .tex here is generated: SI \ref's are replaced by
 "SI Text N" names, \citet by "Author et al.~\cite", figure files copied from tex/pnas with \textwidth -> \linewidth,
 Fig. 3 and Fig. 4 as figure*. Regenerate by re-running the build block in the session log or by hand; treat
-tex/pnas/pnas-main.tex as the source of truth. Purpose: a visual sense of the page count (7 pages incl. references,
+tex/pnas/pnas-main.tex as the source of truth. Footer shows page numbers only (journal footer, DOI and date removed); the SI Appendix follows the references in one column from page 8. Purpose: a visual sense of the page count (main text 7 pages incl. references,
 about 6.3 used) against PNAS's six-page limit.

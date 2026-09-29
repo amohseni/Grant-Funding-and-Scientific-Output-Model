@@ -4,6 +4,22 @@
 \pgfplotsset{compat=1.17}
 \usetikzlibrary{arrows.meta}
 \usepackage{makecell}
+\usepackage{amsthm,mathtools}
+\usepackage{cleveref}
+\usepackage{booktabs,subcaption}
+\newtheorem{theorem}{Theorem}
+\newtheorem{prop}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{lemma}{Lemma}
+\newtheorem{example}{Example}
+\newtheorem{remark}{Remark}
+\newtheorem*{proprestate}{Proposition~1}
+\newtheorem*{definition}{Definition}
+\DeclareMathOperator*{\argmax}{arg \ max}
+\makeatletter
+\fancypagestyle{firststyle}{\fancyhf{}\fancyfoot[R]{\footerfont\textbf{\thepage}}\renewcommand{\headrulewidth}{0pt}}
+\fancyhf{}\fancyfoot[RO]{\footerfont\textbf{\thepage}}\fancyfoot[LE]{\footerfont\textbf{\thepage}}
+\makeatother
 \title{A model of optimal science funding: targeting the capability-resource gap}
 \author[a,1]{Aydin Mohseni}
 \author[b]{Simon DeDeo}
@@ -19,8 +35,6 @@
 \begin{abstract}
 The grant funder's challenge is to maximize the impact of a fixed budget under uncertainty about the researchers who might receive it. We develop a Bayesian model of this challenge: researchers differ in their capabilities and in their resources; research output requires both, and funding compounds capability across rounds. We show that the output-maximizing allocation of a round's budget funds the capability-resource gap: grants increase with capability and decrease with existing resources. Track records underdetermine the gap, because output confounds the two; what a funder needs is a signal of capability separate from resources, and peer review is one source of such a signal. We find that the value of that signal increases with how unequally the gaps are distributed, which capability inequality mainly drives, and with the signal's informativeness, and that under heavy-tailed capability distributions even a noisy signal captures most of that value. Uniform seed grants and lotteries, which forgo targeting, lose little research output exactly where review is worth little, and most of what a partial lottery loses comes from discarding the review ranking rather than from chance. Two features of a field, the funder's budget relative to researchers' resources and the inequality of the gaps, locate a funder on a map of these results.
 \end{abstract}
-\dates{This manuscript was compiled on \today}
-\doi{\url{www.pnas.org/cgi/doi/10.1073/pnas.XXXXXXXXXX}}
 \begin{document}
 \maketitle
 \thispagestyle{firststyle}
@@ -101,4 +115,49 @@ A funder with a fixed budget and imperfect knowledge of researchers faces one pr
 \acknow{This work was supported by the John Templeton Foundation [grant number TODO].}
 \showacknow{}
 \bibliography{references}
+\clearpage\onecolumn
+\setboolean{shortarticle}{false}
+\section*{Supporting Information Appendix}
+\noindent A.~Mohseni, S.~DeDeo, and K.\,J.\,S.~Zollman, A model of optimal science funding: targeting the capability-resource gap.
+
+\setcounter{section}{0}\renewcommand{\thesection}{SI Text \arabic{section}}
+\setcounter{figure}{0}\renewcommand{\thefigure}{S\arabic{figure}}
+\setcounter{table}{0}\renewcommand{\thetable}{S\arabic{table}}
+\setcounter{prop}{1} % the gap rule is restated as Proposition 1 in SI Text 1; the lottery result is Proposition 2
+
+The SI Appendix holds what the main text cites without proof or states in one sentence: the model details, strategies, parameter ranges, the particle audit, and the settings behind every figure (SI Materials and Methods); the derivation of the gap rule and its comparison with the sequential optimum (\ref{app:gap-rule}); the lottery proposition (\ref{app:lottery}); four extended results with Figs.~\ref{fig:targeting-value} to~\ref{fig:concentration} (\ref{si:extended}); the robustness of the results to the production function (\ref{app:technology}); the sensitivity of the value of targeting and of review to the parameters the main sweeps hold fixed and to the signal model (\ref{si:sensitivity}); and the timing of funding (\ref{si:timing}). The table below maps each main-text statement to the section that supports it.
+
+\begin{center}
+\small
+\begin{tabular}{@{}p{8.4cm}p{4.6cm}@{}}
+\toprule
+Main-text statement & Where in the SI \\
+\midrule
+Model, signals, strategies (Table~\ref{tab:strategies}), parameter ranges, copula, particles (Table~\ref{tab:particles}), scoring, settings behind every figure (Table~\ref{tab:settings}), code & SI Materials and Methods \\
+The output-maximizing allocation of a round's budget funds the gap: $g_i^* = \max(cK_i - R_{i0}, 0)$ & \ref{app:gap-rule}, Proposition~1 \\
+The funded set and every grant increase with the budget; the funding frontier & \ref{app:gap-rule}, Corollary~\ref{cor:frontier} \\
+The value of targeting decreases in the budget and vanishes as the budget grows & \ref{app:gap-rule}, Corollary~\ref{cor:targeting-vanishes}; \ref{si:extended}, Fig.~\ref{fig:targeting-value} \\
+Each heuristic can perform worse than uniform division & \ref{app:gap-rule}, Examples 1 and 2, Fig.~\ref{fig:heuristics} \\
+The round-by-round gap rule is within about one percent of the sequential optimum & \ref{app:gap-rule}, Table~\ref{tab:dynopt} \\
+Equal division outperforms any lottery over the same pool & \ref{app:lottery}, Proposition~\ref{prop:lottery} \\
+Targeting's value relative to uniform funding, across budgets and fields & \ref{si:extended} \\
+Overtrusting review loses more output than undertrusting it & \ref{si:extended}, Fig.~\ref{fig:overtrust} \\
+Large grants reveal capability; the source of the shift of spending toward later rounds & \ref{si:extended}, Fig.~\ref{fig:depth-schedule} \\
+The production function does not settle concentration & \ref{si:extended}, Fig.~\ref{fig:concentration} \\
+The ordering of review's value by field holds from Cobb-Douglas to Leontief & \ref{app:technology}, Fig.~\ref{fig:signal-robustness} \\
+The ordering of fields by the value of targeting and of review survives changes in mean capability, the capability-resource association, the resource tail, pool size, the resource signal, and the review-signal model; the inequality of the gaps organizes the results & \ref{si:sensitivity}, Tables~\ref{tab:sens-mean} to~\ref{tab:sens-contam}, Fig.~\ref{fig:gap-gini} \\
+Planning the timing of spending adds little beside choosing recipients, and exists only under complementarity & \ref{si:timing}, Fig.~\ref{fig:p3}; \ref{app:technology}, Table~\ref{tab:timing-technology} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\input{si-methods}
+\input{si-gap-rule}
+\input{si-lottery}
+\input{si-extended}
+\input{si-technology}
+\input{si-sensitivity}
+\input{si-timing}
+
+
 \end{document}

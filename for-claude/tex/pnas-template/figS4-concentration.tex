@@ -1,0 +1,42 @@
+% Figure (S8): how concentrated the informed allocation is, across the family.
+% y = Gini coefficient of the review-informed funder's grants (single round);
+% x = CES exponent gamma (0 = Cobb-Douglas, -1 = our harmonic form, limit =
+% Leontief, plotted as detached marks at the left edge). Three field-budget pairs.
+% Ground: sigma_tierB_concentration (+ leontief endpoint, + 400-seed refinement for
+% the evenly spread curve), 200 seeds per cell, re-derived in-session (verify_s9.R).
+% Leontief cells carry the kink caveat (ties broken by fill order, n_steps = 800).
+\begin{figure}[tp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.82\textwidth, height=6.0cm,
+  axis lines*=left,
+  xmin=-14.8, xmax=0, ymin=-0.16, ymax=0.06,
+  xtick={-14, -12, -6, -3, -1, 0},
+  xticklabels={Leontief, $-12$, $-6$, $-3$, $-1$, $0$},
+  ytick={-0.15, -0.10, -0.05, 0, 0.05},
+  yticklabels={$-0.15$, $-0.10$, $-0.05$, 0, 0.05},
+  xlabel={CES exponent $\gamma$ (complements $\leftarrow$, substitutable $\rightarrow$)},
+  ylabel={change in grant concentration (Gini)},
+  ylabel style={font=\small}, xlabel style={font=\small},
+  tick label style={font=\small},
+  axis line style={line width=0.4pt},
+  tick style={line width=0.4pt, black},
+  clip=false,
+]
+\draw[gray, dotted, line width=0.5pt] (axis cs:-1,-0.16) -- (axis cs:-1,0.06);
+\node[font=\scriptsize, gray, anchor=south] at (axis cs:-1,0.061) {our form};
+\addplot[black, line width=0.7pt, mark=*, mark size=1.1pt] table[x=g, y=dgini] {fig13-heavy01.dat};
+\addplot[black, line width=0.7pt, mark=o, mark size=1.3pt] table[x=g, y=dgini] {fig13-def1.dat};
+\addplot[black, line width=0.7pt, mark=triangle*, mark size=1.4pt] table[x=g, y=dgini] {fig13-even1.dat};
+\addplot[black, only marks, mark=*, mark size=1.1pt] coordinates {(-14,0.031)};
+\addplot[black, only marks, mark=o, mark size=1.3pt] coordinates {(-14,-0.147)};
+\addplot[black, only marks, mark=triangle*, mark size=1.4pt] coordinates {(-14,0.009)};
+\node[font=\scriptsize, anchor=north] at (axis cs:-8.5,0.014) {heavy-tailed, tight};
+\node[font=\scriptsize, anchor=south] at (axis cs:-10.5,-0.047) {default, ample};
+\node[font=\scriptsize, anchor=south] at (axis cs:-7.5,0.042) {evenly spread, ample};
+\end{axis}
+\end{tikzpicture}
+\caption{Complementarity concentrates funding only when the budget is small. The change in the Gini coefficient of the review-informed funder's grants, relative to its Cobb-Douglas level, as the production function moves from Cobb-Douglas ($\gamma = 0$) toward Leontief (detached marks at the left edge), for three field-and-budget combinations. Settings: \ref{app:simulation}.}
+\label{fig:concentration}
+\end{figure}
