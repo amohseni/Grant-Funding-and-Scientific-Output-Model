@@ -971,3 +971,15 @@ output, right = nine fewest baseline resources; gains over no funding on this
 population (A = 1): gap rule 4.01, track record 1.98, under-resourced 2.09, uniform
 1.99 (computed in-session). Parenthetical references added in S4 (long) and Results
 (PNAS). Data: fig1h-all/track/under.dat. Both compile clean; Overleaf bundles rebuilt.
+Same day, sixth pass: PNAS SI streamlined and reorganized to PNAS practice. Related
+literature DROPPED (Aydin: not SI material). SI Materials and Methods (unnumbered,
+first; merges the former model section and simulation specification, keeping only
+what the main Methods lacks: interpretation notes, harmonic-mean rationale, growth and
+budget rules, signals, Table S1 strategies, parameter ranges with citations, defaults,
+scoring, Table S2 settings by figure, code). Then SI Text 1 gap rule (Prop 1, Cor 1-2,
+Examples, Fig S1 heuristics), SI Text 2 lotteries (Prop 2), SI Text 3 extended results
+(Figs S2-S5; main-text quotations removed, footnotes folded into text, restated
+arguments cut), SI Text 4 production function (Fig S6, Table S3). No footnotes in the
+SI. Claim-to-section table updated. Fixed a reference-rewrite bug ("the main text and
+the main text"). SI 16pp (was 20), ~4,400 words of prose (was ~6,700); document 30pp.
+Files: si-methods.tex new; si-literature/si-model/si-simulation removed.

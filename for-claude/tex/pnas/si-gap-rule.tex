@@ -1,15 +1,9 @@
-% SI Text 3: derivation of the gap rule (copy of Appendix A, refs redirected).
-% Appendix A: derivation of the gap rule (Proposition 1), with corollaries and
-% examples. Source: for-claude/gap-rule-proof-v1.md (2026-08-14), converted 2026-09-08.
-% Self-contained: states every assumption used; no KKT machinery (Lemma 3 does that
-% work via the transfer argument and the concavity gradient inequality). Numerical
-% verification: for-claude/verify_gap_rule.py (81 trials vs scipy SLSQP, machine
-% precision; see the md's note 5).
+% SI Text 1: derivation of the gap rule (Proposition 1, Corollaries 1 and 2, Examples 1 and 2, Fig. S1).
 \section{Derivation of the gap rule}\label{app:gap-rule}
 
 \subsection*{The within-round allocation problem}
 
-A population of $n$ researchers. Researcher $i$ has capability $K_i$ and baseline resources $R_{i0}$, both fixed within the round. A grant $g_i \geq 0$ adds to researcher $i$'s resources for the round, so that their expected output is $A\,\Lambda(K_i,\, R_{i0} + g_i)$ with $\Lambda(K, R) = KR/(K + R)$, the production function of \cref{sec:model}, and $A > 0$ the common productivity scale. Write
+A population of $n$ researchers. Researcher $i$ has capability $K_i$ and baseline resources $R_{i0}$, both fixed within the round. A grant $g_i \geq 0$ adds to researcher $i$'s resources for the round, so that their expected output is $A\,\Lambda(K_i,\, R_{i0} + g_i)$ with $\Lambda(K, R) = KR/(K + R)$, the production function of the main text, and $A > 0$ the common productivity scale. Write
 \[
 \varphi_i(g) = \frac{A\,K_i\,(R_{i0} + g)}{K_i + R_{i0} + g}
 \]

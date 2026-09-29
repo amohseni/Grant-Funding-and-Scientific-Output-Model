@@ -1,0 +1,76 @@
+% SI Materials and Methods: what the main text's Materials and Methods leaves out
+% (interpretation, budget rule, signals, strategies, parameter ranges, scoring, the
+% settings behind every figure, code). Built 2026-09-29 by merging the former SI Text 2
+% (long-version Section 3) and SI Text 7 (Appendix D) and removing what Methods states.
+\makeatletter
+\section*{SI Materials and Methods}
+\phantomsection\def\@currentlabel{SI Materials and Methods}\label{app:simulation}\label{sec:model}
+\makeatother
+
+\subsection*{Model details}
+Output in each round is drawn from a Poisson distribution with rate $\lambda_i = AK_iR_i/(K_i + R_i)$, independently across researchers and rounds given the state; the units of output may be read as publications, findings, or units of scientific value. The production function is proportional to the harmonic mean of capability and resources. The harmonic mean makes the two inputs complements without making either an absolute requirement: a capable researcher with few resources still produces, by working more slowly or borrowing equipment, but no surplus of one input fully substitutes for a shortage of the other. \ref{app:technology} repeats the central comparisons for a family of production functions from Cobb-Douglas to Leontief.
+
+Between rounds, capability grows by $\epsilon\,\Lambda(K_i, R_i)$ with $\Lambda = K_iR_i/(K_i + R_i)$: doing research builds expertise, the same bottleneck that limits output limits growth, and capability never declines. Growth follows expected output, so a researcher's accumulation depends on their capability and resources and not on luck in a given round. Resources do not accumulate. The baseline $R_{i0}$ recurs every round and represents the time and support a researcher has independent of the funder; a grant is consumed in the round it is given, and whatever lasts from it (skills, publications, standing) enters the model as capability.
+
+The funder's total budget over the horizon is $b\,n\,\mathbb{E}[R_0]$, where $\mathbb{E}[R_0]$ is the expected baseline resources of one researcher, so at $b = 1$ the budget equals the community's expected baseline resources for one round. The budget does not grow with the horizon: a longer horizon varies the timing of spending, never its amount. Strategies that do not plan ahead spend $1/T$ of the budget each round; forward-looking strategies re-plan the entire remaining budget over the remaining horizon each round and execute the current round's allocation. For the timing runs (Fig.~3\textit{A} and Fig.~\ref{fig:depth-schedule}) the budget is scaled against capability instead, $b\,n\,\mathbb{E}[K_0]$, so that a community with few resources does not zero the budget. The simulations set the productivity constant $A = 1$; the code parameterizes the budget as $2\,b'\,n\,\mathbb{E}[R_0]$, so its $b'$ is half of the $b$ reported here.
+
+The funder knows the distributions of capability and resources but observes no researcher's capability or resources directly. It observes each researcher's output as it accumulates. A resource signal, observed once at the start, gives a noisy estimate of each researcher's baseline resources (noise $\tau_R$), as one might obtain from institutional information. A review signal, drawn afresh in each round that a strategy uses it, gives a noisy estimate of capability (noise $\tau_K$), as one might obtain from proposal evaluation and expert judgment; the smaller $\tau_K$, the more informative the review. Bayesian strategies update beliefs about every researcher after each round and allocate each dollar to the researcher whose expected output, given current beliefs, rises most with it.
+
+\subsection*{Strategies}
+Table~\ref{tab:strategies} lists the strategies compared. The Bayesian strategies differ in information, with or without the review signal, and in planning, myopic (optimizing the current round's expected output) or forward-looking (optimizing expected output over the remaining horizon). Three baselines complete the set: no funding, uniform funding, which splits each round's budget equally, and track-record funding, which allocates in proportion to the previous round's output. Seed grants and lotteries modify these strategies as described in the main text.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lll@{}}
+\toprule
+Strategy & Information & Planning \\
+\midrule
+No funding & none & none \\
+Uniform & none & none \\
+Track record & track record & none \\
+Myopic, without review & track record + resource signal & current round \\
+Forward, without review & track record + resource signal & remaining horizon \\
+Myopic, with review & track record + resource signal + review & current round \\
+Forward, with review & track record + resource signal + review & remaining horizon \\
+\bottomrule
+\end{tabular*}
+\caption{The funding strategies compared.}
+\label{tab:strategies}
+\end{table}
+
+\subsection*{Parameter ranges and defaults}
+The tail parameters $\alpha_K$ and $\alpha_R$ range from 1.3 to 3.5. Empirical distributions of research productivity have Pareto tail parameters near 1 to 2 \citep{Lotka1926, Nicholls1989}; % [check Nicholls range]
+the range covers these values and extends to much more equal fields. The budget scale $b$ ranges from 0.2 to 2, from a funder whose budget is small beside the community's own resources to one able to relieve most researchers' bottlenecks, with larger budgets in the timing analyses. The compounding rate $\epsilon$ ranges from near zero, where funding raises only current output, to 0.85, where this round's funding substantially raises later capability. The review noise $\tau_K$ ranges from 0.05, nearly perfect review, to 20, nearly uninformative review, a range wide enough to contain the noise implied by empirical estimates of review's predictive accuracy. The correlation $\rho$ ranges from $-0.5$ to 0.8, and the horizon $T$ from one round to ten. Unless a figure's settings below say otherwise: $T = 2$; $n = 50$; capability and baseline resources drawn from Pareto distributions with scale 1 and $\alpha_K = \alpha_R = 2$; $\rho = 0$; $\epsilon = 0.1$; $b = 1$; $\tau_K = \tau_R = 1$; seed-grant fraction $0.25$ where seed grants are used.
+
+\subsection*{Scoring and comparison}
+Each strategy is scored by the sum of expected outputs along its run, which equals realized output averaged over repetitions of the same allocations; this removes simulation noise from comparisons without favoring any strategy. Every configuration is run on independently drawn populations, with the same random draws (populations, signals, and realized output) used for every strategy, so that comparisons between strategies are paired. Results are reported as shares of a named comparison, stated in each figure: most often the research output that funding adds (a strategy's expected output minus the expected output under no funding), and otherwise the records-only shortfall or the optimal allocation's gain. Standard errors, where shown, are across simulated populations.
+
+\subsection*{Settings by figure}
+Table~\ref{tab:settings} lists, for each figure, the settings that differ from the defaults.
+\begin{table}[tp]
+\centering
+\small
+\begin{tabular}{@{}p{2.3cm}p{10.0cm}@{}}
+\toprule
+Figure & Settings that differ from the defaults \\
+\midrule
+Fig.~2\textit{C} & Review noise $\tau_K$ from 0.05 to 20; $\alpha_K \in \{1.3, 2, 3.5\}$; 50 populations per point. The records-only shortfall relative to complete information is 40, 27, and 12 percent of the research output that complete-information funding adds, at the three tail parameters. \\
+Fig.~2\textit{B} & $T = 20$; 50 populations. Records-only is the myopic funder without review; with review is the myopic funder with review. Under heavy-tailed capability ($\alpha_K = 1.3$) the correlations run 0.07 to 0.43 against 0.92 in round one. \\
+Fig.~\ref{fig:overtrust} & True noise $\tau_K = 3$; believed noise from 0.1 to 10; $\alpha_K \in \{1.3, 2\}$; 200 populations. Each negative value is within two standard errors of zero. \\
+Fig.~\ref{fig:depth-schedule} & $T = 6$; community with few resources (Pareto scale for resources 0.001); $\alpha_K = 1.3$; no review signal ($\tau_K = 100$); $\epsilon = 10^{-4}$; budget scaled against capability; $b = 1$ (50 populations) and $b = 6$ (24 populations, standard error of each share at most 0.006). \\
+Fig.~3\textit{A} & $T = 5$; forward-looking funder with review; budget scaled against capability; resource scales 0.001, 0.3, and 3; $\epsilon$ from $10^{-4}$ to 0.85; 200 populations. Five resource scales were run; the figure shows three, and the other two lie between them. \\
+Fig.~3\textit{B} & $T$ from 2 to 10 (to 5 for $\epsilon \in \{0.05, 0.15, 0.55\}$); $\epsilon \in \{0.05, 0.15, 0.3, 0.55, 0.85\}$; 64 to 200 populations per point. The gain is the forward-looking funder's output over the myopic funder's, both with review; negative gains, all within noise of zero, are shown as zero. \\
+Fig.~4\textit{A} & Review-informed forward-looking funder; seed-grant fraction from 0 to 0.75; heavy-tailed field ($\alpha_K = 1.3$) with reliable review ($\tau_K = 0.3$) at $b \in \{0.2, 1, 2\}$, and the default field at $b = 1$; 200 populations. The output lost is reported as a share of the review-informed funder's gain over no funding in the same setting. \\
+Fig.~4\textit{B} & Single round; $n = 50$; a fifth of the population funded; review score $K_i$ plus Gaussian noise of standard deviation $\tau$; expected output computed exactly given each allocation; 2{,}000 populations per point (Monte Carlo standard error at most 0.002). Left: $\alpha_K = 1.3$, $b = 0.2$. Right: $\alpha_K = 3.5$, $b = 1$. \\
+Fig.~\ref{fig:signal-robustness}, Table~\ref{tab:timing-technology} & Production functions with $\gamma \in \{0, -3\}$ and Leontief; 100 populations per point (50 for Leontief); $T = 2$ for the signal value and $T = 5$ for the timing table. These runs use an earlier version of the allocation routine, so their magnitudes are compared with one another and not with the main-text figures. Leontief allocations use a finer allocation step, with ties at the kink broken by fill order. \\
+Fig.~\ref{fig:concentration} & Single round; review-informed funder; $\gamma$ from 0 to $-12$ and Leontief; three field-and-budget combinations ($\alpha_K = 1.3$, $b = 0.2$; $\alpha_K = 2$, $b = 2$; $\alpha_K = 3.5$, $b = 2$); 200 populations per point, 400 at the refinement points of the evenly spread curve. \\
+\bottomrule
+\end{tabular}
+\caption{Simulation settings behind each figure.}
+\label{tab:settings}
+\end{table}
+
+\subsection*{Code}
+The model, the sweeps, and the scripts that produce every figure and number in the paper are in the project repository; the archived version will be cited at publication. % [check: repository URL and archived commit at publication]

@@ -1,8 +1,4 @@
-% SI Text 4: lotteries and equal division (copy of Appendix B).
-% Appendix B: lotteries are outperformed by equal division (the Jensen argument).
-% Referenced by S8; \input inside the appendices environment AFTER appendix-gap-rule
-% when S8 is typeset. Uses the prop counter (renders as Proposition 2) and Lemma 1
-% of Appendix A.
+% SI Text 2: lotteries and equal division (Proposition 2).
 \section{Lotteries and equal division}\label{app:lottery}
 
 Fix a round, a budget $B > 0$, and a pool $P \subseteq \{1, \ldots, n\}$ of $m$ researchers. The \emph{equal division} over $P$ grants each researcher in $P$ the amount $B/m$. A \emph{lottery} over $P$ with $k \leq m$ winners selects $k$ researchers from $P$ uniformly at random and grants each winner $B/k$. Expected output is evaluated as in \ref{app:gap-rule}: given an allocation $g$, it is $\sum_i \varphi_i(g_i)$, and for a random allocation, the expectation is taken over the draw as well.
@@ -16,5 +12,5 @@ Researchers outside $P$ receive nothing under either scheme. For $i \in P$, the 
 \end{proof}
 
 \begin{remark}[what the proposition does and does not cover]
-The proposition compares expected output within a fixed pool. It measures the effect of the randomization alone: whatever pool review selects, replacing the lottery within that pool by the equal division of the same money weakly increases expected output. The proposition says nothing about the choice of pool, about the review ranking within the pool that the equal division also ignores, or about anything a lottery saves outside the model (review costs, proposal effort, bias). The main text measures the first two and cites the literature on the third.
+The proposition compares expected output within a fixed pool. It measures the effect of the randomization alone: whatever pool review selects, replacing the lottery within that pool by the equal division of the same money weakly increases expected output. The proposition says nothing about the choice of pool, about the review ranking within the pool that the equal division also ignores, or about anything a lottery saves outside the model (review costs, proposal effort, bias).
 \end{remark}

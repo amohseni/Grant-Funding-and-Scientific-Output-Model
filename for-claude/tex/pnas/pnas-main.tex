@@ -212,47 +212,44 @@ A funder with a fixed budget and imperfect knowledge of researchers faces one pr
 \clearpage
 %----------------------------------------------------------------
 % Supporting Information Appendix. At submission this block becomes the separate SI PDF;
-% here it is compiled with the main text so that every \ref resolves.
+% here it is compiled with the main text so that every \ref resolves. Order follows
+% PNAS practice: SI Materials and Methods first, then numbered SI Text sections;
+% figures S1 to S6 and tables S1 to S3 sit beside the text that uses them.
 \section*{Supporting Information Appendix}
 \setcounter{section}{0}\renewcommand{\thesection}{SI Text \arabic{section}}
 \setcounter{figure}{0}\renewcommand{\thefigure}{S\arabic{figure}}
 \setcounter{table}{0}\renewcommand{\thetable}{S\arabic{table}}
-\setcounter{prop}{1} % the gap rule is restated as Proposition 1 in SI Text 3; the lottery result is Proposition 2
+\setcounter{prop}{1} % the gap rule is restated as Proposition 1 in SI Text 1; the lottery result is Proposition 2
 
-The SI Appendix holds what the main text states in one sentence or cites without proof: the related literature (\ref{sec:literature}), the model in full (\ref{sec:model}), the derivation of the gap rule (\ref{app:gap-rule}), the lottery proposition (\ref{app:lottery}), extended results with Figs.~\ref{fig:targeting-value} to~\ref{fig:concentration} (\ref{si:extended}), the robustness of the results to the production function (\ref{app:technology}), and the simulation specification behind every figure and number (\ref{app:simulation}). The table below maps each main-text statement to the section that supports it.
+The SI Appendix holds what the main text cites without proof or states in one sentence: the model details, strategies, parameter ranges, and the settings behind every figure (SI Materials and Methods); the derivation of the gap rule (\ref{app:gap-rule}); the lottery proposition (\ref{app:lottery}); four extended results with Figs.~\ref{fig:targeting-value} to~\ref{fig:concentration} (\ref{si:extended}); and the robustness of the results to the production function (\ref{app:technology}). The table below maps each main-text statement to the section that supports it.
 
 \begin{center}
 \small
-\begin{tabular}{@{}p{8.6cm}p{4.4cm}@{}}
+\begin{tabular}{@{}p{8.4cm}p{4.6cm}@{}}
 \toprule
 Main-text statement & Where in the SI \\
 \midrule
+Model, signals, strategies (Table~\ref{tab:strategies}), parameter ranges, scoring, settings behind every figure (Table~\ref{tab:settings}), code & SI Materials and Methods \\
 The optimal allocation funds the gap: $g_i^* = \max(cK_i - R_{i0}, 0)$ & \ref{app:gap-rule}, Proposition~1 \\
-Each heuristic can perform worse than uniform division & \ref{app:gap-rule}, Examples 1 and 2 \\
 The funded set and every grant increase with the budget; the funding frontier & \ref{app:gap-rule}, Corollary~\ref{cor:frontier} \\
 The value of targeting decreases in the budget and vanishes as the budget grows & \ref{app:gap-rule}, Corollary~\ref{cor:targeting-vanishes}; \ref{si:extended}, Fig.~\ref{fig:targeting-value} \\
-Targeting's value relative to uniform funding, across budgets and fields & \ref{si:extended} \\
-The ordering of review's value by field holds from Cobb-Douglas to Leontief & \ref{app:technology}, Fig.~\ref{fig:signal-robustness} \\
-Overtrusting review loses more output than undertrusting it & \ref{si:extended}, Fig.~\ref{fig:overtrust} \\
-Large grants reveal capability; the schedule spends a small share first & \ref{si:extended}, Fig.~\ref{fig:depth-schedule} \\
-The shift of spending toward later rounds comes from output produced whether or not funded & \ref{si:extended} \\
-Scheduling's value exists only under complementarity & \ref{app:technology}, Table~\ref{tab:timing-technology} \\
+Each heuristic can perform worse than uniform division & \ref{app:gap-rule}, Examples 1 and 2, Fig.~\ref{fig:heuristics} \\
 Equal division outperforms any lottery over the same pool & \ref{app:lottery}, Proposition~\ref{prop:lottery} \\
+Targeting's value relative to uniform funding, across budgets and fields & \ref{si:extended} \\
+Overtrusting review loses more output than undertrusting it & \ref{si:extended}, Fig.~\ref{fig:overtrust} \\
+Large grants reveal capability; the shift of spending toward later rounds and its source & \ref{si:extended}, Fig.~\ref{fig:depth-schedule} \\
 The production function does not settle concentration & \ref{si:extended}, Fig.~\ref{fig:concentration} \\
-Model, signals, strategies (Table~\ref{tab:strategies}), parameter ranges & \ref{sec:model} \\
-Related literature & \ref{sec:literature} \\
-Settings behind every figure and number; code & \ref{app:simulation} \\
+The ordering of review's value by field holds from Cobb-Douglas to Leontief & \ref{app:technology}, Fig.~\ref{fig:signal-robustness} \\
+Scheduling's value exists only under complementarity & \ref{app:technology}, Table~\ref{tab:timing-technology} \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\input{si-literature}
-\input{si-model}
+\input{si-methods}
 \input{si-gap-rule}
 \input{si-lottery}
 \input{si-extended}
 \input{si-technology}
-\input{si-simulation}
 
 \bibliographystyle{plainnat}
 \bibliography{references}
