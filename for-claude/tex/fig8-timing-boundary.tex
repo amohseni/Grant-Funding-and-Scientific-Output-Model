@@ -7,7 +7,7 @@
 \centering
 \begin{tikzpicture}
 \begin{axis}[
-  width=0.82\textwidth, height=5.4cm,
+  width=0.79\textwidth, height=5.4cm,
   axis lines*=left,
   xmode=log,
   xmin=0.0001, xmax=0.85, ymin=0.48, ymax=0.68,
@@ -16,7 +16,7 @@
   ytick={0.5, 0.55, 0.6, 0.65},
   yticklabels={even, 0.55, 0.60, 0.65},
   xlabel={compounding rate $\epsilon$},
-  ylabel={schedule center of mass},
+  ylabel={center of mass of spending},
   ylabel style={font=\small}, xlabel style={font=\small},
   tick label style={font=\small},
   axis line style={line width=0.4pt},
@@ -27,11 +27,11 @@
 \addplot[black, line width=0.7pt] table[x=eps, y=rich] {fig8-boundary.dat};
 \addplot[black, line width=0.7pt] table[x=eps, y=mid]  {fig8-boundary.dat};
 \addplot[black, line width=0.7pt] table[x=eps, y=poor] {fig8-boundary.dat};
-\node[font=\small, anchor=west] at (axis cs:0.92,0.652) {resource-rich};
+\node[font=\small, anchor=west] at (axis cs:0.92,0.652) {many resources};
 \node[font=\small, anchor=west] at (axis cs:0.92,0.566) {intermediate};
-\node[font=\small, anchor=west] at (axis cs:0.92,0.521) {resource-poor};
+\node[font=\small, anchor=west] at (axis cs:0.92,0.521) {few resources};
 \end{axis}
 \end{tikzpicture}
-\caption{The compounding rate, not the scarcity of baseline resources, sets how far spending shifts toward later rounds. The schedule's center of mass (0.5 is even; higher is later) as the compounding rate $\epsilon$ increases, for three baseline resource scales. Settings: Appendix~\ref{app:simulation}.}
+\caption{The compounding rate, not the scarcity of baseline resources, sets how far spending shifts toward later rounds. The center of mass of spending (0.5 is even; higher is later) as the compounding rate $\epsilon$ increases, for three baseline resource scales. Settings: Appendix~\ref{app:simulation}.}
 \label{fig:timing-boundary}
 \end{figure}

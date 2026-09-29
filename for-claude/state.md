@@ -983,3 +983,10 @@ arguments cut), SI Text 4 production function (Fig S6, Table S3). No footnotes i
 SI. Claim-to-section table updated. Fixed a reference-rewrite bug ("the main text and
 the main text"). SI 16pp (was 20), ~4,400 words of prose (was ~6,700); document 30pp.
 Files: si-methods.tex new; si-literature/si-model/si-simulation removed.
+Same day, seventh pass: "timing" replaces "the schedule" wherever the word named the
+choice (timing gain, value of timing, optimal timing, center of mass of spending,
+time its spending freely); axis labels and Table 2/S3 headers included; internal
+labels fig:depth-schedule / fig:schedule-vs-signal unchanged. Fig 8 / 3A in-plot labels
+"resource-rich/poor" -> "many/few resources" (missed by the sweep); axis narrowed 0.82
+-> 0.79 to fit. Parameter ranges confirmed present: PNAS Methods, SI Materials and
+Methods (with citations and defaults), Table S2 per figure; long version S3 + App D.
