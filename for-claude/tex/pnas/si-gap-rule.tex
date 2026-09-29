@@ -9,9 +9,9 @@
 
 \subsection*{The within-round allocation problem}
 
-A population of $n$ researchers. Researcher $i$ has capability $K_i$ and baseline resources $R_{i0}$, both fixed within the round. A grant $g_i \geq 0$ adds to researcher $i$'s resources for the round, so that their expected output is $A\,\Lambda(K_i,\, R_{i0} + g_i)$ with $\Lambda(K, R) = 2KR/(K + R)$, the production function of \cref{sec:model}, and $A > 0$ the common productivity scale. Write
+A population of $n$ researchers. Researcher $i$ has capability $K_i$ and baseline resources $R_{i0}$, both fixed within the round. A grant $g_i \geq 0$ adds to researcher $i$'s resources for the round, so that their expected output is $A\,\Lambda(K_i,\, R_{i0} + g_i)$ with $\Lambda(K, R) = KR/(K + R)$, the production function of \cref{sec:model}, and $A > 0$ the common productivity scale. Write
 \[
-\varphi_i(g) = \frac{2A\,K_i\,(R_{i0} + g)}{K_i + R_{i0} + g}
+\varphi_i(g) = \frac{A\,K_i\,(R_{i0} + g)}{K_i + R_{i0} + g}
 \]
 for researcher $i$'s expected output as a function of their grant alone.
 
@@ -25,14 +25,14 @@ The funder observes $(K_i, R_{i0})_{i=1}^n$ and divides the budget so as to maxi
 \subsection*{Three lemmas}
 
 \begin{lemma}[the return to a grant]\label{lem:return}
-For each $i$, on $g \in [0, \infty)$: (i) $\varphi_i$ is strictly increasing, with $\varphi_i'(g) = 2A\,K_i^2/(K_i + R_{i0} + g)^2 > 0$; (ii) $\varphi_i$ is strictly concave: $\varphi_i''(g) = -\,4A\,K_i^2/(K_i + R_{i0} + g)^3 < 0$; (iii) $\varphi_i'(g) < 2A$ whenever $R_{i0} + g > 0$, and $\varphi_i(g) \uparrow 2A K_i$ as $g \to \infty$.
+For each $i$, on $g \in [0, \infty)$: (i) $\varphi_i$ is strictly increasing, with $\varphi_i'(g) = A\,K_i^2/(K_i + R_{i0} + g)^2 > 0$; (ii) $\varphi_i$ is strictly concave: $\varphi_i''(g) = -\,4A\,K_i^2/(K_i + R_{i0} + g)^3 < 0$; (iii) $\varphi_i'(g) < A$ whenever $R_{i0} + g > 0$, and $\varphi_i(g) \uparrow A K_i$ as $g \to \infty$.
 \end{lemma}
 
 \begin{proof}
-Write $S = K_i + R_{i0} + g$. Then $\varphi_i(g) = 2AK_i(S - K_i)/S = 2AK_i - 2AK_i^2/S$, and (i) and (ii) follow by differentiating in $g$ (note $dS/dg = 1$). For (iii): $\varphi_i'(g) = 2A\,K_i^2/S^2 < 2A$ exactly when $S > K_i$, that is, when $R_{i0} + g > 0$; and $\varphi_i(g) = 2AK_i - 2AK_i^2/S \to 2AK_i$ as $S \to \infty$.
+Write $S = K_i + R_{i0} + g$. Then $\varphi_i(g) = AK_i(S - K_i)/S = AK_i - AK_i^2/S$, and (i) and (ii) follow by differentiating in $g$ (note $dS/dg = 1$). For (iii): $\varphi_i'(g) = A\,K_i^2/S^2 < A$ exactly when $S > K_i$, that is, when $R_{i0} + g > 0$; and $\varphi_i(g) = AK_i - AK_i^2/S \to AK_i$ as $S \to \infty$.
 \end{proof}
 
-\Cref{lem:return} says that the marginal value of a dollar to researcher $i$ increases with their capability and decreases with the resources they already hold, that each dollar granted lowers the value of the next, and that expected output never exceeds $2AK_i$.
+\Cref{lem:return} says that the marginal value of a dollar to researcher $i$ increases with their capability and decreases with the resources they already hold, that each dollar granted lowers the value of the next, and that expected output never exceeds $AK_i$.
 
 \begin{lemma}[existence, uniqueness, exhaustion]\label{lem:existence}
 Problem $(\mathrm{P})$ has exactly one solution $g^* = (g_1^*, \ldots, g_n^*)$, and it exhausts the budget: $\sum_i g_i^* = B$.
@@ -70,21 +70,21 @@ The unique solution of $(\mathrm{P})$ is
 \[
 g_i^* = \max(c\,K_i - R_{i0},\, 0), \qquad i = 1, \ldots, n,
 \]
-where $c > 0$ is the unique constant satisfying the budget identity $\sum_{i=1}^n \max(c\,K_i - R_{i0},\, 0) = B$. Equivalently, $c = \sqrt{2A/\nu} - 1$, where $\nu \in (0, 2A)$ is the common marginal value of \cref{lem:emv}.
+where $c > 0$ is the unique constant satisfying the budget identity $\sum_{i=1}^n \max(c\,K_i - R_{i0},\, 0) = B$. Equivalently, $c = \sqrt{A/\nu} - 1$, where $\nu \in (0, A)$ is the common marginal value of \cref{lem:emv}.
 \end{proprestate}
 
 \begin{proof}
 Let $g^*$ be the unique solution (\cref{lem:existence}) and $\nu$ the multiplier that \cref{lem:emv} associates with it. The proof proceeds in four steps.
 
-\emph{Step 1: $\nu \in (0, 2A)$, so $c = \sqrt{2A/\nu} - 1$ is well defined and positive.} Positivity of $\nu$ is part of \cref{lem:emv}. For the upper bound: some researcher $i$ is funded, and for them $R_{i0} + g_i^* \geq g_i^* > 0$, so \cref{lem:return}(iii) gives $\nu = \varphi_i'(g_i^*) < 2A$. Then $2A/\nu > 1$, so $c = \sqrt{2A/\nu} - 1 > 0$.
+\emph{Step 1: $\nu \in (0, A)$, so $c = \sqrt{A/\nu} - 1$ is well defined and positive.} Positivity of $\nu$ is part of \cref{lem:emv}. For the upper bound: some researcher $i$ is funded, and for them $R_{i0} + g_i^* \geq g_i^* > 0$, so \cref{lem:return}(iii) gives $\nu = \varphi_i'(g_i^*) < A$. Then $A/\nu > 1$, so $c = \sqrt{A/\nu} - 1 > 0$.
 
-\emph{Step 2: funded researchers receive exactly their gap.} Let $g_i^* > 0$. By \cref{lem:emv}, $2A\,K_i^2/(K_i + R_{i0} + g_i^*)^2 = \nu$. Solving, and taking the positive square root (both sides of the next display are positive),
+\emph{Step 2: funded researchers receive exactly their gap.} Let $g_i^* > 0$. By \cref{lem:emv}, $A\,K_i^2/(K_i + R_{i0} + g_i^*)^2 = \nu$. Solving, and taking the positive square root (both sides of the next display are positive),
 \[
-K_i + R_{i0} + g_i^* = K_i\,\sqrt{2A/\nu} = (1 + c)\,K_i,
+K_i + R_{i0} + g_i^* = K_i\,\sqrt{A/\nu} = (1 + c)\,K_i,
 \]
 so $g_i^* = c\,K_i - R_{i0}$. Since $g_i^* > 0$, this equals $\max(c\,K_i - R_{i0},\, 0)$.
 
-\emph{Step 3: unfunded researchers have no gap.} Let $g_i^* = 0$. By \cref{lem:emv}, $2A\,K_i^2/(K_i + R_{i0})^2 = \varphi_i'(0) \leq \nu$, so $K_i + R_{i0} \geq K_i\sqrt{2A/\nu} = (1 + c)\,K_i$, that is, $R_{i0} \geq c\,K_i$. Then $\max(c\,K_i - R_{i0},\, 0) = 0 = g_i^*$.
+\emph{Step 3: unfunded researchers have no gap.} Let $g_i^* = 0$. By \cref{lem:emv}, $A\,K_i^2/(K_i + R_{i0})^2 = \varphi_i'(0) \leq \nu$, so $K_i + R_{i0} \geq K_i\sqrt{A/\nu} = (1 + c)\,K_i$, that is, $R_{i0} \geq c\,K_i$. Then $\max(c\,K_i - R_{i0},\, 0) = 0 = g_i^*$.
 
 Steps 2 and 3 establish $g_i^* = \max(c\,K_i - R_{i0}, 0)$ for every $i$, and the budget identity is exhaustion (\cref{lem:existence}). It remains to show $c$ is the only constant satisfying that identity.
 
@@ -94,22 +94,22 @@ Steps 2 and 3 establish $g_i^* = \max(c\,K_i - R_{i0}, 0)$ for every $i$, and th
 \subsection*{Consequences}
 
 \begin{corollary}[funding frontier and budget comparative statics]\label{cor:frontier}
-(i) Researcher $i$ is funded, $g_i^* > 0$, exactly when $K_i > R_{i0}/c$. (ii) As a function of the budget $B$, the constant $c(B)$ is continuous and strictly increasing; hence the funded set is nondecreasing in $B$, every funded researcher's grant $c(B)\,K_i - R_{i0}$ is strictly increasing in $B$, and the common marginal value $\nu(B) = 2A/(1 + c(B))^2$ is strictly decreasing in $B$. Both parts follow from the formula and Step 4.
+(i) Researcher $i$ is funded, $g_i^* > 0$, exactly when $K_i > R_{i0}/c$. (ii) As a function of the budget $B$, the constant $c(B)$ is continuous and strictly increasing; hence the funded set is nondecreasing in $B$, every funded researcher's grant $c(B)\,K_i - R_{i0}$ is strictly increasing in $B$, and the common marginal value $\nu(B) = A/(1 + c(B))^2$ is strictly decreasing in $B$. Both parts follow from the formula and Step 4.
 \end{corollary}
 \begin{corollary}[the value of targeting vanishes in the budget]\label{cor:targeting-vanishes}
 Let $f^*(B)$ denote the optimal value of $(\mathrm{P})$ and $f^u(B) = \sum_i \varphi_i(B/n)$ the value of uniform funding. Then $0 \leq f^*(B) - f^u(B)$ for every $B$, and $f^*(B) - f^u(B) \to 0$ as $B \to \infty$.
 \end{corollary}
 
 \begin{proof}
-The first inequality holds because uniform funding is feasible. For the second: by \cref{lem:return}(iii), $\varphi_i(g) < 2AK_i$ for every $g$, so $f^*(B) \leq 2A\sum_i K_i$; and $f^u(B) = \sum_i \varphi_i(B/n) \to 2A\sum_i K_i$ as $B \to \infty$. Hence $0 \leq f^*(B) - f^u(B) \leq 2A\sum_i K_i - f^u(B) \to 0$.
+The first inequality holds because uniform funding is feasible. For the second: by \cref{lem:return}(iii), $\varphi_i(g) < AK_i$ for every $g$, so $f^*(B) \leq A\sum_i K_i$; and $f^u(B) = \sum_i \varphi_i(B/n) \to A\sum_i K_i$ as $B \to \infty$. Hence $0 \leq f^*(B) - f^u(B) \leq A\sum_i K_i - f^u(B) \to 0$.
 \end{proof}
 
-Since uniform funding's own gain over no funding does not vanish (it approaches $2A\sum_i K_i - \sum_i \varphi_i(0) > 0$), the same conclusion holds for the value of targeting measured relative to that gain, the quantity plotted in Fig.~\ref{fig:targeting-value}.
+Since uniform funding's own gain over no funding does not vanish (it approaches $A\sum_i K_i - \sum_i \varphi_i(0) > 0$), the same conclusion holds for the value of targeting measured relative to that gain, the quantity plotted in Fig.~\ref{fig:targeting-value}.
 
 \begin{example}[funding the track record can produce less than uniform funding]\label{ex:track-record}
-Two researchers, $A = 1$, budget $B = 2$. Researcher 1: $K_1 = 8$, $R_{10} = 8$ (productive and well resourced; expected output $\varphi_1(0) = 8$). Researcher 2: $K_2 = 4$, $R_{20} = 1$ (capable but with few resources; $\varphi_2(0) = 8/5$). Allocating in proportion to expected output gives $g = (5/3,\, 1/3)$ and total output $570/53 \approx 10.75$. Uniform funding, $g = (1, 1)$, gives $568/51 \approx 11.14$. The gap rule ($c = 3/4$) gives $g^* = (0, 2)$ and $80/7 \approx 11.43$.
+Two researchers, $A = 1$, budget $B = 2$. Researcher 1: $K_1 = 8$, $R_{10} = 8$ (productive and well resourced; expected output $\varphi_1(0) = 4$). Researcher 2: $K_2 = 4$, $R_{20} = 1$ (capable but with few resources; $\varphi_2(0) = 4/5$). Allocating in proportion to expected output gives $g = (5/3,\, 1/3)$ and total output $285/53 \approx 5.38$. Uniform funding, $g = (1, 1)$, gives $284/51 \approx 5.57$. The gap rule ($c = 3/4$) gives $g^* = (0, 2)$ and $40/7 \approx 5.71$.
 \end{example}
 
 \begin{example}[funding the under-resourced can produce less than uniform funding]\label{ex:scarcity}
-Two researchers, $A = 1$, budget $B = 2$. Researcher 1: $K_1 = 10$, $R_{10} = 5$. Researcher 2: $K_2 = 1/2$, $R_{20} = 0$ (the scarcest resources in the population). Directing the budget to the researcher with the fewest resources gives total output $112/15 \approx 7.47$. Uniform funding gives $49/6 \approx 8.17$. The gap rule ($c = 2/3$) gives $g^* = (5/3,\, 1/3)$ and $42/5 = 8.4$.
+Two researchers, $A = 1$, budget $B = 2$. Researcher 1: $K_1 = 10$, $R_{10} = 5$. Researcher 2: $K_2 = 1/2$, $R_{20} = 0$ (the scarcest resources in the population). Directing the budget to the researcher with the fewest resources gives total output $56/15 \approx 3.73$. Uniform funding gives $49/12 \approx 4.08$. The gap rule ($c = 2/3$) gives $g^* = (5/3,\, 1/3)$ and $21/5 = 4.2$.
 \end{example}

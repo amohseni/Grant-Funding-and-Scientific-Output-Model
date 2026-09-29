@@ -956,3 +956,11 @@ metrics) of the paper-writing skill (rev 11 card; he must save). Overleaf bundle
 rebuilt: overleaf-main-2026-09-29.zip (main.tex + references.bib at root, 17 tex + 18
 dat in figures/, chicago bst) and overleaf-pnas-2026-09-29.zip (pnas-main.tex + bib at
 root, 16 tex + 18 dat in figures/); both test-compiled clean with paths rewritten.
+Same day, fourth pass: the factor 2 dropped from the production function. lambda_i =
+A K_i R_i/(K_i + R_i), "proportional to the harmonic mean"; every 2A -> A (about 50
+places: marginal value A K^2/(K+R+g)^2, bound A K_i, lower bound K > lambda/A,
+small-grant approximation A R, c = sqrt(A/nu) - 1, nu(B) = A/(1+c)^2); simulations set
+A = 1 (the code's formula, no conversion note); Appendix A examples recomputed at A = 1
+(285/53, 284/51, 40/7; 56/15, 49/12, 21/5; c and g* unchanged; verified exactly). PNAS
+Results defines A at first use. Fig 3 axes are schematic, data unchanged. Both compile
+clean (main 36pp, pnas 34pp). Overleaf bundles rebuilt.
