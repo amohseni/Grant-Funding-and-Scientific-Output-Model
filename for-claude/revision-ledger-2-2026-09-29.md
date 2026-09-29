@@ -57,3 +57,6 @@ Companion to revision-plan-2-2026-09-29.md. Both documents (tex/main.tex, tex/pn
 - "optimal allocation" -> "output-maximizing allocation" in Abstract, Significance, Conclusion; the intro states the objective and that "optimal" means output-maximizing under it.
 - Significance: "whether to concentrate or spread" removed from the two-features sentence; concentration's dependence on complementarity stated in Discussion.
 - Budget range stated as 0.01 to 3 (regime grid), was 0.2 to 2.
+
+## Final polish (same day): PNAS compression
+- PNAS main text (intro, Results, Discussion, Methods; captions, abstract, and Significance excluded) compressed from about 5,900 to about 4,800 words with no number or claim removed; the "Placing programs on the budget axis" paragraph moved from Methods to SI Materials and Methods (Discussion now cites "SI Materials and Methods" for the budget figures). Repetition between Results and Discussion cut; "The regimes differ sharply" -> "The regimes differ" (both versions); straight quotes replaced by LaTeX quotes.
