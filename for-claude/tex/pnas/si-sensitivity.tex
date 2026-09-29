@@ -1,0 +1,94 @@
+% SI Text 5: sensitivity of the value of targeting and of review (Tables S4 to S7, Fig. S7).
+\section{Sensitivity of the value of targeting and of review}\label{app:sensitivity}\label{si:sensitivity}
+
+The main text varies the tail of the capability distribution, the budget, and review noise, and holds fixed the mean of the capability distribution, the correlation between capability and resources ($\rho = 0$), the tail of the resource distribution ($\alpha_R = 2$), and the size of the applicant pool ($n = 50$). This appendix varies each of these and asks two questions: whether the ordering of fields by the value of targeting and of review survives, and what single quantity, if any, organizes the results. Every run uses two rounds, the default budget $b = 1$, the myopic funders with and without review, and the complete-information benchmark; 50 simulated populations per setting, 100 in the noise sweeps. The value of targeting is the complete-information optimum's gain over uniform funding as a share of uniform funding's gain over no funding; the value of review is the share of the records-only shortfall that the review signal recovers, as in Fig.~2\textit{C}.
+
+\subsection*{Mean capability}
+A Pareto distribution with a fixed scale has mean $\alpha/(\alpha - 1)$, so at scale 1 the heavy-tailed field ($\alpha_K = 1.3$) has mean capability 4.3, the default field ($\alpha_K = 2$) 2, and the evenly spread field ($\alpha_K = 3.5$) 1.4: a sweep of $\alpha_K$ at fixed scale varies mean capability along with inequality, and a higher mean makes resources more binding on its own. Table~\ref{tab:sens-mean} compares that sweep with one in which the scale is set to $2(\alpha_K - 1)/\alpha_K$, so that every field has mean capability 2. Holding the mean fixed narrows the heavy-tailed field's advantage but preserves the ordering at every noise level; Fig.~2\textit{C} and every number in the main text use the fixed-mean sweep.
+
+\begin{table}[t]
+\centering
+\small
+\caption{The value of review by field at a fixed Pareto scale and at a fixed mean capability. Share of the records-only shortfall recovered, at review noise $\tau_K = 0.3$, $1$, and $3$; 100 simulated populations per entry.}
+\label{tab:sens-mean}
+\begin{tabular}{@{}lcccccccc@{}}
+\toprule
+& \multicolumn{4}{c}{fixed scale 1} & \multicolumn{4}{c}{fixed mean 2} \\
+$\alpha_K$ & mean $K$ & $\tau_K = 0.3$ & $1$ & $3$ & mean $K$ & $\tau_K = 0.3$ & $1$ & $3$ \\
+\midrule
+1.3 & 3.84 & 0.94 & 0.88 & 0.69 & 1.77 & 0.91 & 0.77 & 0.48 \\
+2.0 & 1.97 & 0.84 & 0.63 & 0.28 & 1.97 & 0.84 & 0.63 & 0.28 \\
+3.5 & 1.39 & 0.56 & 0.21 & 0.03 & 1.99 & 0.62 & 0.31 & 0.05 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{Review compared at equal informativeness}
+The same review noise $\tau_K$ is a more informative signal where capability is more dispersed, because the noise then moves fewer researchers past one another. Table~\ref{tab:sens-matched} therefore compares fields at equal informativeness, measured by the rank correlation between the review score and capability, interpolating within the fixed-mean sweep. At a rank correlation of 0.8, 0.55, and 0.3, the heavy-tailed field recovers 0.91, 0.78, and 0.48 of the shortfall, the default field 0.83, 0.63, and 0.30, and the evenly spread field 0.64, 0.45, and 0.17. The ordering is unchanged; the gaps between fields are smaller than at equal noise.
+
+\begin{table}[t]
+\centering
+\small
+\caption{The value of review by field at equal informativeness. Share of the records-only shortfall recovered when the rank correlation between the review score and capability is held at the stated value; fixed mean capability; interpolated within the noise sweep of Table~\ref{tab:sens-mean}.}
+\label{tab:sens-matched}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+$\alpha_K$ & rank correlation 0.8 & 0.55 & 0.3 \\
+\midrule
+1.3 & 0.91 & 0.78 & 0.48 \\
+2.0 & 0.83 & 0.63 & 0.30 \\
+3.5 & 0.64 & 0.45 & 0.17 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{The correlation between capability and resources, the resource tail, and pool size}
+Table~\ref{tab:sens-rest} varies the three remaining parameters one at a time, at the default review noise and at Pareto scale 1. The correlation between capability and resources is the one that matters. As $\rho$ rises from $-0.5$ to $0.8$, the value of targeting falls in every field (from 0.96 to 0.69 in the heavy-tailed field, from 0.25 to 0.06 in the evenly spread one), and so does the value of review; the ordering of fields is unchanged at every $\rho$. The mechanism is the gap rule itself: when resources already sit with the capable, the gaps $cK_i - R_{i0}$ are small and even, and there is little for targeting, or for the information that targeting requires, to add. The tail of the resource distribution changes the value of targeting by at most a tenth and the value of review by less. Pool size raises the value of targeting in the heavy-tailed field, because a larger pool contains more of the rare researchers of very high capability, and raises the value of review in the evenly spread field, where a larger pool gives review more to separate; neither effect changes the ordering.
+
+\begin{table}[t]
+\centering
+\small
+\caption{The value of targeting (upper block) and of review (lower block) by field as the correlation between capability and resources, the tail of the resource distribution, and the size of the applicant pool vary. Review noise $\tau_K = 1$; Pareto scale 1; 50 simulated populations per entry. Default values: $\rho = 0$, $\alpha_R = 2$, $n = 50$.}
+\label{tab:sens-rest}
+\begin{tabular}{@{}lcccccccccccc@{}}
+\toprule
+& \multicolumn{4}{c}{correlation $\rho$} & \multicolumn{3}{c}{resource tail $\alpha_R$} & \multicolumn{4}{c}{pool size $n$} \\
+$\alpha_K$ & $-0.5$ & $0$ & $0.5$ & $0.8$ & $1.3$ & $2$ & $3.5$ & $25$ & $50$ & $100$ & $200$ \\
+\midrule
+\multicolumn{12}{@{}l}{\emph{Value of targeting (share of uniform funding's gain)}} \\
+1.3 & 0.96 & 0.91 & 0.82 & 0.69 & 0.92 & 0.91 & 0.82 & 0.81 & 0.91 & 1.06 & 1.15 \\
+2.0 & 0.56 & 0.49 & 0.38 & 0.25 & 0.43 & 0.49 & 0.46 & 0.44 & 0.49 & 0.53 & 0.57 \\
+3.5 & 0.25 & 0.20 & 0.13 & 0.06 & 0.17 & 0.20 & 0.18 & 0.20 & 0.20 & 0.21 & 0.22 \\
+\addlinespace
+\multicolumn{12}{@{}l}{\emph{Value of review (share of the records-only shortfall recovered)}} \\
+1.3 & 0.89 & 0.89 & 0.86 & 0.84 & 0.86 & 0.89 & 0.91 & 0.86 & 0.89 & 0.90 & 0.89 \\
+2.0 & 0.64 & 0.63 & 0.59 & 0.54 & 0.64 & 0.63 & 0.64 & 0.58 & 0.63 & 0.68 & 0.69 \\
+3.5 & 0.22 & 0.20 & 0.14 & 0.00 & 0.22 & 0.20 & 0.19 & 0.14 & 0.20 & 0.25 & 0.30 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{Review that partly reflects resources}
+The main text's review signal observes capability with noise. Real review may also reflect the resources a researcher visibly has. Table~\ref{tab:sens-contam} replaces the signal by $K_i + \beta R_{i0} + \xi_{it}$, with the funder knowing $\beta$ and updating accordingly. Contamination costs little where capability is heavy-tailed: at $\beta = 1$, where the score weights resources as heavily as capability, the heavy-tailed field still recovers 0.60 to 0.65 of the shortfall, against 0.77 to 0.91 for a clean signal. It costs most where capability is evenly spread, where at $\beta = 1$ review is nearly worthless. The reason is the one behind Fig.~2\textit{C}: the researchers whom review must find in a heavy-tailed field stand so far apart in capability that a resource term does not hide them.
+
+\begin{table}[t]
+\centering
+\small
+\caption{The value of review when the review score partly reflects resources. Share of the records-only shortfall recovered when the score is $K_i + \beta R_{i0}$ plus noise, for $\beta = 0$ (the main text's signal), $0.25$, $0.5$, and $1$; fixed mean capability; 50 simulated populations per entry (100 at $\beta = 0$).}
+\label{tab:sens-contam}
+\begin{tabular}{@{}lcccccccc@{}}
+\toprule
+& \multicolumn{4}{c}{$\tau_K = 0.3$} & \multicolumn{4}{c}{$\tau_K = 1$} \\
+$\alpha_K$ & $\beta = 0$ & $0.25$ & $0.5$ & $1$ & $\beta = 0$ & $0.25$ & $0.5$ & $1$ \\
+\midrule
+1.3 & 0.91 & 0.89 & 0.81 & 0.60 & 0.77 & 0.76 & 0.73 & 0.65 \\
+2.0 & 0.84 & 0.79 & 0.66 & 0.38 & 0.63 & 0.61 & 0.57 & 0.45 \\
+3.5 & 0.62 & 0.52 & 0.33 & 0.04 & 0.31 & 0.26 & 0.22 & 0.11 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{The inequality of the gaps organizes the results}
+The runs above vary five parameters. One quantity summarizes what they do to the value of targeting: how unequally the optimal grants, the gaps $\max(cK_i - R_{i0}, 0)$ at the population's budget, are distributed across the field. Across all 159 settings in this appendix, the logarithm of the value of targeting is a nearly linear function of the Gini coefficient of the optimal grants, with $R^2 = 0.96$ (Fig.~\ref{fig:gap-gini}); adding the ratio of mean capability to mean resources raises $R^2$ to $0.99$. Settings that differ in the capability tail, the correlation between capability and resources, the resource tail, and pool size, but agree on the inequality of the gaps, have the same value of targeting. The value of review depends on the same quantity together with the signal's informativeness: the log-odds of the share recovered, regressed on the Gini coefficient of the optimal grants and the log-odds of the rank correlation between score and capability, has $R^2 = 0.86$, and adding the capability tail as a separate variable raises it by less than $0.01$. Capability inequality is the main driver of gap inequality in every sweep we ran, which is why the main text can speak of it directly; the correlation between capability and resources is the second driver, and it works through the same channel.
+
+\input{figS7-gap-gini}

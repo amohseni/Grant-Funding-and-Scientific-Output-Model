@@ -990,3 +990,17 @@ labels fig:depth-schedule / fig:schedule-vs-signal unchanged. Fig 8 / 3A in-plot
 "resource-rich/poor" -> "many/few resources" (missed by the sweep); axis narrowed 0.82
 -> 0.79 to fit. Parameter ranges confirmed present: PNAS Methods, SI Materials and
 Methods (with citations and defaults), Table S2 per figure; long version S3 + App D.
+
+## 2026-09-29 (evening): revision after the referee-style review
+Plan: revision-plan-2026-09-29.md; ledger of every changed number: revision-ledger-2026-09-29.md;
+scripts and results in analysis/. Package A (corrections, both versions), B (gap rule
+generalized to F = A K h(R/K) in Appendix A / SI Text 1; Cor 2 needs h bounded, Cobb-
+Douglas excluded with proof sketch), C (sensitivity runs: rho, alpha_R, n, mean-normalized
+alpha_K sweep now the Fig 4 / 2C data with error bars, matched informativeness,
+contaminated review; new Appendix E / SI Text 5 with Tables and Fig 15 / S7; by-round
+shortfall now Fig 5 / 2B), D (thesis: second feature = inequality of the gaps, capability
+inequality its main driver, K-R association the second; Significance 117 words). Timing
+section moved after spreading in both versions. Referee's -4A was my error from the
+factor-2 removal; fixed. Both compile clean: main 42pp, pnas 36pp (14 main + SI).
+Not done (declined or infeasible): persistent reviewer error, project quality, calibration,
+robustness rerun on the water-filling allocator (harmonic-only in the code).
