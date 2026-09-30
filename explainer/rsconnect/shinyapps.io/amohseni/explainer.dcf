@@ -1,0 +1,12 @@
+name: explainer
+title: explainer
+username: amohseni
+account: amohseni
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 18050209
+bundleId: 12626278
+url: https://amohseni.shinyapps.io/explainer/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
