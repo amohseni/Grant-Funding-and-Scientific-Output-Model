@@ -85,9 +85,10 @@ why <- function(...) tags$div(class = "why", tags$span(class = "notice-label", "
 side <- function(...) tags$div(class = "side", ...)
 
 css <- "
-body { font-family: Georgia, 'Times New Roman', serif; color: #111; }
-.navbar { border-bottom: 1px solid #ddd; }
-.side { max-width: 34rem; }
+html { font-size: 18px; }
+body { font-family: Georgia, 'Times New Roman', serif; color: #111; margin: 10pt; }
+.navbar { border-bottom: 1px solid #ddd; margin-bottom: 10pt; }
+.side, .main-text, .readout, .notice, .why { max-width: 60ch; }
 .lead-text { font-size: 1.12rem; line-height: 1.55; }
 .side p, .main-text p { line-height: 1.55; }
 .notice, .why { border-left: 2px solid #111; padding: 0.2rem 0 0.2rem 0.9rem; margin: 1rem 0; }
@@ -336,7 +337,7 @@ server <- function(input, output, session) {
       geom_segment(data = d[d$funded, ], aes(x = R0, y = K, xend = R1, yend = K), arrow = arrow(length = unit(4, "pt"), type = "closed"), linewidth = 0.4, colour = GREY) +
       geom_point(aes(R0, K, shape = funded), size = 2.2, fill = "white") +
       scale_shape_manual(values = c(`TRUE` = 16, `FALSE` = 1)) +
-      annotate("text", x = min(xmax, ymax * a$c) * 0.55, y = min(xmax, ymax * a$c) * 0.55 / a$c, label = "frontier R = cK", hjust = 0, vjust = -0.6, angle = 0, size = 3.8, colour = GREY) +
+      annotate("text", x = min(xmax, ymax * a$c) * 0.55, y = min(xmax, ymax * a$c) * 0.55 / a$c, label = "frontier R = cK", hjust = 1.08, vjust = -0.3, size = 3.8, colour = GREY) +
       coord_cartesian(xlim = c(0, xmax), ylim = c(0, ymax), expand = FALSE) +
       labs(x = "resources R", y = "capability K", title = sprintf("Grants from %s (filled points are funded; arrows show the grants)", input$g_show)) +
       th()
