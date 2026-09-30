@@ -77,3 +77,20 @@ Numbers verified in-container from the staged sweep summaries (D3_seed_signal, T
 ## Revision 2 (same day, after the second review)
 Replaced: "optimal timing" -> "the forward-looking funder's timing"; "timing gain", "value of timing", "the gain from choosing the timing of spending" -> "gain from planning ahead" (Aydin approved); "the optimal allocation" -> "the output-maximizing allocation" where a prescription is stated (Abstract, Significance, Conclusion; "optimal allocation" kept in Results after the sentence that defines it as the round-by-round gap rule); "correlation rho" -> "copula parameter rho" (Methods, appendices) and "the correlation between capability and resources" -> "the association between capability and resources" (main texts, sensitivity appendix); "drawn afresh in each round" -> "observed once at the start".
 Kept: "regime" (Discussion and Conclusion, in its ordinary sense of a region of the map in which the recommendations agree); "map" (Fig. 16 / Fig. 4); "excellence council", "science agency", "biomedical agency", "foundation" (descriptive program labels, no real funder named in the figure).
+
+## Revision 2, late (plainness sweep)
+- output (standalone) -> research output, everywhere (main texts, appendices, SI); output-maximizing kept
+- unsettled -> still debated; the prior question -> the more basic question
+- non-monotone / not even monotone -> has no single direction
+- underdetermine -> do not pin down; which input binds -> which of the two is scarce
+- marginal grant -> additional grant; latent -> unobserved; proxy -> stand-in
+- Two results lie outside this quantity -> Two results are not set by this quantity alone
+
+## 2026-09-30 close-out
+- records-only -> no-review (funder, shortfall); defined at first use
+- default field / default distribution (alpha_K = 2) -> intermediate field / intermediate distribution
+- a signal of capability separate from resources -> a signal of capability less confounded by resources than the track record
+- exact dynamic optimum -> two-round optimum
+- even a noisy signal / even noisy review -> even a moderately informative signal / even moderately noisy review
+- we ran -> we considered; we sweep / swept -> in our parameter sweep / of our parameter sweep
+- Capability is a state, not a trait -> Capability is a state rather than a trait, so ...

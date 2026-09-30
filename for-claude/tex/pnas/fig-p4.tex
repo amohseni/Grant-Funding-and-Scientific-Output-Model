@@ -23,15 +23,16 @@
 \node[font=\small, anchor=west] at (axis cs:0.77,8.11) {heavy-tailed, $b = 2$};
 \node[font=\small, anchor=west] at (axis cs:0.77,11.07) {heavy-tailed, $b = 1$};
 \node[font=\small, anchor=west] at (axis cs:0.77,17.29) {heavy-tailed, $b = 0.2$};
-\node[font=\small, anchor=west] at (axis cs:0.77,3.47) {default, $b = 1$};
+\node[font=\small, anchor=west] at (axis cs:0.77,3.47) {intermediate, $b = 1$};
 \end{axis}
 \end{tikzpicture}
 \end{minipage}\par\vspace{0.9em}
 \begin{minipage}{\textwidth}\noindent\textbf{B}\par\vspace{-0.3em}
+\centering
 \begin{tikzpicture}
 \begin{axis}[
   name=left,
-  width=0.44\textwidth, height=5.6cm,
+  width=0.36\textwidth, height=5.6cm,
   axis lines*=left,
   xmode=log,
   xmin=0.3, xmax=10, ymin=0, ymax=1,
@@ -45,21 +46,20 @@
   tick label style={font=\small},
   axis line style={line width=0.4pt},
   tick style={line width=0.4pt, black},
-  title={\small heavy-tailed, tight budget},
-  title style={yshift=-2pt},
+  title={\small heavy-tailed capabilities,\\ tight budget},
+  title style={at={(0,1)}, anchor=south west, xshift=-2pt, yshift=-1pt, align=left},
   clip=false,
 ]
-\addplot[gray, dashed, line width=0.5pt, domain=0.3:10] {0.445};
-\addplot[gray, dotted, line width=0.6pt, domain=0.3:10] {0.378};
 \addplot[black, line width=0.7pt, mark=*, mark size=1.1pt] table[x=tau, y=ss] {fig11-heavy.dat};
 \addplot[black, line width=0.7pt, mark=o, mark size=1.3pt] table[x=tau, y=ws] {fig11-heavy.dat};
 \addplot[black, line width=0.7pt, mark=triangle*, mark size=1.4pt] table[x=tau, y=sl] {fig11-heavy.dat};
-\node[font=\scriptsize, anchor=south west] at (axis cs:0.315,0.79) {top fifth by review};
-\node[font=\scriptsize, gray, anchor=north west] at (axis cs:0.315,0.372) {lottery over all};
+\addplot[black!65, dashed, line width=0.6pt, domain=0.3:10] {0.445};
+\addplot[black!65, dotted, line width=0.8pt, domain=0.3:10] {0.378};
 \end{axis}
 \begin{axis}[
-  at={(left.outer east)}, anchor=outer west, xshift=6pt,
-  width=0.44\textwidth, height=5.6cm,
+  name=right,
+  at={(left.east)}, anchor=west, xshift=30pt,
+  width=0.36\textwidth, height=5.6cm,
   axis lines*=left,
   xmode=log,
   xmin=0.3, xmax=10, ymin=0, ymax=1,
@@ -72,20 +72,25 @@
   tick label style={font=\small},
   axis line style={line width=0.4pt},
   tick style={line width=0.4pt, black},
-  title={\small evenly spread, ample budget},
-  title style={yshift=-2pt},
+  title={\small evenly spread capabilities,\\ ample budget},
+  title style={at={(0,1)}, anchor=south west, xshift=-2pt, yshift=-1pt, align=left},
   clip=false,
+  legend style={draw=none, fill=none, font=\scriptsize, at={(1.04,0.55)}, anchor=west, legend cell align=left, row sep=1pt},
+  legend image post style={mark size=1.1pt},
 ]
-\addplot[gray, dashed, line width=0.5pt, domain=0.3:10] {0.831};
-\addplot[gray, dotted, line width=0.6pt, domain=0.3:10] {0.414};
 \addplot[black, line width=0.7pt, mark=*, mark size=1.1pt] table[x=tau, y=ss] {fig11-even.dat};
+\addlegendentry{top fifth by review}
 \addplot[black, line width=0.7pt, mark=o, mark size=1.3pt] table[x=tau, y=ws] {fig11-even.dat};
+\addlegendentry{top two fifths by review}
 \addplot[black, line width=0.7pt, mark=triangle*, mark size=1.4pt] table[x=tau, y=sl] {fig11-even.dat};
-\node[font=\scriptsize, gray, anchor=south west] at (axis cs:0.32,0.836) {uniform};
-\node[font=\scriptsize, anchor=south west] at (axis cs:1.15,0.705) {top two fifths by review};
+\addlegendentry{partial lottery}
+\addplot[black!65, dashed, line width=0.6pt, domain=0.3:10] {0.831};
+\addlegendentry{uniform funding}
+\addplot[black!65, dotted, line width=0.8pt, domain=0.3:10] {0.414};
+\addlegendentry{lottery over all}
 \end{axis}
 \end{tikzpicture}
 \end{minipage}\par\vspace{0.9em}
-\caption{Spreading funds. (\textit{A}) The research output lost to uniform seed grants, as a percent of the research output that the funder's grants add over no funding, when a review-informed funder gives out a fraction of its budget as equal grants to all researchers and targets the rest; the loss grows faster than the fraction, and its size is set by what targeting is worth in the field. (\textit{B}) What five funding schemes gain, by field: each scheme's gain over no funding as a share of the optimal allocation's gain, as review noise increases, in a heavy-tailed field with a tight budget (left) and an evenly spread field with a large budget (right). Filled circles: equal division among the top fifth by review score; open circles: among the top two fifths; triangles: the partial lottery; dashed: uniform funding; dotted: a lottery over all researchers. Settings: \ref{app:simulation}.}
+\caption{Spreading funds. (\textit{A}) The research output lost to uniform seed grants, as a percent of the research output that the funder's grants add over no funding, when a review-informed funder gives out a fraction of its budget as equal grants to all researchers and targets the rest; the loss grows faster than the fraction, and its size is set by what targeting is worth in the field. (\textit{B}) What five funding schemes gain, by field: each scheme's gain over no funding as a share of the optimal allocation's gain, as review noise increases, in a heavy-tailed field with a tight budget (left) and an evenly spread field with a large budget (right). The top fifth and top two fifths by review score receive equal division; the partial lottery funds half of the top two fifths at random with full-size grants. Settings: \ref{app:simulation}.}
 \label{fig:p4}
 \end{figure}

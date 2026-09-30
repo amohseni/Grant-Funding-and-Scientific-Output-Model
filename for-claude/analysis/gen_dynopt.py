@@ -1,4 +1,4 @@
-"""Table tab:dynopt from dynopt2_results.csv (T = 2 exact optimum) and dynopt5_results.csv
+"""Table tab:dynopt from dynopt2_results.csv (T = 2 two-round optimum) and dynopt5_results.csv
 (T = 5 division of the budget), and the DYNLOSS / DYNCOR placeholders in the texts."""
 import csv, shutil, re
 D = '/home/claude/gf/tex/'
@@ -7,10 +7,10 @@ def find(rows, aK, eps, b):
     for r in rows:
         if abs(float(r['aK']) - aK) < 1e-9 and abs(float(r['eps']) - eps) < 1e-9 and abs(float(r['b']) - b) < 1e-9: return r
 L = ['\\begin{table}[tp]', '\\centering', '\\footnotesize', '\\setlength{\\tabcolsep}{3pt}',
-     '\\caption{The round-by-round gap rule against the sequential optimum under complete information. Two rounds: the output lost by applying the gap rule to half the budget in each round, as a percent of the research output that the exact two-round optimum adds over no funding (mean and maximum over 20 populations); the correlation between the two allocations\' first-round grants (mean and minimum); and the share of the budget the optimum spends in round one. Five rounds: the output lost by an even division of the budget across rounds, as a percent of what the best division adds, with the gap rule choosing recipients in every round, and the center of mass of the best division (0.5 is even; higher is later). Mean capability 2; $n = 50$.}',
+     '\\caption{The round-by-round gap rule against the sequential optimum under complete information. Two rounds: the research output lost by applying the gap rule to half the budget in each round, as a percent of the research output that the exact two-round optimum adds over no funding (mean and maximum over 20 populations); the correlation between the two allocations\' first-round grants (mean and minimum); and the share of the budget the optimum spends in round one. Five rounds: the research output lost by an even division of the budget across rounds, as a percent of what the best division adds, with the gap rule choosing recipients in every round, and the center of mass of the best division (0.5 is even; higher is later). Mean capability 2; $n = 50$.}',
      '\\label{tab:dynopt}',
      '\\begin{tabular}{@{}cccccccc@{}}', '\\toprule',
-     '& & & \\multicolumn{3}{c}{two rounds, exact optimum} & \\multicolumn{2}{c}{five rounds, division only} \\\\',
+     '& & & \\multicolumn{3}{c}{two rounds, optimum} & \\multicolumn{2}{c}{five rounds, division only} \\\\',
      '$\\alpha_K$ & $\\epsilon$ & $b$ & \\makecell{loss, \\%\\\\(max)} & \\makecell{correlation\\\\(min)} & \\makecell{round-1\\\\share} & \\makecell{even division\\\\loses, \\%} & \\makecell{center\\\\of mass} \\\\', '\\midrule']
 for aK in (1.3, 2.0, 3.5):
     for eps in (0.1, 0.5, 0.85):

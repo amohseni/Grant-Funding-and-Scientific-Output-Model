@@ -2,7 +2,7 @@
 % y = output lost by flooring the review-informed forward funder (S11 vs S8) as
 %     percent of no-funding output; x = floored share of the budget (x_seed).
 % Curves: heavy-tailed field with reliable review (tau_K = 0.3) at b = 1, 0.5, 0.1;
-% default field with default review (tau_K = 1) at b = 0.5. T = 2, 200 seeds.
+% intermediate field with default review (tau_K = 1) at b = 0.5. T = 2, 200 seeds.
 % Data: fig10-floor-cost.dat, from sweep_results/D3_seed_signal (hash 21b0d9a),
 % re-derived in-session (verify_s8.R). Regime pairing caveat: the heavy-tailed cells
 % run with sharper review than the default cells; stated in the caption.
@@ -30,7 +30,7 @@
 \node[font=\small, anchor=west] at (axis cs:0.77,8.11) {heavy-tailed, $b = 2$};
 \node[font=\small, anchor=west] at (axis cs:0.77,11.07) {heavy-tailed, $b = 1$};
 \node[font=\small, anchor=west] at (axis cs:0.77,17.29) {heavy-tailed, $b = 0.2$};
-\node[font=\small, anchor=west] at (axis cs:0.77,3.47) {default, $b = 1$};
+\node[font=\small, anchor=west] at (axis cs:0.77,3.47) {intermediate, $b = 1$};
 \end{axis}
 \end{tikzpicture}
 \caption{The research output lost to uniform seed grants. Expected research output lost, as a percent of the research output that the funder's grants add over no funding, when a review-informed funder gives out a fraction of its budget as equal grants to all researchers and targets the rest. The loss grows faster than the fraction, and its size is set by what targeting is worth in the field. Settings: Appendix~\ref{app:simulation}.}
