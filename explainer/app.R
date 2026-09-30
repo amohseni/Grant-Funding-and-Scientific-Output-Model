@@ -90,7 +90,7 @@ body { font-family: Georgia, 'Times New Roman', serif; color: #111; margin: 10pt
 /* header: title on its own line, navigation on the line below, one hairline under both */
 .navbar { border-bottom: 1px solid #111; padding: 1.4rem 0 0 0; margin-bottom: 1.6rem; background: #fff !important; }
 .navbar > .container-fluid { flex-direction: column; align-items: flex-start; padding: 0 0.75rem; }
-.navbar-brand { white-space: normal; padding: 0; margin: 0 0 calc(1.1rem + 10pt) 0; }
+.navbar-brand { white-space: normal; padding: 0; margin: 0 !important; }
 .brand { display: flex; flex-direction: column; }
 .brand-title { font-size: 2.05rem; line-height: 1.2; font-weight: 400; letter-spacing: -0.005em; color: #111; max-width: 34ch; }
 .brand-sub { font-size: 1rem; color: #666; margin-top: 0.45rem; font-style: italic; }
@@ -100,7 +100,7 @@ body { font-family: Georgia, 'Times New Roman', serif; color: #111; margin: 10pt
 .navbar .nav-link.active { color: #111 !important; border-bottom: 1px solid #111; }
 .navbar-toggler { display: none; }
 .bslib-page-navbar > .container-fluid, .tab-content > .container-fluid, .container-fluid { border-top: none !important; }
-.navbar-collapse { display: flex !important; }
+.navbar-collapse { display: flex !important; padding-top: 25pt; }
 /* text */
 .side, .main-text, .readout, .notice, .why { max-width: 60ch; }
 .lead-text { font-size: 1.12rem; line-height: 1.55; }
