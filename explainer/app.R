@@ -86,28 +86,46 @@ side <- function(...) tags$div(class = "side", ...)
 
 css <- "
 html { font-size: 18px; }
-body { font-family: Georgia, 'Times New Roman', serif; color: #111; margin: 10pt; }
-.navbar { border-bottom: 1px solid #ddd; margin-bottom: 10pt; }
+body { font-family: Georgia, 'Times New Roman', serif; color: #111; margin: 10pt; background: #fff; }
+/* header: title on its own line, navigation on the line below, one hairline under both */
+.navbar { border-bottom: 1px solid #111; padding: 1.4rem 0 0 0; margin-bottom: 1.6rem; background: #fff !important; }
+.navbar > .container-fluid { flex-direction: column; align-items: flex-start; padding: 0 0.75rem; }
+.navbar-brand { white-space: normal; padding: 0; margin: 0 0 1.1rem 0; }
+.brand { display: flex; flex-direction: column; }
+.brand-title { font-size: 2.05rem; line-height: 1.2; font-weight: 400; letter-spacing: -0.005em; color: #111; max-width: 34ch; }
+.brand-sub { font-size: 1rem; color: #666; margin-top: 0.45rem; font-style: italic; }
+.navbar-nav { flex-direction: row !important; flex-wrap: wrap; gap: 0 1.6rem; margin: 0 0 0.9rem 0; }
+.navbar .nav-link { padding: 0.15rem 0 !important; font-size: 0.95rem; color: #666 !important; border-bottom: 1px solid transparent; }
+.navbar .nav-link:hover { color: #111 !important; }
+.navbar .nav-link.active { color: #111 !important; border-bottom: 1px solid #111; }
+.navbar-toggler { display: none; }
+.bslib-page-navbar > .container-fluid, .tab-content > .container-fluid, .container-fluid { border-top: none !important; }
+.navbar-collapse { display: flex !important; }
+/* text */
 .side, .main-text, .readout, .notice, .why { max-width: 60ch; }
 .lead-text { font-size: 1.12rem; line-height: 1.55; }
 .side p, .main-text p { line-height: 1.55; }
-.notice, .why { border-left: 2px solid #111; padding: 0.2rem 0 0.2rem 0.9rem; margin: 1rem 0; }
-.notice-label { display: block; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: #555; margin-bottom: 0.2rem; }
-.readout { font-size: 1.05rem; line-height: 1.5; border: 1px solid #ddd; padding: 0.9rem 1rem; margin-top: 0.8rem; }
+.notice, .why { border-left: 1px solid #111; padding: 0.2rem 0 0.2rem 0.9rem; margin: 1.1rem 0; }
+.notice-label { display: block; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: #666; margin-bottom: 0.25rem; }
+.readout { font-size: 1rem; line-height: 1.5; border-top: 1px solid #111; padding: 0.7rem 0 0.2rem 0; margin-top: 1rem; }
 .readout .num { font-weight: 600; }
 .control-label, label { font-size: 0.92rem; color: #333; }
-.small-note { font-size: 0.85rem; color: #555; }
-h2 { font-weight: 400; font-size: 1.5rem; margin-bottom: 0.6rem; }
-h3 { font-weight: 400; font-size: 1.15rem; margin-top: 1.2rem; }
-.takeaway { margin: 0.6rem 0 0.6rem 0; padding-left: 0.9rem; border-left: 2px solid #ccc; }
+.small-note { font-size: 0.85rem; color: #666; line-height: 1.45; }
+h2 { font-weight: 400; font-size: 1.5rem; margin: 0.2rem 0 0.7rem 0; }
+h3 { font-weight: 400; font-size: 1.15rem; margin-top: 1.3rem; }
+.takeaway { margin: 0.7rem 0; padding-left: 0.9rem; border-left: 1px solid #999; }
+/* controls, kept quiet */
 .irs--shiny .irs-bar, .irs--shiny .irs-single, .irs--shiny .irs-from, .irs--shiny .irs-to { background: #111; border-color: #111; }
 .irs--shiny .irs-handle { border-color: #111; }
+.irs--shiny .irs-min, .irs--shiny .irs-max, .irs--shiny .irs-grid-text { color: #888; }
 .btn-outline-dark { border-radius: 0; }
+.form-control { border-radius: 0; border-color: #bbb; }
+.form-check-input:checked { background-color: #111; border-color: #111; }
 "
 
 # ================================================================== UI
 ui <- page_navbar(
-  title = "Funding the Gap",
+  title = tags$div(class = "brand", tags$span(class = "brand-title", "A Model of Optimal Science Funding: Targeting the Capability-Resource Gap"), tags$span(class = "brand-sub", "An interactive guide to the paper by Mohseni, DeDeo, and Zollman")),
   theme = bs_theme(version = 5, bg = "#ffffff", fg = "#111111", primary = "#111111",
                    base_font = font_collection("Georgia", "Times New Roman", "serif")),
   header = tags$head(tags$style(HTML(css))),
@@ -117,7 +135,7 @@ ui <- page_navbar(
   nav_panel("Start",
     layout_columns(col_widths = c(7, 5),
       div(class = "main-text",
-        h2("An interactive guide to A model of optimal science funding"),
+        h2("The problem, and the answer in one sentence"),
         lead("A research funder divides a fixed budget among researchers whose abilities and needs it cannot see.
               Should it concentrate the money or spread it? Is peer review worth its cost? Should lotteries replace it?"),
         p("This guide walks through the paper's answer in seven steps. Each step has one interactive figure and a few
