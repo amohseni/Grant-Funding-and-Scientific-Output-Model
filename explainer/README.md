@@ -19,3 +19,8 @@ configured (`rsconnect::setAccountInfo`). The app name is `funding-the-gap`.
 Column note for `data/fig16-grid.dat`: `rev` is review's value as a share of the research
 output that review-informed funding adds (the paper's panel B); `revgain` is the share of the
 no-review shortfall recovered, which is unstable at very small budgets and is not used.
+
+Figure sizing: each figure renders at a fixed width and aspect ratio chosen for its content (single
+plots 640 px wide at 4:3 or 3:2, two-panel plots 720 px), so plot text stays in proportion to the page
+text. The container scales a figure down on narrow screens and never up. Below 992 px the figure moves
+above its text and controls.

@@ -68,7 +68,7 @@ th <- function(base = 13) {
           axis.line = element_line(colour = "black", linewidth = 0.35),
           axis.ticks = element_line(colour = "black", linewidth = 0.35),
           axis.title = element_text(size = base - 1),
-          plot.title = element_text(size = base, face = "plain", hjust = 0),
+          plot.title = element_text(size = base, face = "plain", hjust = 0, lineheight = 1.05),
           plot.subtitle = element_text(size = base - 2, colour = "grey30"),
           strip.text = element_text(size = base - 2, hjust = 0),
           strip.background = element_blank(),
@@ -83,6 +83,11 @@ lead <- function(...) tags$p(class = "lead-text", ...)
 notice <- function(...) tags$div(class = "notice", tags$span(class = "notice-label", "What to notice"), tags$p(...))
 why <- function(...) tags$div(class = "why", tags$span(class = "notice-label", "Why"), tags$p(...))
 side <- function(...) tags$div(class = "side", ...)
+# Figures render at a fixed pixel size chosen for their content (a fixed aspect ratio and a width that keeps
+# plot text in proportion to the page text); CSS scales the image down, never up, on narrow screens.
+fig <- function(id, w, h) tags$div(class = "fig", style = sprintf("max-width:%dpx", w),
+                                   tags$div(style = sprintf("width:100%%; aspect-ratio:%d/%d", w, h),
+                                            plotOutput(id, width = "100%", height = "100%")))
 
 css <- "
 html { font-size: 18px; }
@@ -94,13 +99,19 @@ body { font-family: Georgia, 'Times New Roman', serif; color: #111; margin: 10pt
 .brand { display: flex; flex-direction: column; }
 .brand-title { font-size: 2.05rem; line-height: 1.2; font-weight: 400; letter-spacing: -0.005em; color: #111; max-width: 34ch; }
 .brand-sub { font-size: 1rem; color: #666; margin-top: 0.45rem; font-style: italic; }
-.navbar-nav { flex-direction: row !important; flex-wrap: wrap; gap: 0 1.6rem; margin: 0 0 0.9rem 0; }
+.navbar-nav { flex-direction: row !important; flex-wrap: wrap; gap: 0.35rem 1.6rem; margin: 0 0 0.9rem 0; }
 .navbar .nav-link { padding: 0.15rem 0 !important; font-size: 0.95rem; color: #666 !important; border-bottom: 1px solid transparent; }
 .navbar .nav-link:hover { color: #111 !important; }
 .navbar .nav-link.active { color: #111 !important; border-bottom: 1px solid #111; }
-.navbar-toggler { display: none; }
+.navbar-toggler, .navbar-toggle { display: none !important; }
 .bslib-page-navbar > .container-fluid, .tab-content > .container-fluid, .container-fluid { border-top: none !important; }
 .navbar-collapse { display: flex !important; padding-top: 25pt; }
+/* figures: fixed proportions, capped width, scale down only */
+.fig { width: 100%; margin: 0.2rem 0 1.2rem 0; }
+.fig .shiny-plot-output img { display: block; }
+@media (min-width: 992px) { .fig { margin-top: 0.4rem; } }
+/* narrow screens: the figure comes first, then the text and controls */
+@media (max-width: 991px) { .bslib-grid > .bslib-grid-item:nth-child(2) { order: -1; } .side { margin-top: 0.6rem; } }
 /* text */
 .side, .main-text, .readout, .notice, .why { max-width: 60ch; }
 .lead-text { font-size: 1.12rem; line-height: 1.55; }
@@ -174,7 +185,7 @@ ui <- page_navbar(
                 approaches the ceiling set by capability. Now hold resources at a small value and raise capability.
                 Output barely changes, because resources are the scarce input."),
         uiOutput("m_readout")),
-      plotOutput("m_plot", height = "460px"))),
+      div(class = "figcol", fig("m_plot", 640, 420)))),
 
   # ---------------------------------------------------------------- 3 gap rule
   nav_panel("2 The gap rule",
@@ -199,7 +210,7 @@ ui <- page_navbar(
                 under-resourced gives grants to the researchers with the fewest resources, many of whom have low capability.
                 Either rule can produce less research output than dividing the budget equally."),
         uiOutput("g_readout")),
-      plotOutput("g_plot", height = "520px"))),
+      div(class = "figcol", fig("g_plot", 640, 480)))),
 
   # ---------------------------------------------------------------- 4 records
   nav_panel("3 What track records show",
@@ -212,14 +223,14 @@ ui <- page_navbar(
            differently. The first may have the largest gap in the field; the second may have no gap at all."),
         sliderInput("r_Ks", "Capabilities to compare", min = 2, max = 40, value = c(3, 30), step = 1),
         sliderInput("r_y", "An observed output level", min = 0.5, max = 8, value = 2.5, step = 0.1),
-        notice("Left: when resources are small relative to capability, researchers of very different capability produce
-                nearly the same output, so a small grant tells the funder little about capability. Right: every point on
-                the curve produces the same expected output. A record alone does not say where on the curve a researcher
+        notice("Upper figure: when resources are small relative to capability, researchers of very different capability
+                produce nearly the same output, so a small grant tells the funder little about capability. Lower figure:
+                every point on the curve produces the same expected output. A record alone does not say where on the curve a researcher
                 is."),
         why("On a small grant, output is close to proportional to resources and nearly independent of capability. Only
              grants comparable in size to capability itself make records informative about capability. For this reason a
              funder that relies on records alone stays far from the gap rule for many rounds, as the next page shows.")),
-      plotOutput("r_plot", height = "460px"))),
+      div(class = "figcol", fig("r_plot1", 640, 300), fig("r_plot2", 640, 300)))),
 
   # ---------------------------------------------------------------- 5 review
   nav_panel("4 What peer review is worth",
@@ -242,7 +253,7 @@ ui <- page_navbar(
              so no score adds much."),
         p(class = "small-note", "Simulation results from the paper (Fig. 2B and 2C). The three fields have the same mean
                                  capability. The lower panel shows the intermediate field.")),
-      div(plotOutput("v_plot", height = "320px"), plotOutput("v_rounds", height = "280px")))),
+      div(class = "figcol", fig("v_plot", 640, 330), fig("v_rounds", 640, 260)))),
 
   # ---------------------------------------------------------------- 6 seed grants and lotteries
   nav_panel("5 Seed grants and lotteries",
@@ -266,7 +277,7 @@ ui <- page_navbar(
                 reverses, and uniform funding produces the most. Where a partial lottery loses output, most of the loss
                 comes from ignoring the review ranking, and only a small part from chance."),
         p(class = "small-note", "Simulation results from the paper (Fig. 3).")),
-      div(plotOutput("s_plot", height = "320px"), plotOutput("lot_plot", height = "340px")))),
+      div(class = "figcol", fig("s_plot", 720, 320), fig("lot_plot", 720, 400)))),
 
   # ---------------------------------------------------------------- 7 regime map
   nav_panel("6 Where your program stands",
@@ -289,7 +300,7 @@ ui <- page_navbar(
                                  map's budget scale is twice the annual ratio. The vertical position is the funder's own estimate.
                                  The paper suggests three observable indicators: how unequal research output is in the field, how
                                  dispersed review scores are, and how strongly output responds to substantial pilot grants.")),
-      plotOutput("w_plot", height = "520px"))),
+      div(class = "figcol", fig("w_plot", 720, 420)))),
 
   # ---------------------------------------------------------------- 8 summary
   nav_panel("7 Summary",
@@ -372,7 +383,7 @@ server <- function(input, output, session) {
       scale_shape_manual(values = c(`TRUE` = 16, `FALSE` = 1)) +
       annotate("text", x = min(xmax, ymax * a$c) * 0.55, y = min(xmax, ymax * a$c) * 0.55 / a$c, label = "frontier R = cK", hjust = 1.08, vjust = -0.3, size = 3.8, colour = GREY) +
       coord_cartesian(xlim = c(0, xmax), ylim = c(0, ymax), expand = FALSE) +
-      labs(x = "resources R", y = "capability K", title = sprintf("Grants under %s. Filled points are funded; each arrow is a grant.", input$g_show)) +
+      labs(x = "resources R", y = "capability K", title = sprintf("Grants under %s\nFilled points are funded; each arrow is a grant", input$g_show)) +
       th()
   }, res = 110)
   output$g_readout <- renderUI({
@@ -384,33 +395,27 @@ server <- function(input, output, session) {
   })
 
   # ---- 3 records
-  output$r_plot <- renderPlot({
+  output$r_plot1 <- renderPlot({
     Ks <- c(input$r_Ks[1], round(exp(mean(log(input$r_Ks))), 0), input$r_Ks[2])
     Rs <- seq(0.05, 12, length.out = 300)
     d1 <- do.call(rbind, lapply(Ks, function(k) data.frame(K = k, R = Rs, y = lam(k, Rs))))
     d1$lab <- ifelse(d1$R == max(Rs), sprintf("K = %g", d1$K), NA)
+    ggplot(d1, aes(R, y, group = K)) + geom_line(linewidth = 0.6) +
+      geom_text(aes(label = lab), na.rm = TRUE, hjust = -0.15, size = 3.8) +
+      coord_cartesian(xlim = c(0, 14.5), ylim = c(0, max(d1$y) * 1.08), expand = FALSE) +
+      labs(x = "resources R", y = "expected research output", title = "Expected output against resources, for three capabilities") + th()
+  }, res = 110)
+  output$r_plot2 <- renderPlot({
     y <- input$r_y
     Rc <- seq(y * 1.02, 40, length.out = 300)
-    d2 <- data.frame(R = Rc, K = y * Rc / (Rc - y))
-    d2 <- d2[d2$K <= 40, ]
-    p1 <- ggplot(d1, aes(R, y, group = K)) + geom_line(linewidth = 0.6) +
-      geom_text(aes(label = lab), na.rm = TRUE, hjust = -0.1, size = 3.6) +
-      coord_cartesian(xlim = c(0, 14.5), ylim = c(0, max(d1$y) * 1.08), expand = FALSE) +
-      labs(x = "resources R", y = "expected research output", title = "Expected research output against resources, for three capabilities") + th()
+    d2 <- data.frame(R = Rc, K = y * Rc / (Rc - y)); d2 <- d2[d2$K <= 40, ]
     ex <- data.frame(R = c(y * 1.25, min(36, y * 6)))
-    ex$K <- y * ex$R / (ex$R - y); ex$lab <- c("high capability,\nfew resources", "modest capability,\nample resources")
-    p2 <- ggplot(d2, aes(R, K)) + geom_line(linewidth = 0.6) +
+    ex$K <- y * ex$R / (ex$R - y); ex$lab <- c("high capability, few resources", "modest capability, ample resources")
+    ggplot(d2, aes(R, K)) + geom_line(linewidth = 0.6) +
       geom_point(data = ex, size = 2.6) +
-      geom_text(data = ex, aes(label = lab), hjust = 0, nudge_x = 1.2, vjust = c(0.2, -0.3), size = 3.4, lineheight = 0.9) +
+      geom_text(data = ex, aes(label = lab), hjust = 0, nudge_x = 1.2, vjust = c(0.3, -0.5), size = 3.8) +
       coord_cartesian(xlim = c(0, 40), ylim = c(0, 40), expand = FALSE) +
-      labs(x = "resources R", y = "capability K", title = sprintf("Researchers with expected output %.1f", y)) + th()
-    gridExtra_absent <- !requireNamespace("gridExtra", quietly = TRUE)
-    if (gridExtra_absent) {
-      grid::grid.newpage()
-      grid::pushViewport(grid::viewport(layout = grid::grid.layout(1, 2)))
-      print(p1, vp = grid::viewport(layout.pos.row = 1, layout.pos.col = 1))
-      print(p2, vp = grid::viewport(layout.pos.row = 1, layout.pos.col = 2))
-    } else gridExtra::grid.arrange(p1, p2, ncol = 2)
+      labs(x = "resources R", y = "capability K", title = sprintf("Researchers whose expected output is %.1f", y)) + th()
   }, res = 110)
 
   # ---- 4 review
@@ -435,7 +440,7 @@ server <- function(input, output, session) {
       geom_text(data = lab, aes(label = who), hjust = -0.1, size = 3.6) +
       scale_x_continuous(breaks = c(1, 5, 10, 15, 20), expand = expansion(mult = c(0.02, 0.25))) +
       scale_y_continuous(limits = c(0, 0.5), expand = c(0, 0)) +
-      labs(x = "round", y = "shortfall (share of gain)", title = "Shortfall below the complete-information optimum, by round, in the intermediate field") + th()
+      labs(x = "round", y = "shortfall (share of gain)", title = "Shortfall below the complete-information optimum,\nby round, in the intermediate field") + th()
   }, res = 110)
   output$v_readout <- renderUI({
     interp <- function(col) approx(log(D_review$tau), D_review[[col]], xout = log(input$v_tau), rule = 2)$y
@@ -452,16 +457,16 @@ server <- function(input, output, session) {
     div(class = "readout", HTML(sprintf("A pool of %d researchers with equal capability and resources, and a fixed sum to divide. Equal division adds <span class='num'>%.2f</span> units of expected output. A lottery that gives full grants to %d of them adds <span class='num'>%.2f</span>. Equal division produces more whenever grants can be divided and output has diminishing returns to resources.", m, certain, k, lottery)))
   })
   output$s_plot <- renderPlot({
-    d <- rbind(data.frame(x = D_seed$xseed, y = D_seed$hb01, f = "heavy-tailed, tight budget (b = 0.2)"),
+    d <- rbind(data.frame(x = D_seed$xseed, y = D_seed$hb01, f = "heavy-tailed, b = 0.2"),
                data.frame(x = D_seed$xseed, y = D_seed$hb05, f = "heavy-tailed, b = 1"),
-               data.frame(x = D_seed$xseed, y = D_seed$hb1, f = "heavy-tailed, ample budget (b = 2)"),
+               data.frame(x = D_seed$xseed, y = D_seed$hb1, f = "heavy-tailed, b = 2"),
                data.frame(x = D_seed$xseed, y = D_seed$db05, f = "intermediate, b = 1"))
     lab <- d[d$x == max(d$x), ]
     ggplot(d, aes(x, y, group = f)) + geom_line(linewidth = 0.6) + geom_point(size = 1.4) +
       geom_text(data = lab, aes(label = f), hjust = -0.05, size = 3.4) +
       scale_x_continuous(breaks = c(0, 0.25, 0.5, 0.75), limits = c(0, 1.25), expand = c(0, 0)) +
       scale_y_continuous(limits = c(0, 20), expand = c(0, 0)) +
-      labs(x = "fraction of the budget given out as seed grants", y = "output lost (%)", title = "Research output lost to uniform seed grants, as a percent of the gain from funding") + th()
+      labs(x = "fraction of the budget given out as seed grants", y = "output lost (%)", title = "Research output lost to uniform seed grants,\nas a percent of the gain from funding") + th()
   }, res = 110)
   output$lot_plot <- renderPlot({
     mk <- function(D, f, u, l) rbind(data.frame(tau = D$tau, y = D$ss, s = "top fifth by review", field = f),
@@ -478,10 +483,11 @@ server <- function(input, output, session) {
       scale_linetype_manual(values = c("solid", "solid", "solid", "dashed", "dotted"), name = NULL) +
       scale_colour_manual(values = c("black", "black", "black", GREY, GREY), name = NULL) +
       facet_wrap(~field) +
-      scale_x_log10(breaks = c(0.3, 1, 3, 10), expand = expansion(mult = c(0.05, 0.05))) +
+      scale_x_log10(breaks = c(0.3, 1, 3, 10), labels = c("0.3", "1", "3", "10"), expand = expansion(mult = c(0.06, 0.06))) +
       scale_y_continuous(limits = c(0, 1), expand = c(0, 0)) +
-      labs(x = "review noise (log scale)", y = "share of the optimum's gain", title = "Gain of five funding schemes, as a share of the optimal allocation's gain") +
-      th() + theme(legend.position = "right", legend.key.width = unit(22, "pt"), legend.text = element_text(size = 10))
+      guides(shape = guide_legend(nrow = 2), linetype = guide_legend(nrow = 2), colour = guide_legend(nrow = 2)) +
+      labs(x = "review noise (log scale)", y = "share of the optimum's gain", title = "Gain of five funding schemes,\nas a share of the optimal allocation's gain") +
+      th() + theme(legend.position = "bottom", legend.key.width = unit(26, "pt"), legend.text = element_text(size = 11), legend.margin = margin(4, 0, 0, 0), panel.spacing.x = unit(18, "pt"))
   }, res = 110)
 
   # ---- 6 regime map
@@ -506,8 +512,8 @@ server <- function(input, output, session) {
         geom_point(data = pt, aes(b, gini), inherit.aes = FALSE, size = 3.6, shape = 21, fill = "black", colour = "white", stroke = 1.2) +
         scale_x_log10(breaks = c(0.01, 0.1, 1), limits = c(0.01, 3), expand = expansion(mult = c(0, 0.2))) +
         scale_y_continuous(breaks = yb, labels = ylabs, limits = c(0.1, 0.72), expand = c(0, 0)) +
-        labs(x = "budget relative to the field's resources", y = if (ends) "capability inequality" else NULL, title = title) +
-        th() + theme(axis.text.y = element_text(size = if (ends) 11 else 0))
+        labs(x = "budget relative to field resources", y = if (ends) "capability inequality" else NULL, title = title) +
+        th() + theme(axis.text.y = element_text(size = if (ends) 11 else 0), axis.title.x = element_text(size = 11))
     }
     p1 <- mkpanel(C_targ, "A  Value of targeting", TRUE)
     p2 <- mkpanel(C_rev, "B  Value of review", FALSE)
