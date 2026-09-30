@@ -83,7 +83,7 @@ for f in ['fig-p1', 'fig-p2', 'fig-p3', 'fig-p4', 'fig-regime']:
     t = open(f'{SRC}/{f}.tex').read().replace('\\textwidth', '\\linewidth').replace('\\ref{app:simulation}', 'SI Materials and Methods')
     if f == 'fig-p4':
         t = t.replace('\\begin{figure}[tp]', '\\begin{figure*}[t!]').replace('\\end{figure}', '\\end{figure*}')
-        t = t.replace('width=0.76\\linewidth, height=5.4cm', 'width=0.5\\linewidth, height=4.2cm').replace('width=0.36\\linewidth, height=5.6cm', 'width=0.32\\linewidth, height=4.4cm')
+        t = t.replace('width=0.76\\linewidth, height=5.4cm', 'width=0.5\\linewidth, height=5.2cm').replace('width=0.36\\linewidth, height=5.6cm', 'width=0.32\\linewidth, height=4.4cm')
     if f == 'fig-regime':
         t = t.replace('\\begin{figure}[t]', '\\begin{figure*}[t]').replace('\\end{figure}', '\\end{figure*}')
     if f == 'fig-p2':
