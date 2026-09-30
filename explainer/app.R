@@ -90,7 +90,7 @@ body { font-family: Georgia, 'Times New Roman', serif; color: #111; margin: 10pt
 /* header: title on its own line, navigation on the line below, one hairline under both */
 .navbar { border-bottom: 1px solid #111; padding: 1.4rem 0 0 0; margin-bottom: 1.6rem; background: #fff !important; }
 .navbar > .container-fluid { flex-direction: column; align-items: flex-start; padding: 0 0.75rem; }
-.navbar-brand { white-space: normal; padding: 0; margin: 0 0 1.1rem 0; }
+.navbar-brand { white-space: normal; padding: 0; margin: 0 0 calc(1.1rem + 10pt) 0; }
 .brand { display: flex; flex-direction: column; }
 .brand-title { font-size: 2.05rem; line-height: 1.2; font-weight: 400; letter-spacing: -0.005em; color: #111; max-width: 34ch; }
 .brand-sub { font-size: 1rem; color: #666; margin-top: 0.45rem; font-style: italic; }
@@ -183,7 +183,7 @@ ui <- page_navbar(
            ", em("g = max(cK − R, 0)"), ": a target of ", em("c"), " times their capability, filled up from the resources
            they already hold, and nothing to anyone already at or above their target. The constant ", em("c"), " is set by
            the budget. Grants rise with capability and fall with existing resources."),
-        sliderInput("g_b", "Budget, as a fraction of the field's total baseline resources", min = 0.02, max = 2, value = 0.2, step = 0.02),
+        sliderInput("g_b", "Budget, as a fraction of the field's total baseline resources", min = 0.02, max = 2, value = 0.1, step = 0.02),
         sliderInput("g_alpha", "Capability inequality (Pareto tail; smaller is more unequal)", min = 1.2, max = 5, value = 2, step = 0.1),
         div(class = "d-flex gap-2 align-items-end",
             numericInput("g_seed", "Population seed", value = 7, min = 1, max = 9999, width = "9rem"),
